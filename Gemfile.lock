@@ -1,7 +1,7 @@
 PATH
   remote: ../saml-kit
   specs:
-    saml-kit (0.1.0)
+    saml-kit (0.2.0)
       activemodel (>= 4.2.0)
       activesupport (>= 4.2.0)
       builder (~> 3.2)
