@@ -31,9 +31,9 @@ class SessionsController < ApplicationController
         raise ActiveRecord::RecordInvalid.new(saml) if saml.invalid?
       end
       user = User.find_by(uuid: saml_request.name_id)
-      response_binding = saml_request.provider.single_logout_service_for(binding: :http_post)
-      @saml_response = saml_request.response_for(user)
-      @url, @saml_params = response_binding.serialize(@saml_response, relay_state: saml_params[:RelayState])
+      @url, @saml_params = saml_request.response_for(user, binding: :http_post, relay_state: saml_params[:RelayState]) do |builder|
+        @saml_response_builder = builder
+      end
       reset_session
     elsif saml_params[:SAMLResponse].present?
     else
@@ -63,9 +63,9 @@ class SessionsController < ApplicationController
   end
 
   def post_back(saml_request, user)
-    response_binding = saml_request.provider.assertion_consumer_service_for(binding: :http_post)
-    @saml_response = saml_request.response_for(user)
-    @url, @saml_params = response_binding.serialize(@saml_response, relay_state: saml_params[:RelayState])
+    @url, @saml_params = saml_request.response_for(user, binding: :http_post, relay_state: saml_params[:RelayState]) do |builder|
+      @saml_response_builder = builder
+    end
     reset_session
     session[:user_id] = user.id
     render :create
