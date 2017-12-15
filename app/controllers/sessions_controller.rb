@@ -47,7 +47,7 @@ class SessionsController < ApplicationController
   end
 
   def saml_params
-    params.permit(:SAMLRequest, :SAMLResponse, :SAMLEncoding, :SigAlg, :Signature)
+    params.permit(:SAMLRequest, :SAMLResponse, :SAMLEncoding, :SigAlg, :Signature, :RelayState)
   end
 
   def idp

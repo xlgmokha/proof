@@ -8,7 +8,7 @@
             <li><%= message %></li>
           <% end %>
         </ul>
-        <%= debug @model %>
+        <%= debug @model.to_xml(pretty: true) %>
       <% end %>
     </div>
   </div>
