@@ -64,7 +64,7 @@ gem 'dotenv-rails'
 if ENV['RAILS_ENV'] == 'development'
   gem 'saml-kit', path: '../saml-kit'
 else
-  gem 'saml-kit', '~> 0.2.2'
+  gem 'saml-kit', '~> 0.2.4'
 end
 gem 'rails-assets-bootstrap', source: 'https://rails-assets.org'
 gem 'jwt'
