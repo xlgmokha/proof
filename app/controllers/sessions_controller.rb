@@ -5,10 +5,13 @@ class SessionsController < ApplicationController
     target_binding = request.post? ? :http_post : :http_redirect
     binding = idp.single_sign_on_service_for(binding: target_binding)
     @saml_request = binding.deserialize(raw_params)
-    return render_error(:forbidden, model: @saml_request) if @saml_request.invalid?
-    return post_back(@saml_request, current_user) if current_user?
-
-    session[:saml] = { params: raw_params.to_h, binding: target_binding }
+    if @saml_request.valid?
+      session[:saml] = { params: raw_params.to_h, binding: target_binding }
+      return post_back(@saml_request, current_user) if current_user?
+    else
+      logger.error(@saml_request.errors.full_messages)
+      return render_error(:forbidden, model: @saml_request)
+    end
   end
 
   def create
@@ -58,12 +61,13 @@ class SessionsController < ApplicationController
     if request.post?
       saml_params
     else
-      Hash[request.query_string.split("&").map { |x| x.split("=", 2) }]
+      Hash[request.query_string.split("&amp;").map { |x| x.split("=", 2) }].symbolize_keys
     end
   end
 
   def post_back(saml_request, user)
-    @url, @saml_params = saml_request.response_for(user, binding: :http_post, relay_state: saml_params[:RelayState]) do |builder|
+    relay_state = session[:saml][:params][:RelayState]
+    @url, @saml_params = saml_request.response_for(user, binding: :http_post, relay_state: relay_state) do |builder|
       @saml_response_builder = builder
     end
     reset_session
