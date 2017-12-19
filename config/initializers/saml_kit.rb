@@ -13,6 +13,5 @@ Saml::Kit.configure do |configuration|
   configuration.issuer = ENV['ISSUER']
   configuration.registry = OnDemandRegistry.new(configuration.registry)
   configuration.logger = Rails.logger
-  configuration.generate_key_pair_for(use: :signing)
-  configuration.generate_key_pair_for(use: :signing)
+  5.times { configuration.generate_key_pair_for(use: :signing) }
 end
