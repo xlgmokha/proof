@@ -33,8 +33,9 @@ class SessionsController < ApplicationController
       saml_request = binding.deserialize(raw_params).tap do |saml|
         raise ActiveRecord::RecordInvalid.new(saml) if saml.invalid?
       end
-      user = User.find_by(uuid: saml_request.name_id)
-      @url, @saml_params = saml_request.response_for(user, binding: :http_post, relay_state: saml_params[:RelayState]) do |builder|
+      raise 'Unknown NameId' unless current_user.uuid == saml_request.name_id
+
+      @url, @saml_params = saml_request.response_for(binding: :http_post, relay_state: saml_params[:RelayState]) do |builder|
         @saml_response_builder = builder
       end
       reset_session
