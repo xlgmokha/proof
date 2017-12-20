@@ -4,9 +4,9 @@ class SessionsController < ApplicationController
   def new
     target_binding = request.post? ? :http_post : :http_redirect
     binding = idp.single_sign_on_service_for(binding: target_binding)
-    @saml_request = binding.deserialize(raw_params)
+    @saml_request = binding.deserialize(saml_params)
     if @saml_request.valid?
-      session[:saml] = { params: raw_params.to_h, binding: target_binding }
+      session[:saml] = { params: saml_params.to_h, binding: target_binding }
       return post_back(@saml_request, current_user) if current_user?
     else
       logger.error(@saml_request.errors.full_messages)
@@ -30,7 +30,7 @@ class SessionsController < ApplicationController
   def destroy
     if saml_params[:SAMLRequest].present?
       binding = idp.single_logout_service_for(binding: :http_post)
-      saml_request = binding.deserialize(raw_params).tap do |saml|
+      saml_request = binding.deserialize(saml_params).tap do |saml|
         raise ActiveRecord::RecordInvalid.new(saml) if saml.invalid?
       end
       raise 'Unknown NameId' unless current_user.uuid == saml_request.name_id
