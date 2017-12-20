@@ -20,6 +20,7 @@ describe SessionsController do
     it 'renders an error page when the service provider is not registered' do
       post :new, params: saml_params
       expect(response).to have_http_status(:forbidden)
+      expect(response.body).to include("Forbidden")
     end
 
     it 'renders the login page when the service provider is registered and the user is not logged in' do

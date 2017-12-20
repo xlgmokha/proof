@@ -1,5 +1,5 @@
 class BearerToken
-  def initialize(private_key = Saml::Kit.configuration.signing_private_key)
+  def initialize(private_key = Saml::Kit.configuration.private_keys(use: :signing).last)
     @private_key = private_key
     @public_key = private_key.public_key
   end
