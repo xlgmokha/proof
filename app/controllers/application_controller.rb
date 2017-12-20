@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+  include SamlRespondable
   protect_from_forgery with: :exception
 
   def render_error(status, model: nil)

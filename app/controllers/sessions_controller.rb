@@ -50,20 +50,8 @@ class SessionsController < ApplicationController
     params.require(:user).permit(:email, :password)
   end
 
-  def saml_params
-    params.permit(:SAMLRequest, :SAMLResponse, :SAMLEncoding, :SigAlg, :Signature, :RelayState)
-  end
-
   def idp
     Idp.default(request)
-  end
-
-  def raw_params
-    if request.post?
-      saml_params
-    else
-      Hash[request.query_string.split("&amp;").map { |x| x.split("=", 2) }].symbolize_keys
-    end
   end
 
   def post_back(saml_request, user)
