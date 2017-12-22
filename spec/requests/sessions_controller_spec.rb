@@ -48,6 +48,12 @@ describe SessionsController do
         expect(response).to have_http_status(:ok)
         expect(response.body).to include("Sending Response to Service Provider")
       end
+
+      it 'renders a login page when their is no SAML Request' do
+        post '/session/new'
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("Login")
+      end
     end
 
     describe "GET #new" do

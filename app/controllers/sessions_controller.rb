@@ -12,6 +12,8 @@ class SessionsController < ApplicationController
       logger.error(@saml_request.errors.full_messages)
       return render_error(:forbidden, model: @saml_request)
     end
+  rescue => error
+    logger.error(error)
   end
 
   def create
