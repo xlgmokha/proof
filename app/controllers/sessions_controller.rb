@@ -18,6 +18,8 @@ class SessionsController < ApplicationController
 
   def create
     if user = User.login(user_params[:email], user_params[:password])
+      return redirect_to(dashboard_path) unless session[:saml].present?
+
       binding = idp.single_sign_on_service_for(binding: session[:saml][:binding])
       saml_request = binding.deserialize(session[:saml][:params])
       return render_error(:forbidden, model: saml_request) if saml_request.invalid?

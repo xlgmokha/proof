@@ -73,4 +73,15 @@ describe SessionsController do
       end
     end
   end
+
+  describe "#create" do
+    let(:user) { User.create!(email: FFaker::Internet.email, password: password) }
+    let(:password) { FFaker::Internet.password }
+
+    it 'redirects to the dashboard when a SAMLRequest is not present' do
+      post '/session', params: { user: { email: user.email, password: password } }
+
+      expect(response).to redirect_to('/dashboard')
+    end
+  end
 end

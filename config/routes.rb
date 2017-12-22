@@ -4,5 +4,6 @@ Rails.application.routes.draw do
   post "/session/logout" => "sessions#destroy", as: :logout
   post "/session/new" => "sessions#new"
   resource :metadata, only: [:show]
+  resource :dashboard, only: [:show]
   root to: "sessions#new"
 end
