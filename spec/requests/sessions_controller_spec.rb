@@ -83,5 +83,31 @@ describe SessionsController do
 
       expect(response).to redirect_to('/dashboard')
     end
+
+    it 'posts the response back to the ACS endpoint' do
+      allow(registry).to receive(:metadata_for).with(issuer).and_return(sp_metadata)
+      redirect_binding = Saml::Kit::Bindings::HttpRedirect.new(location: new_session_url)
+      get redirect_binding.serialize(Saml::Kit::AuthenticationRequest.builder)[0]
+
+      post '/session', params: { user: { email: user.email, password: password } }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include(sp_metadata.assertion_consumer_service_for(binding: :http_post).location)
+      expect(response.body).to include('SAMLResponse')
+    end
+
+    it 'includes the RelayState in the response' do
+      relay_state = SecureRandom.uuid
+      allow(registry).to receive(:metadata_for).with(issuer).and_return(sp_metadata)
+      redirect_binding = Saml::Kit::Bindings::HttpRedirect.new(location: new_session_url)
+
+      get redirect_binding.serialize(Saml::Kit::AuthenticationRequest.builder, relay_state: relay_state)[0]
+
+      post '/session', params: { user: { email: user.email, password: password } }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include('RelayState')
+      expect(response.body).to include(relay_state)
+    end
   end
 end
