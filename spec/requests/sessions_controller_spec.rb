@@ -6,6 +6,7 @@ describe SessionsController do
   let(:sp_metadata) do
     Saml::Kit::ServiceProviderMetadata.build do |x|
       x.add_assertion_consumer_service(FFaker::Internet.uri("https"), binding: :http_post)
+      x.add_single_logout_service(FFaker::Internet.uri("https"), binding: :http_post)
     end
   end
   def http_login(user)
@@ -108,6 +109,27 @@ describe SessionsController do
       expect(response).to have_http_status(:ok)
       expect(response.body).to include('RelayState')
       expect(response.body).to include(relay_state)
+    end
+  end
+
+  describe "#destroy" do
+    let(:post_binding) { Saml::Kit::Bindings::HttpPost.new(location: "/session/logout") }
+    let(:user) { User.create!(email: FFaker::Internet.email, password: FFaker::Internet.password) }
+
+    it 'posts the response back to the service provider' do
+      allow(registry).to receive(:metadata_for).with(issuer).and_return(sp_metadata)
+      builder = Saml::Kit::LogoutRequest.builder(user) do |x|
+        x.issuer = issuer
+        x.embed_signature = false
+      end
+
+      http_login(user)
+
+      url, saml_params = post_binding.serialize(builder)
+      post url, params: saml_params
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("SAMLResponse")
+      expect(response.body).to include(sp_metadata.single_logout_service_for(binding: :http_post).location)
     end
   end
 end

@@ -18,7 +18,10 @@ class SessionsController < ApplicationController
 
   def create
     if user = User.login(user_params[:email], user_params[:password])
-      return redirect_to(dashboard_path) unless session[:saml].present?
+      unless session[:saml].present?
+        login(user)
+        return redirect_to(dashboard_path)
+      end
 
       binding = idp.single_sign_on_service_for(binding: session[:saml][:binding])
       saml_request = binding.deserialize(session[:saml][:params])
@@ -33,7 +36,7 @@ class SessionsController < ApplicationController
 
   def destroy
     if saml_params[:SAMLRequest].present?
-      binding = idp.single_logout_service_for(binding: :http_post)
+      binding = Saml::Kit::Bindings::HttpPost.new(location: session_url)
       saml_request = binding.deserialize(saml_params).tap do |saml|
         raise ActiveRecord::RecordInvalid.new(saml) if saml.invalid?
       end
@@ -63,8 +66,12 @@ class SessionsController < ApplicationController
     @url, @saml_params = saml_request.response_for(user, binding: :http_post, relay_state: relay_state) do |builder|
       @saml_response_builder = builder
     end
+    login(user)
+    render :create
+  end
+
+  def login(user)
     reset_session
     session[:user_id] = user.id
-    render :create
   end
 end
