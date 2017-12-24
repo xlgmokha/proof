@@ -62,6 +62,8 @@ end
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'dotenv-rails'
 gem 'saml-kit', '0.2.18'
+gem 'rails-assets-jquery', source: 'https://rails-assets.org'
 gem 'rails-assets-bootstrap', source: 'https://rails-assets.org'
 gem 'jwt'
 gem 'activerecord-session_store'
+gem "email_validator"

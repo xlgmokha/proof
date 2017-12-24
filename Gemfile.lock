@@ -77,6 +77,8 @@ GEM
     dotenv-rails (2.2.1)
       dotenv (= 2.2.1)
       railties (>= 3.2, < 5.2)
+    email_validator (1.6.0)
+      activemodel
     erubi (1.7.0)
     execjs (2.7.0)
     ffaker (2.7.0)
@@ -250,6 +252,7 @@ DEPENDENCIES
   capybara (~> 2.13)
   coffee-rails (~> 4.2)
   dotenv-rails
+  email_validator
   ffaker
   jbuilder (~> 2.5)
   jwt
@@ -258,6 +261,7 @@ DEPENDENCIES
   puma (~> 3.7)
   rails (~> 5.1.4)
   rails-assets-bootstrap!
+  rails-assets-jquery!
   rails-controller-testing
   rails_12factor
   rspec-rails (~> 3.6)

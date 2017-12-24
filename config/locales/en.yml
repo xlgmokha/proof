@@ -31,3 +31,6 @@
 
 en:
   hello: "Hello world"
+  registrations:
+    new:
+      register: "Register"

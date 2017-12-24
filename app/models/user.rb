@@ -1,5 +1,7 @@
 class User < ApplicationRecord
   has_secure_password
+  validates :email, presence: true, email: true, uniqueness: true
+
   after_initialize do
     self.uuid = SecureRandom.uuid unless self.uuid
   end
