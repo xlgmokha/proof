@@ -179,7 +179,7 @@ GEM
     ruby_dep (1.5.0)
     rubyzip (1.2.1)
     safe_yaml (1.0.4)
-    saml-kit (0.2.18)
+    saml-kit (0.3.0)
       activemodel (>= 4.2.0)
       builder (~> 3.2)
       nokogiri (~> 1.8)
@@ -265,7 +265,7 @@ DEPENDENCIES
   rails-controller-testing
   rails_12factor
   rspec-rails (~> 3.6)
-  saml-kit (= 0.2.18)
+  saml-kit (= 0.3.0)
   sass-rails (~> 5.0)
   selenium-webdriver
   spring
