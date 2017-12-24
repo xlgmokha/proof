@@ -2,32 +2,32 @@ class SessionsController < ApplicationController
   skip_before_action :verify_authenticity_token, only: [:new, :destroy]
 
   def new
-    target_binding = request.post? ? :http_post : :http_redirect
-    binding = idp.single_sign_on_service_for(binding: target_binding)
+    binding = binding_for(request.post? ? :http_post : :http_redirect, new_session_url)
     @saml_request = binding.deserialize(saml_params)
     if @saml_request.valid?
-      session[:saml] = { params: saml_params.to_h, binding: target_binding }
+      session[:saml] = { params: saml_params.to_h, xml: @saml_request.to_xml }
       return post_back(@saml_request, current_user) if current_user?
     else
-      logger.error(@saml_request.errors.full_messages)
-      return render_error(:forbidden, model: @saml_request)
+      render_error(:forbidden, model: @saml_request)
     end
   rescue => error
     logger.error(error)
   end
 
   def create
+    user_params = params.require(:user).permit(:email, :password)
     if user = User.login(user_params[:email], user_params[:password])
       unless session[:saml].present?
         login(user)
         return redirect_to(dashboard_path)
       end
 
-      binding = idp.single_sign_on_service_for(binding: session[:saml][:binding])
-      saml_request = binding.deserialize(session[:saml][:params])
-      return render_error(:forbidden, model: saml_request) if saml_request.invalid?
-
-      post_back(saml_request, user)
+      saml_request = Saml::Kit::AuthenticationRequest.new(session[:saml][:xml])
+      if saml_request.invalid?
+        render_error(:forbidden, model: saml_request)
+      else
+        post_back(saml_request, user)
+      end
     else
       flash[:error] = "Invalid Credentials"
       render :new
@@ -36,7 +36,7 @@ class SessionsController < ApplicationController
 
   def destroy
     if saml_params[:SAMLRequest].present?
-      binding = Saml::Kit::Bindings::HttpPost.new(location: session_url)
+      binding = binding_for(:http_post, session_url)
       saml_request = binding.deserialize(saml_params).tap do |saml|
         raise ActiveRecord::RecordInvalid.new(saml) if saml.invalid?
       end
@@ -52,14 +52,6 @@ class SessionsController < ApplicationController
   end
 
   private
-
-  def user_params
-    params.require(:user).permit(:email, :password)
-  end
-
-  def idp
-    Idp.default(request)
-  end
 
   def post_back(saml_request, user)
     relay_state = session[:saml][:params][:RelayState]

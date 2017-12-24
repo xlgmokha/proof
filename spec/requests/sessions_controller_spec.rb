@@ -35,7 +35,8 @@ describe SessionsController do
 
         expect(response).to have_http_status(:ok)
         expect(session[:saml]).to be_present
-        expect(session[:saml][:binding]).to eql(:http_post)
+        expect(session[:saml][:params]).to be_present
+        expect(session[:saml][:xml]).to be_present
       end
 
       it 'generates a response for the user when they are already logged in' do
@@ -50,7 +51,7 @@ describe SessionsController do
         expect(response.body).to include("Sending Response to Service Provider")
       end
 
-      it 'renders a login page when their is no SAML Request' do
+      it 'renders a login page when there is no SAML Request' do
         post '/session/new'
         expect(response).to have_http_status(:ok)
         expect(response.body).to include("Login")

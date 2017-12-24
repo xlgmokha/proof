@@ -1,6 +1,14 @@
 module SamlRespondable
   extend ActiveSupport::Concern
 
+  def binding_for(binding, location)
+    if binding == :http_post
+      Saml::Kit::Bindings::HttpPost.new(location: location)
+    else
+      Saml::Kit::Bindings::HttpRedirect.new(location: location)
+    end
+  end
+
   def saml_params(allowed_params = [:SAMLRequest, :SAMLResponse, :SAMLEncoding, :SigAlg, :Signature, :RelayState])
     @saml_params ||=
       if request.post?
