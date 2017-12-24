@@ -132,5 +132,18 @@ describe SessionsController do
       expect(response.body).to include("SAMLResponse")
       expect(response.body).to include(sp_metadata.single_logout_service_for(binding: :http_post).location)
     end
+
+    it 'redirects to the login page' do
+      allow(registry).to receive(:metadata_for).with(issuer).and_return(sp_metadata)
+      authn_request = Saml::Kit::AuthenticationRequest.build
+      builder = Saml::Kit::LogoutResponse.builder(authn_request) do |x|
+        x.issuer = issuer
+        x.embed_signature = false
+      end
+
+      url, saml_params = post_binding.serialize(builder)
+      post url, params: saml_params
+      expect(response).to redirect_to(new_session_url)
+    end
   end
 end

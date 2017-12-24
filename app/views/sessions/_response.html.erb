@@ -8,7 +8,7 @@
           <%= hidden_field_tag key, value %>
         <% end %>
       <% end %>
-      <%= debug @saml_response_builder.build.to_xhtml %>
+      <%= debug @saml_response_builder.try(:build).try(:to_xhtml) %>
     </div>
   </div>
 </div>

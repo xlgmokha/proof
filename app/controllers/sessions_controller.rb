@@ -35,8 +35,8 @@ class SessionsController < ApplicationController
   end
 
   def destroy
+    binding = binding_for(:http_post, session_url)
     if saml_params[:SAMLRequest].present?
-      binding = binding_for(:http_post, session_url)
       saml_request = binding.deserialize(saml_params).tap do |saml|
         raise ActiveRecord::RecordInvalid.new(saml) if saml.invalid?
       end
@@ -47,6 +47,12 @@ class SessionsController < ApplicationController
       end
       reset_session
     elsif saml_params[:SAMLResponse].present?
+      saml_request = binding.deserialize(saml_params)
+      if saml_request.invalid?
+        raise ActiveRecord::RecordInvalid.new(saml_request)
+      end
+      reset_session
+      redirect_to new_session_path
     else
     end
   end
