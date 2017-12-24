@@ -1,5 +1,6 @@
 class SessionsController < ApplicationController
   skip_before_action :verify_authenticity_token, only: [:new, :destroy]
+  skip_before_action :authenticate!, only: [:new, :create, :destroy]
 
   def new
     binding = binding_for(request.post? ? :http_post : :http_redirect, new_session_url)

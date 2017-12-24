@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   include SamlRespondable
   protect_from_forgery with: :exception
+  before_action :authenticate!
 
   def render_error(status, model: nil)
     @model = model
@@ -17,5 +18,11 @@ class ApplicationController < ActionController::Base
 
   def current_user?
     current_user.present?
+  end
+
+  private
+
+  def authenticate!
+    redirect_to new_session_path unless current_user?
   end
 end
