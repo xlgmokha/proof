@@ -29,8 +29,8 @@ describe '/scim/v2/users' do
       expect(json[:meta][:resourceType]).to eql('User')
       expect(json[:meta][:created]).to be_present
       expect(json[:meta][:lastModified]).to be_present
-      expect(json[:meta][:location]).to be_present
       expect(json[:meta][:version]).to be_present
+      expect(json[:meta][:location]).to be_present
     end
   end
 end

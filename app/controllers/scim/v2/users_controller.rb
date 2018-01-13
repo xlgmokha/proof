@@ -8,7 +8,7 @@ module Scim
         )
         response.headers['Content-Type'] = 'application/scim+json'
         response.headers['Location'] = scim_v2_users_url(@user)
-        render status: :created
+        render json: @user.to_scim(self), status: :created
       end
 
       private
