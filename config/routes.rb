@@ -6,5 +6,11 @@ Rails.application.routes.draw do
   resource :metadata, only: [:show]
   resource :dashboard, only: [:show]
   resources :registrations, only: [:new, :create]
+
+  namespace :scim do
+    namespace :v2, defaults: { format: 'json' } do
+      resources :users, only: [:create]
+    end
+  end
   root to: "sessions#new"
 end

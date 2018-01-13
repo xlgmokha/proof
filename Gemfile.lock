@@ -1,3 +1,8 @@
+PATH
+  remote: ../scim-shady
+  specs:
+    scim-shady (0.1.0)
+
 GEM
   remote: https://rubygems.org/
   remote: https://rails-assets.org/
@@ -271,6 +276,7 @@ DEPENDENCIES
   rspec-rails (~> 3.6)
   saml-kit (= 0.3.2)
   sass-rails (~> 5.0)
+  scim-shady!
   selenium-webdriver
   spring
   spring-watcher-listen (~> 2.0.0)
@@ -283,4 +289,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   1.16.0
+   1.16.1
