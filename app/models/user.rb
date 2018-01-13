@@ -14,15 +14,6 @@ class User < ApplicationRecord
     request.trusted? ? trusted_attributes : {}
   end
 
-  def self.login(email, password)
-    return if email.blank? || password.blank?
-
-    user = User.find_by!(email: email)
-    user.authenticate(password) ? user : nil
-  rescue ActiveRecord::RecordNotFound
-    nil
-  end
-
   def to_scim(url_helpers)
     Scim::Shady::User.build do |x|
       x.id = uuid
@@ -32,6 +23,15 @@ class User < ApplicationRecord
       x.location = url_helpers.scim_v2_users_url(self)
       x.version = lock_version
     end
+  end
+
+  def self.login(email, password)
+    return if email.blank? || password.blank?
+
+    user = User.find_by!(email: email)
+    user.authenticate(password) ? user : nil
+  rescue ActiveRecord::RecordNotFound
+    nil
   end
 
   private

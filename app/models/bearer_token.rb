@@ -1,5 +1,5 @@
 class BearerToken
-  def initialize(private_key = Saml::Kit.configuration.private_keys(use: :signing).last)
+  def initialize(private_key = Rails.application.config.x.jwt.private_key)
     @private_key = private_key
     @public_key = private_key.public_key
   end
