@@ -14,17 +14,6 @@ class User < ApplicationRecord
     request.trusted? ? trusted_attributes : {}
   end
 
-  def to_scim(url_helpers)
-    Scim::Shady::User.build do |x|
-      x.id = uuid
-      x.username = email
-      x.created_at = created_at
-      x.updated_at = updated_at
-      x.location = url_helpers.scim_v2_users_url(self)
-      x.version = lock_version
-    end
-  end
-
   def self.login(email, password)
     return if email.blank? || password.blank?
 
