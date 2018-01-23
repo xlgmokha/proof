@@ -1,6 +1,15 @@
 module Scim
   module V2
     class UsersController < ::Scim::Controller
+      def index
+        response.headers['Content-Type'] = 'application/scim+json'
+        render json: {
+          schemas: [Scim::Shady::Messages::LIST],
+          totalResults: 0,
+          Resources: [],
+        }.to_json, status: :ok
+      end
+
       def show
         user = User.find_by(uuid: params[:id])
         response.headers['Content-Type'] = 'application/scim+json'

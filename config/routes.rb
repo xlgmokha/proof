@@ -9,7 +9,7 @@ Rails.application.routes.draw do
 
   namespace :scim do
     namespace :v2, defaults: { format: 'json' } do
-      resources :users, only: [:show, :create, :update, :destroy]
+      resources :users, only: [:index, :show, :create, :update, :destroy]
       get :ServiceProviderConfig, to: "service_providers#index"
       #resources :groups
       resources :resource_types, only: [:index]

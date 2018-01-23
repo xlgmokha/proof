@@ -35,7 +35,7 @@ describe '/scim/v2/users' do
     end
   end
 
-  describe "GET /scim/v2/users" do
+  describe "GET /scim/v2/users/:id" do
     let(:user) { create(:user) }
 
     it 'returns the requested resource' do
@@ -55,6 +55,21 @@ describe '/scim/v2/users' do
       expect(json[:meta][:lastModified]).to eql(user.updated_at.iso8601)
       expect(json[:meta][:version]).to eql(user.lock_version)
       expect(json[:meta][:location]).to eql(scim_v2_users_url(user))
+    end
+  end
+
+  describe "GET /scim/v2/users" do
+    it 'returns an empty set of results' do
+      get "/scim/v2/users?attributes=userName"
+
+      expect(response).to have_http_status(:ok)
+      expect(response.headers['Content-Type']).to eql('application/scim+json')
+      expect(response.body).to be_present
+
+      json = JSON.parse(response.body, symbolize_names: true)
+      expect(json[:schemas]).to match_array([Scim::Shady::Messages::LIST])
+      expect(json[:totalResults]).to be_zero
+      expect(json[:Resources]).to be_empty
     end
   end
 end
