@@ -1,6 +1,6 @@
 module Scim
   module V2
-    class UsersController < ApplicationController
+    class UsersController < ::Scim::Controller
       def create
         @user = User.create!(
           email: user_params[:userName],
@@ -8,7 +8,7 @@ module Scim
         )
         response.headers['Content-Type'] = 'application/scim+json'
         response.headers['Location'] = scim_v2_users_url(@user)
-        render json: @user.to_scim(self), status: :created
+        render json: @user.to_scim(self).to_json, status: :created
       end
 
       private
