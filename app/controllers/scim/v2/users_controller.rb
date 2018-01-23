@@ -20,9 +20,6 @@ module Scim
 
       private
 
-      def authenticate!
-      end
-
       def user_params
         params.permit(:schemas, :userName)
       end
