@@ -9,7 +9,14 @@ Rails.application.routes.draw do
 
   namespace :scim do
     namespace :v2, defaults: { format: 'json' } do
-      resources :users, only: [:create]
+      resources :users, only: [:show, :create, :update, :destroy]
+      get :ServiceProviderConfig, to: "service_providers#index"
+      #resources :groups
+      resources :resource_types, only: [:index]
+      get :ResourceTypes, to: "resource_types#index"
+      resources :schemas, only: [:index]
+
+      match 'me', to: lambda { |env| [501, {}, ['']] }, via: [:get, :post, :put, :patch, :delete]
     end
   end
   root to: "sessions#new"

@@ -2,6 +2,7 @@ PATH
   remote: ../scim-shady
   specs:
     scim-shady (0.1.0)
+      activesupport (>= 4.2.0)
 
 GEM
   remote: https://rubygems.org/
