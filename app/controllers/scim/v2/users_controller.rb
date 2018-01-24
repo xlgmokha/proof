@@ -4,7 +4,7 @@ module Scim
       def index
         response.headers['Content-Type'] = 'application/scim+json'
         render json: {
-          schemas: [Scim::Shady::Messages::LIST],
+          schemas: [Scim::Shady::Messages::LIST_RESPONSE],
           totalResults: 0,
           Resources: [],
         }.to_json, status: :ok
