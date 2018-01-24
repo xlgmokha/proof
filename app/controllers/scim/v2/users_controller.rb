@@ -12,13 +12,13 @@ module Scim
       def show
         user = repository.find!(params[:id])
         response.headers['Location'] = scim_v2_users_url(user)
-        render json: user.to_scim(self).to_json, status: :ok
+        render json: user.to_scim.to_json, status: :ok
       end
 
       def create
         user = repository.create!(user_params)
         response.headers['Location'] = scim_v2_users_url(user)
-        render json: user.to_scim(self).to_json, status: :created
+        render json: user.to_scim.to_json, status: :created
       end
 
       def update
@@ -26,7 +26,7 @@ module Scim
         user.update!(email: user_params[:userName])
 
         response.headers['Location'] = scim_v2_users_url(user)
-        render json: user.to_scim(self).to_json, status: :ok
+        render json: user.to_scim.to_json, status: :ok
       end
 
       def destroy
