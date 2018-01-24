@@ -23,8 +23,7 @@ class User < ApplicationRecord
     nil
   end
 
-  def to_scim
-    url_helpers = Rails.application.routes.url_helpers
+  def to_scim(url_helpers = Rails.application.routes.url_helpers)
     Scim::Shady::User.build do |x|
       x.id = uuid
       x.username = email

@@ -30,8 +30,7 @@ module Scim
       end
 
       def destroy
-        user = repository.find!(params[:id])
-        user.destroy!
+        repository.destroy!(params[:id])
       end
 
       private
@@ -53,6 +52,10 @@ module Scim
       def create!(params)
         password = SecureRandom.hex(32)
         User.create!(email: params[:userName], password: password)
+      end
+
+      def destroy!(id)
+        find!(id).destroy!
       end
     end
   end
