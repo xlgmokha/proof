@@ -10,22 +10,19 @@ module Scim
       end
 
       def show
-        user = User.find_by!(uuid: params[:id])
+        user = repository.find!(params[:id])
         response.headers['Location'] = scim_v2_users_url(user)
         render json: user.to_scim(self).to_json, status: :ok
       end
 
       def create
-        user = User.create!(
-          email: user_params[:userName],
-          password: SecureRandom.hex(32),
-        )
+        user = repository.create!(user_params)
         response.headers['Location'] = scim_v2_users_url(user)
         render json: user.to_scim(self).to_json, status: :created
       end
 
       def update
-        user = User.find_by!(uuid: params[:id])
+        user = repository.find!(params[:id])
         user.update!(email: user_params[:userName])
 
         response.headers['Location'] = scim_v2_users_url(user)
@@ -33,7 +30,7 @@ module Scim
       end
 
       def destroy
-        user = User.find_by!(uuid: params[:id])
+        user = repository.find!(params[:id])
         user.destroy!
       end
 
@@ -41,6 +38,21 @@ module Scim
 
       def user_params
         params.permit(:schemas, :userName)
+      end
+
+      def repository
+        UserRepository.new
+      end
+    end
+
+    class UserRepository
+      def find!(id)
+        User.find_by!(uuid: id)
+      end
+
+      def create!(params)
+        password = SecureRandom.hex(32)
+        User.create!(email: params[:userName], password: password)
       end
     end
   end
