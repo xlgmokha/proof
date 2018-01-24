@@ -11,7 +11,7 @@ module Scim
       end
 
       def show
-        user = User.find_by(uuid: params[:id])
+        user = User.find_by!(uuid: params[:id])
         response.headers['Content-Type'] = 'application/scim+json'
         response.headers['Location'] = scim_v2_users_url(user)
         render json: user.to_scim(self).to_json, status: :ok
@@ -34,6 +34,11 @@ module Scim
         response.headers['Content-Type'] = 'application/scim+json'
         response.headers['Location'] = scim_v2_users_url(user)
         render json: user.to_scim(self).to_json, status: :ok
+      end
+
+      def destroy
+        user = User.find_by(uuid: params[:id])
+        user.destroy!
       end
 
       private

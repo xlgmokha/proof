@@ -73,7 +73,7 @@ describe '/scim/v2/users' do
     end
   end
 
-  describe "PUT /scim/v1/users" do
+  describe "PUT /scim/v2/users" do
     let(:user) { create(:user) }
     let(:new_email) { FFaker::Internet.email }
 
@@ -96,6 +96,23 @@ describe '/scim/v2/users' do
       expect(json[:meta][:version]).to be_present
       expect(json[:meta][:location]).to be_present
       expect(json[:emails]).to match_array([value: new_email, type: 'work', primary: true])
+    end
+  end
+
+  describe "DELETE /scim/v2/users/:id" do
+    let(:user) { create(:user) }
+
+    it 'deletes the user' do
+      delete "/scim/v2/users/#{user.uuid}", headers: headers
+      expect(response).to have_http_status(:no_content)
+
+      get "/scim/v2/users/#{user.uuid}", headers: headers
+      expect(response).to have_http_status(:not_found)
+      expect(response.body).to be_present
+      json = JSON.parse(response.body, symbolize_names: true)
+      expect(json[:schemas]).to match_array([Scim::Shady::Messages::ERROR])
+      expect(json[:detail]).to eql("Resource #{user.uuid} not found")
+      expect(json[:status]).to eql("404")
     end
   end
 end
