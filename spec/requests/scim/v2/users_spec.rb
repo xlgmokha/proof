@@ -39,7 +39,7 @@ describe '/scim/v2/users' do
     let(:user) { create(:user) }
 
     it 'returns the requested resource' do
-      get "/scim/v2/users/#{user.uuid}"
+      get "/scim/v2/users/#{user.uuid}", headers: headers
 
       expect(response).to have_http_status(:ok)
       expect(response.headers['Content-Type']).to eql('application/scim+json')
@@ -60,7 +60,7 @@ describe '/scim/v2/users' do
 
   describe "GET /scim/v2/users" do
     it 'returns an empty set of results' do
-      get "/scim/v2/users?attributes=userName"
+      get "/scim/v2/users?attributes=userName", headers: headers
 
       expect(response).to have_http_status(:ok)
       expect(response.headers['Content-Type']).to eql('application/scim+json')
@@ -70,6 +70,32 @@ describe '/scim/v2/users' do
       expect(json[:schemas]).to match_array([Scim::Shady::Messages::LIST_RESPONSE])
       expect(json[:totalResults]).to be_zero
       expect(json[:Resources]).to be_empty
+    end
+  end
+
+  describe "PUT /scim/v1/users" do
+    let(:user) { create(:user) }
+    let(:new_email) { FFaker::Internet.email }
+
+    it 'updates the user' do
+      body = { schemas: [Scim::Shady::Schemas::USER], userName: new_email }
+      put "/scim/v2/users/#{user.uuid}", headers: headers, params: body.to_json
+
+      expect(response).to have_http_status(:ok)
+      expect(response.headers['Content-Type']).to eql('application/scim+json')
+      expect(response.headers['Location']).to eql(scim_v2_users_url(user))
+      expect(response.body).to be_present
+
+      json = JSON.parse(response.body, symbolize_names: true)
+      expect(json[:schemas]).to match_array([Scim::Shady::Schemas::USER])
+      expect(json[:id]).to be_present
+      expect(json[:userName]).to eql(new_email)
+      expect(json[:meta][:resourceType]).to eql('User')
+      expect(json[:meta][:created]).to be_present
+      expect(json[:meta][:lastModified]).to be_present
+      expect(json[:meta][:version]).to be_present
+      expect(json[:meta][:location]).to be_present
+      expect(json[:emails]).to match_array([value: new_email, type: 'work', primary: true])
     end
   end
 end

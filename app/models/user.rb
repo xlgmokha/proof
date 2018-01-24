@@ -31,6 +31,9 @@ class User < ApplicationRecord
       x.updated_at = updated_at
       x.location = url_helpers.scim_v2_users_url(self)
       x.version = lock_version
+      x.emails do |y|
+        y.add(email, primary: true)
+      end
     end
   end
 

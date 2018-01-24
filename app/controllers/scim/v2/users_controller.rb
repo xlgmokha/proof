@@ -27,6 +27,15 @@ module Scim
         render json: user.to_scim(self).to_json, status: :created
       end
 
+      def update
+        user = User.find_by(uuid: params[:id])
+        user.update!(email: user_params[:userName])
+
+        response.headers['Content-Type'] = 'application/scim+json'
+        response.headers['Location'] = scim_v2_users_url(user)
+        render json: user.to_scim(self).to_json, status: :ok
+      end
+
       private
 
       def user_params
