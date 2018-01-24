@@ -22,9 +22,7 @@ module Scim
       end
 
       def update
-        user = repository.find!(params[:id])
-        user.update!(email: user_params[:userName])
-
+        user = repository.update!(params[:id], user_params)
         response.headers['Location'] = scim_v2_users_url(user)
         render json: user.to_scim.to_json, status: :ok
       end
@@ -52,6 +50,12 @@ module Scim
       def create!(params)
         password = SecureRandom.hex(32)
         User.create!(email: params[:userName], password: password)
+      end
+
+      def update!(id, params)
+        user = find!(id)
+        user.update!(email: params[:userName])
+        user
       end
 
       def destroy!(id)
