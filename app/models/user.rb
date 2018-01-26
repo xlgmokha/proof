@@ -23,20 +23,6 @@ class User < ApplicationRecord
     nil
   end
 
-  def to_scim(url_helpers = Rails.application.routes.url_helpers)
-    Scim::Shady::User.build do |x|
-      x.id = uuid
-      x.username = email
-      x.created_at = created_at
-      x.updated_at = updated_at
-      x.location = url_helpers.scim_v2_users_url(self)
-      x.version = lock_version
-      x.emails do |y|
-        y.add(email, primary: true)
-      end
-    end
-  end
-
   private
 
   def access_token
