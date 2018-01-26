@@ -1,7 +1,7 @@
 class UserRepository
   attr_reader :mapper
 
-  def initialize(mapper = UserMapper.new)
+  def initialize(mapper)
     @mapper = mapper
   end
 

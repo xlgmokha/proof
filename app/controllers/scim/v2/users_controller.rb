@@ -38,7 +38,7 @@ module Scim
       end
 
       def repository
-        UserRepository.new
+        $container.resolve(:user_repository)
       end
     end
   end

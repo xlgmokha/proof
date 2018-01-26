@@ -69,3 +69,4 @@ gem 'jwt'
 gem 'activerecord-session_store'
 gem "email_validator"
 gem 'scim-shady', path: '../scim-shady'
+gem 'spank'
