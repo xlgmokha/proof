@@ -186,7 +186,7 @@ GEM
     ruby_dep (1.5.0)
     rubyzip (1.2.1)
     safe_yaml (1.0.4)
-    saml-kit (1.0.0)
+    saml-kit (1.0.1)
       activemodel (>= 4.2.0)
       xml-kit (~> 0.1)
     sass (3.5.2)
@@ -283,7 +283,7 @@ DEPENDENCIES
   rails-controller-testing
   rails_12factor
   rspec-rails (~> 3.6)
-  saml-kit (= 1.0.0)
+  saml-kit (= 1.0.1)
   sass-rails (~> 5.0)
   scim-shady (= 0.2.0)
   selenium-webdriver
