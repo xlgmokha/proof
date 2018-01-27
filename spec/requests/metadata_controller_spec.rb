@@ -7,7 +7,7 @@ describe MetadataController do
     it 'returns the metadata' do
       expect(response).to have_http_status(:ok)
       metadata = Saml::Kit::Metadata.from(response.body)
-      expect(metadata.entity_id).to eql(Saml::Kit.configuration.issuer)
+      expect(metadata.entity_id).to eql(Saml::Kit.configuration.entity_id)
     end
 
     it 'uses the correct content type' do

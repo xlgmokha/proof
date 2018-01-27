@@ -61,12 +61,12 @@ end
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'dotenv-rails'
-gem 'saml-kit', '0.3.2'
+gem 'saml-kit', "1.0.0"
 gem 'rails-assets-jquery', source: 'https://rails-assets.org'
 gem 'rails-assets-bootstrap', source: 'https://rails-assets.org'
 gem 'jwt'
 gem 'activerecord-session_store'
 gem "email_validator"
-gem 'scim-shady', path: '../scim-shady'
+gem 'scim-shady', "0.2.0"
 gem 'spank'
 gem 'webpacker'

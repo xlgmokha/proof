@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe SessionsController do
   let(:registry) { Saml::Kit::DefaultRegistry.new }
-  let(:issuer) { Saml::Kit.configuration.issuer }
+  let(:issuer) { Saml::Kit.configuration.entity_id }
   let(:sp_metadata) do
     Saml::Kit::ServiceProviderMetadata.build do |x|
       x.add_assertion_consumer_service(FFaker::Internet.uri("https"), binding: :http_post)
