@@ -10,4 +10,10 @@ describe('SessionsController', () => {
   it("is alive", () => {
     expect(subject).toBeInstanceOf(SessionController);
   });
+
+  describe("validate", () => {
+    xit("disables the submit button when the email is blank", () => {
+      subject.validate();
+    });
+  });
 });
