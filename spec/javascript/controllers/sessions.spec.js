@@ -1,6 +1,13 @@
 import SessionController from '../../../app/javascript/packs/controllers/sessions_controller'
 
-test('SessionsController', () => {
-  const subject = new SessionController();
-  expect(subject).toBeTruthy();
+describe('SessionsController', () => {
+  let subject = null;
+
+  beforeEach(() => {
+    subject = new SessionController();
+  });
+
+  it("is alive", () => {
+    expect(subject).toBeInstanceOf(SessionController);
+  });
 });
