@@ -1,34 +1,44 @@
 module Scim
   module V2
-    class UsersController < ApplicationController
+    class UsersController < ::Scim::Controller
+      def index
+        render json: {
+          schemas: [Scim::Shady::Messages::LIST_RESPONSE],
+          totalResults: 0,
+          Resources: [],
+        }.to_json, status: :ok
+      end
+
+      def show
+        user = repository.find!(params[:id])
+        response.headers['Location'] = user.meta.location
+        render json: user.to_json, status: :ok
+      end
+
       def create
-        @user = User.create!(
-          email: user_params[:userName],
-          password: SecureRandom.hex(32),
-        )
-        response.headers['Content-Type'] = 'application/scim+json'
-        response.headers['Location'] = scim_v2_users_url(@user)
-        render json: map_from(@user), status: :created
+        user = repository.create!(user_params)
+        response.headers['Location'] = user.meta.location
+        render json: user.to_json, status: :created
+      end
+
+      def update
+        user = repository.update!(params[:id], user_params)
+        response.headers['Location'] = user.meta.location
+        render json: user.to_json, status: :ok
+      end
+
+      def destroy
+        repository.destroy!(params[:id])
       end
 
       private
-
-      def authenticate!
-      end
 
       def user_params
         params.permit(:schemas, :userName)
       end
 
-      def map_from(user)
-        Scim::Shady::User.build do |x|
-          x.id = user.uuid
-          x.username = user.email
-          x.created_at = user.created_at
-          x.updated_at = user.updated_at
-          x.location = scim_v2_users_url(self)
-          x.version = user.lock_version
-        end
+      def repository
+        $container.resolve(:user_repository)
       end
     end
   end

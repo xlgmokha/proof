@@ -5,7 +5,6 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
-
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.1.4'
 # Use Puma as the app server
@@ -42,6 +41,7 @@ group :development, :test do
   gem 'webmock'
   gem 'rails-controller-testing'
   gem 'sqlite3'
+  gem 'factory_bot_rails'
 end
 
 group :development do
@@ -68,3 +68,5 @@ gem 'jwt'
 gem 'activerecord-session_store'
 gem "email_validator"
 gem 'scim-shady', path: '../scim-shady'
+gem 'spank'
+gem 'webpacker'
