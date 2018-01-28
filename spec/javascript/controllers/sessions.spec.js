@@ -8,7 +8,7 @@ describe('SessionsController', () => {
   });
 
   it("is alive", () => {
-    expect(subject).toBeInstanceOf(SessionController);
+    expect(subject).toEqual(jasmine.any(SessionController));
   });
 
   describe("validate", () => {
