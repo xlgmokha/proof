@@ -11,7 +11,7 @@ Rails.application.routes.draw do
     namespace :v2, defaults: { format: :scim } do
       post ".search", to: "search#index"
       resources :users, only: [:index, :show, :create, :update, :destroy]
-      get :ServiceProviderConfig, to: "service_providers#index"
+      get :ServiceProviderConfig, to: "service_providers#show"
       #resources :groups
       resources :resource_types, only: [:index]
       get :ResourceTypes, to: "resource_types#index"
