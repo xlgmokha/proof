@@ -67,6 +67,6 @@ gem 'rails-assets-bootstrap', source: 'https://rails-assets.org'
 gem 'jwt'
 gem 'activerecord-session_store'
 gem "email_validator"
-gem 'scim-shady', "0.2.0"
+gem 'scim-shady', path: '../scim-shady'
 gem 'spank'
 gem 'webpacker'
