@@ -15,7 +15,7 @@ describe "/scim" do
   #it { expect(delete: "scim/v2/groups/#{id}").to route_to(controller: "scim/v2/groups", action: "destroy", id: id, format: :scim) }
 
   #it { expect(get: "/scim/v2/me").to route_to(controller: 'hi') }
-  it { expect(get: "scim/v2/ServiceProviderConfig").to route_to(controller: "scim/v2/service_providers", action: "index", format: :scim) }
+  it { expect(get: "scim/v2/ServiceProviderConfig").to route_to(controller: "scim/v2/service_providers", action: "show", format: :scim) }
   it { expect(get: "scim/v2/ResourceTypes").to route_to(controller: "scim/v2/resource_types", action: "index", format: :scim) }
   it { expect(get: "scim/v2/schemas").to route_to(controller: "scim/v2/schemas", action: "index", format: :scim) }
   #it { expect(post: "scim/v2/bulk").to route_to(controller: "scim/v2/bulk", action: "update", format: :scim) }
