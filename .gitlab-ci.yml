@@ -10,4 +10,6 @@ before_script:
 
 rspec:
   script:
+    - ./bin/yarn
+    - ./bin/webpack
     - bundle exec rspec
