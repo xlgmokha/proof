@@ -1,0 +1,4 @@
+#!/bin/sh
+
+bin/bootstrap
+bin/rake lint:all
