@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UserMapper
   def initialize(url_helpers)
     @url_helpers = url_helpers

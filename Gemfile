@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 
 git_source(:github) do |repo_name|
@@ -12,7 +14,7 @@ gem 'puma', '~> 3.7'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
 # Use Uglifier as compressor for JavaScript assets
-#gem 'uglifier', '>= 1.3.0'
+# gem 'uglifier', '>= 1.3.0'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 gem 'therubyracer', platforms: :ruby
 
@@ -35,23 +37,23 @@ group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara', '~> 2.13'
-  gem 'selenium-webdriver'
-  gem 'rspec-rails', '~> 3.6'
-  gem 'ffaker'
-  gem 'webmock'
-  gem 'rails-controller-testing'
-  gem 'sqlite3'
   gem 'factory_bot_rails'
+  gem 'ffaker'
+  gem 'rails-controller-testing'
+  gem 'rspec-rails', '~> 3.6'
+  gem 'selenium-webdriver'
+  gem 'sqlite3'
+  gem 'webmock'
 end
 
 group :development do
-  gem 'web-console', '>= 3.3.0'
+  gem 'brakeman'
+  gem 'bundler-audit'
   gem 'listen', '>= 3.0.5', '< 3.2'
+  gem 'rubocop'
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
-  gem 'bundler-audit'
-  gem 'brakeman'
-  gem 'rubocop'
+  gem 'web-console', '>= 3.3.0'
 end
 
 group :production do
@@ -60,14 +62,14 @@ group :production do
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
-gem 'dotenv-rails'
-gem 'saml-kit', '~> 1.0'
-gem 'rails-assets-jquery', source: 'https://rails-assets.org'
-gem 'rails-assets-bootstrap', source: 'https://rails-assets.org'
-gem 'jwt'
 gem 'activerecord-session_store'
+gem 'dotenv-rails'
 gem "email_validator"
+gem 'jwt'
+gem 'rails-assets-bootstrap', source: 'https://rails-assets.org'
+gem 'rails-assets-jquery', source: 'https://rails-assets.org'
+gem 'saml-kit', '~> 1.0'
 gem 'scim-shady', '~> 0.2'
 gem 'spank'
+gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'webpacker'

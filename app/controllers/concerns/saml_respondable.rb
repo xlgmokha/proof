@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SamlRespondable
   extend ActiveSupport::Concern
 
@@ -17,7 +19,7 @@ module SamlRespondable
         query_string = request.query_string
         on = query_string.include?("&amp;") ? "&amp;" : "&"
         result = Hash[query_string.split(on).map { |x| x.split("=", 2) }].symbolize_keys
-        result.reject! { |key, value| !allowed_params.include?(key.to_sym) }
+        result.select! { |key, _value| allowed_params.include?(key.to_sym) }
         result
       end
   end

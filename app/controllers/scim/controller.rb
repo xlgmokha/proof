@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Scim
   class Controller < ApplicationController
     protect_from_forgery with: :null_session
@@ -6,8 +8,7 @@ module Scim
 
     private
 
-    def authenticate!
-    end
+    def authenticate!; end
 
     def not_found
       render json: {

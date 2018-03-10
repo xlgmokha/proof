@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class BearerToken
   def initialize(private_key = Rails.application.config.x.jwt.private_key)
     @private_key = private_key
@@ -9,8 +11,8 @@ class BearerToken
   end
 
   def decode(token)
-    JWT.decode(token, public_key, true, { algorithm: 'RS256' })[0].with_indifferent_access
-  rescue
+    JWT.decode(token, public_key, true, algorithm: 'RS256')[0].with_indifferent_access
+  rescue StandardError
     {}
   end
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SessionsController < ApplicationController
   skip_before_action :verify_authenticity_token, only: [:new, :destroy]
   skip_before_action :authenticate!, only: [:new, :create, :destroy]
@@ -11,7 +13,7 @@ class SessionsController < ApplicationController
     else
       render_error(:forbidden, model: @saml_request)
     end
-  rescue => error
+  rescue StandardError => error
     logger.error(error)
   end
 
@@ -54,7 +56,6 @@ class SessionsController < ApplicationController
       end
       reset_session
       redirect_to new_session_path
-    else
     end
   end
 

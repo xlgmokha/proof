@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Idp
   class << self
     def default(request)
