@@ -11,7 +11,8 @@ class BearerToken
   end
 
   def decode(token)
-    JWT.decode(token, public_key, true, algorithm: 'RS256')[0].with_indifferent_access
+    decoded = JWT.decode(token, public_key, true, algorithm: 'RS256')[0]
+    decoded.with_indifferent_access
   rescue StandardError
     {}
   end

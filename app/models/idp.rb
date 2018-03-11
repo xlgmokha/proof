@@ -3,7 +3,7 @@
 class Idp
   class << self
     def default(request)
-      @idp ||=
+      @default ||=
         begin
           host = "#{request.protocol}#{request.host}:#{request.port}"
           url_helpers = Rails.application.routes.url_helpers
@@ -13,9 +13,15 @@ class Idp
             builder.organization_name = "Acme, Inc"
             builder.organization_url = url_helpers.root_url(host: host)
             builder.build_identity_provider do |x|
-              x.add_single_sign_on_service(url_helpers.new_session_url(host: host), binding: :http_post)
-              x.add_single_sign_on_service(url_helpers.new_session_url(host: host), binding: :http_redirect)
-              x.add_single_logout_service(url_helpers.logout_url(host: host), binding: :http_post)
+              x.add_single_sign_on_service(
+                url_helpers.new_session_url(host: host), binding: :http_post
+              )
+              x.add_single_sign_on_service(
+                url_helpers.new_session_url(host: host), binding: :http_redirect
+              )
+              x.add_single_logout_service(
+                url_helpers.logout_url(host: host), binding: :http_post
+              )
               x.name_id_formats = [
                 Saml::Kit::Namespaces::EMAIL_ADDRESS,
                 Saml::Kit::Namespaces::PERSISTENT,

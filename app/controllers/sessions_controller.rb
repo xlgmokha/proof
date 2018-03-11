@@ -5,7 +5,9 @@ class SessionsController < ApplicationController
   skip_before_action :authenticate!, only: [:new, :create, :destroy]
 
   def new
-    binding = binding_for(request.post? ? :http_post : :http_redirect, new_session_url)
+    binding = binding_for(
+      request.post? ? :http_post : :http_redirect, new_session_url
+    )
     @saml_request = binding.deserialize(saml_params)
     if @saml_request.valid?
       session[:saml] = { params: saml_params.to_h, xml: @saml_request.to_xml }
@@ -19,7 +21,7 @@ class SessionsController < ApplicationController
 
   def create
     user_params = params.require(:user).permit(:email, :password)
-    if user = User.login(user_params[:email], user_params[:password])
+    if (user = User.login(user_params[:email], user_params[:password]))
       unless session[:saml].present?
         login(user)
         return redirect_to(dashboard_path)
@@ -45,7 +47,9 @@ class SessionsController < ApplicationController
       end
       raise 'Unknown NameId' unless current_user.uuid == saml_request.name_id
 
-      @url, @saml_params = saml_request.response_for(binding: :http_post, relay_state: saml_params[:RelayState]) do |builder|
+      @url, @saml_params = saml_request.response_for(
+        binding: :http_post, relay_state: saml_params[:RelayState]
+      ) do |builder|
         @saml_response_builder = builder
       end
       reset_session
@@ -63,7 +67,9 @@ class SessionsController < ApplicationController
 
   def post_back(saml_request, user)
     relay_state = session[:saml][:params][:RelayState]
-    @url, @saml_params = saml_request.response_for(user, binding: :http_post, relay_state: relay_state) do |builder|
+    @url, @saml_params = saml_request.response_for(
+      user, binding: :http_post, relay_state: relay_state
+    ) do |builder|
       @saml_response_builder = builder
     end
     login(user)
