@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180113222024) do
+ActiveRecord::Schema.define(version: 20180311010910) do
 
   create_table "sessions", force: :cascade do |t|
     t.string "session_id", null: false
@@ -28,6 +28,7 @@ ActiveRecord::Schema.define(version: 20180113222024) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "lock_version", default: 0, null: false
+    t.string "tfa_secret", limit: 16
     t.index ["uuid"], name: "index_users_on_uuid"
   end
 

@@ -176,6 +176,7 @@ GEM
     rb-inotify (0.9.10)
       ffi (>= 0.5.0, < 2)
     ref (2.0.0)
+    rotp (3.3.1)
     rspec-core (3.7.0)
       rspec-support (~> 3.7.0)
     rspec-expectations (3.7.0)
@@ -301,6 +302,7 @@ DEPENDENCIES
   rails-assets-jquery!
   rails-controller-testing
   rails_12factor
+  rotp
   rspec-rails (~> 3.6)
   rubocop
   saml-kit (~> 1.0)
@@ -313,7 +315,6 @@ DEPENDENCIES
   sqlite3
   therubyracer
   turbolinks (~> 5)
-  tzinfo-data
   web-console (>= 3.3.0)
   webmock
   webpacker

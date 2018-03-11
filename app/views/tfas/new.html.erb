@@ -1,0 +1,13 @@
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <h1>TFA Setup</h1>
+      <p><%= current_user.tfa_secret %></p>
+      <p><%= current_user.tfa_provisioning_uri %></p>
+      <%= form_for current_user, url: tfa_path, method: :post do |f| %>
+        <%= f.hidden_field :tfa_secret %>
+        <%= f.submit "Save" %>
+      <% end %>
+    </div>
+  </div>
+</div>
