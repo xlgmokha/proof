@@ -7,7 +7,7 @@ class BearerToken
   end
 
   def encode(payload)
-    JWT.encode(timestamps.merge(payload), private_key, 'RS256')
+    JWT.encode(defaults.merge(payload), private_key, 'RS256')
   end
 
   def decode(token)
@@ -21,15 +21,13 @@ class BearerToken
 
   attr_reader :private_key, :public_key
 
-  def timestamps
-    { exp: expiration.to_i, iat: issued_at.to_i }
-  end
-
-  def issued_at
-    Time.current
-  end
-
-  def expiration
-    1.hour.from_now
+  def defaults
+    issued_at = Time.current.to_i
+    {
+      exp: 1.hour.from_now,
+      iat: issued_at,
+      iss: Saml::Kit.configuration.entity_id,
+      nbf: issued_at,
+    }
   end
 end

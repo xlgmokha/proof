@@ -13,7 +13,7 @@ class User < ApplicationRecord
   end
 
   def assertion_attributes_for(request)
-    request.trusted? ? trusted_attributes : {}
+    request.trusted? ? trusted_attributes_for(request) : {}
   end
 
   def self.login(email, password)
@@ -27,16 +27,16 @@ class User < ApplicationRecord
 
   private
 
-  def access_token
-    BearerToken.new.encode(id: uuid)
+  def access_token(audience)
+    BearerToken.new.encode(sub: uuid, aud: audience)
   end
 
-  def trusted_attributes
+  def trusted_attributes_for(request)
     {
       id: uuid,
       email: email,
       created_at: created_at,
-      access_token: access_token,
+      access_token: access_token(request.issuer),
     }
   end
 end
