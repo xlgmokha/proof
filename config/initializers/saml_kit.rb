@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class OnDemandRegistry < SimpleDelegator
   def metadata_for(entity_id)
     found = __getobj__.metadata_for(entity_id)

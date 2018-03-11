@@ -39,8 +39,8 @@ module Scim
         params.permit(:schemas, :userName)
       end
 
-      def repository
-        $container.resolve(:user_repository)
+      def repository(container = Spank::IOC)
+        container.resolve(:user_repository)
       end
     end
   end
