@@ -4,9 +4,10 @@
       <h1>TFA Setup</h1>
       <p><%= current_user.tfa_secret %></p>
       <p><%= current_user.tfa_provisioning_uri %></p>
-      <%= form_for current_user, url: tfa_path, method: :post do |f| %>
-        <%= f.hidden_field :tfa_secret %>
-        <%= f.submit "Save" %>
+      <%= form_for current_user, url: tfa_path, method: :post, data: { controller: 'tfa' } do |form| %>
+        <%= form.button 'Show', type: 'button', class: 'btn', data: { action: 'click->tfa#present'  } %>
+        <%= form.hidden_field :tfa_secret, data: { target: 'tfa.secret' } %>
+        <%= form.submit "Save" %>
       <% end %>
     </div>
   </div>

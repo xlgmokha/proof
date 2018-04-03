@@ -1,15 +1,15 @@
-image: ruby:2.4
+image: ruby:2.5
 
 before_script:
   - apt-get update && apt-get install -y locales
   - echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
   - locale-gen
   - export LC_ALL=en_US.UTF-8
-  - gem install bundler --no-ri --no-rdoc
-  - bundle install --jobs $(nproc) "${FLAGS[@]}"
 
 rspec:
   script:
-    - ./bin/yarn
-    - ./bin/webpack
-    - bundle exec rspec
+    - bin/cibuild
+
+lint:
+  script:
+    - bin/lint

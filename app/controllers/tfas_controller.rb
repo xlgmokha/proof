@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TfasController < ApplicationController
   def new
     return redirect_to edit_tfa_path if current_user.tfa_setup?
@@ -9,9 +11,7 @@ class TfasController < ApplicationController
     redirect_to dashboard_path
   end
 
-  def edit
-  end
+  def edit; end
 
-  def update
-  end
+  def update; end
 end
