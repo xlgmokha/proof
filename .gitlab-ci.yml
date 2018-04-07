@@ -6,10 +6,6 @@ before_script:
   - locale-gen
   - export LC_ALL=en_US.UTF-8
 
-rspec:
+cibuild:
   script:
     - bin/cibuild
-
-lint:
-  script:
-    - bin/lint

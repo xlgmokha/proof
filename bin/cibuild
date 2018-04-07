@@ -31,7 +31,10 @@ test -d "/usr/share/rbenv/shims" && {
 }
 export PATH="$RACK_ROOT/bin:$PATH"
 
-# run tests
 echo "Running tests …"
 date "+%H:%M:%S"
 bin/test
+
+echo "Running linters …"
+date "+%H:%M:%S"
+bin/lint
