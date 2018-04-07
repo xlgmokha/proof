@@ -33,6 +33,7 @@ export PATH="$RACK_ROOT/bin:$PATH"
 
 echo "Running tests …"
 date "+%H:%M:%S"
+bin/webpack
 bin/test
 
 echo "Running linters …"
