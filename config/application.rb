@@ -8,6 +8,7 @@ require 'rails/all'
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+Dotenv.load(".env.local", ".env.#{Rails.env}", ".env")
 module Proof
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
+ruby '2.5.1'
 
 git_source(:github) do |repo_name|
   repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
@@ -10,8 +11,9 @@ end
 gem 'activerecord-session_store'
 gem 'bcrypt', '~> 3.1.7'
 gem 'coffee-rails', '~> 4.2'
-gem 'dotenv-rails'
+gem 'dotenv'
 gem 'email_validator'
+gem 'foreman'
 gem 'jbuilder', '~> 2.5'
 gem 'jwt'
 gem 'puma', '~> 3.7'
