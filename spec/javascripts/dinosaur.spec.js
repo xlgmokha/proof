@@ -1,4 +1,4 @@
-import Dinosaur from '../../app/javascript/packs/dinosaur'
+import Dinosaur from '../../app/javascript/models/dinosaur'
 
 describe("Dinosaur", () => {
   it("Dinosaurs are extinct", () => {

@@ -1,14 +1,14 @@
-import SessionController from '../../../app/javascript/packs/controllers/sessions_controller'
+import SessionsController from '../../../app/javascript/controllers/sessions_controller'
 
 describe('SessionsController', () => {
   let subject = null;
 
   beforeEach(() => {
-    subject = new SessionController();
+    subject = new SessionsController();
   });
 
   it("is alive", () => {
-    expect(subject).toEqual(jasmine.any(SessionController));
+    expect(subject).toEqual(jasmine.any(SessionsController));
   });
 
   describe("validate", () => {
