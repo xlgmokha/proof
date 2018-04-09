@@ -2,7 +2,11 @@
   <div class="row">
     <div class="col">
       <h1>Dashboard</h1>
-      <%= link_to "TFA setup", new_tfa_path %>
+      <% if current_user.tfa_setup? %>
+        <%= link_to "TFA", edit_tfa_path %>
+      <% else %>
+        <%= link_to "Setup TFA", new_tfa_path %>
+      <% end %>
       <table class="table">
         <thead>
           <th>Entity ID</th>

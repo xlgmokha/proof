@@ -25,6 +25,10 @@ class User < ApplicationRecord
     tfa_secret.present?
   end
 
+  def disable_tfa!
+    update!(tfa_secret: nil)
+  end
+
   def self.login(email, password)
     return if email.blank? || password.blank?
 

@@ -13,5 +13,8 @@ class TfasController < ApplicationController
 
   def edit; end
 
-  def update; end
+  def destroy
+    current_user.disable_tfa!
+    redirect_to dashboard_path
+  end
 end
