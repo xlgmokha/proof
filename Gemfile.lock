@@ -63,6 +63,9 @@ GEM
       rack (>= 1.0.0)
       rack-test (>= 0.5.4)
       xpath (>= 2.0, < 4.0)
+    capybara-screenshot (1.0.18)
+      capybara (>= 1.0, < 3)
+      launchy
     childprocess (0.9.0)
       ffi (~> 1.0, >= 1.0.11)
     coffee-rails (4.2.2)
@@ -100,6 +103,8 @@ GEM
       activesupport (>= 4.2.0)
       multi_json (>= 1.2)
     jwt (2.1.0)
+    launchy (2.4.3)
+      addressable (~> 2.3)
     libv8 (3.16.14.19)
     listen (3.1.5)
       rb-fsevent (~> 0.9, >= 0.9.4)
@@ -279,6 +284,7 @@ DEPENDENCIES
   bundler-audit
   byebug
   capybara (~> 2.13)
+  capybara-screenshot
   coffee-rails (~> 4.2)
   dotenv
   email_validator
