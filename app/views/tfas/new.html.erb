@@ -1,10 +1,11 @@
 <div class="container">
   <div class="row">
     <div class="col">
-      <h1>TFA Setup</h1>
+      <h1>Two Factor Authentication (TFA) - Setup</h1>
       <p><%= current_user.tfa_secret %></p>
       <p><%= current_user.tfa_provisioning_uri %></p>
       <%= form_for current_user, url: tfa_path, method: :post, data: { controller: 'tfa' } do |form| %>
+        <canvas id="canvas" data-target="tfa.canvas"></canvas>
         <%= form.button 'Show', type: 'button', class: 'btn', data: { action: 'click->tfa#present'  } %>
         <%= form.hidden_field :tfa_secret, data: { target: 'tfa.secret' } %>
         <%= form.submit "Save" %>

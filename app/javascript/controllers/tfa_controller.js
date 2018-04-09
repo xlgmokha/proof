@@ -1,12 +1,13 @@
 import { Controller } from 'stimulus'
-import Tfa from '../models/tfa'
+import QRCode from 'qrcode'
 
 export default class extends Controller {
   get secret() { return this.targets.find("secret") }
+  get canvas() { return this.targets.find("canvas") }
 
   present() {
-    //let tfa = new Tfa(this.secret.value);
-    //console.log(tfa.qr_code());
-    console.log("CLICKED");
+    QRCode.toCanvas(this.canvas, this.secret.value, (error) => {
+      if (error) console.error(error);
+    });
   }
 }
