@@ -5,7 +5,11 @@ module.exports = function(config) {
   config.set({
     basePath: '',
     frameworks: ['jasmine'],
-    files: [ 'spec/javascripts/**/*.spec.js' ],
+    files: [
+      'spec/javascripts/**/*.spec.js',
+      'node_modules/jquery/dist/jquery.min.js',
+      'node_modules/jasmine-fixture/dist/jasmine-fixture.min.js'
+    ],
     exclude: [ ],
     preprocessors: {
       'app/javascript/packs/*.js': ['webpack', 'sourcemap'],
