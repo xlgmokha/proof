@@ -2,8 +2,8 @@
 
 class TfasController < ApplicationController
   def new
-    return redirect_to edit_tfa_path if current_user.tfa_setup?
-    current_user.tfa_secret = ::ROTP::Base32.random_base32
+    return redirect_to edit_tfa_path if current_user.tfa.setup?
+    current_user.tfa.build_secret
   end
 
   def create
@@ -14,7 +14,7 @@ class TfasController < ApplicationController
   def edit; end
 
   def destroy
-    current_user.disable_tfa!
+    current_user.tfa.disable!
     redirect_to dashboard_path
   end
 end
