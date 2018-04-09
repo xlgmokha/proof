@@ -7,27 +7,36 @@ describe('SessionsController', () => {
     $form.affix('input[data-target="sessions.email" data-action="keyup->sessions#validate" type="email" id="user_email"]')
     $form.affix('input[data-target="sessions.password" data-action="keyup->sessions#validate" type="password" id="user_password"]')
     $form.affix('button[name="button" type="submit" data-target="sessions.submit"]')
-    const stimulusApp = Application.start();
-    stimulusApp.register('sessions', SessionsController);
+    const application = Application.start();
+    application.register('sessions', SessionsController);
   });
 
   describe("validate", () => {
+    let emailField;
+    let passwordField;
+
+    beforeEach(() => {
+      emailField = document.getElementById('user_email')
+      passwordField = document.getElementById('user_password')
+    });
+
     it("disables the submit button when the email is blank", () => {
-      $('#user_email').val('')
-      document.getElementById('user_email').dispatchEvent(new Event('keyup'))
+      emailField.value = ''
+      emailField.dispatchEvent(new Event('keyup'))
       expect($('button[type="submit"]').attr('disabled')).toBe('disabled')
     });
 
     it("disables the submit button when the password is blank", () => {
-      $('#user_password').val('');
-      document.getElementById('user_password').dispatchEvent(new Event('keyup'))
+      passwordField.value = ''
+      passwordField.dispatchEvent(new Event('keyup'))
       expect($('button[type="submit"]').attr('disabled')).toBe('disabled')
     });
 
     it ("enables the submit button when all fields are provided", () => {
-      $('#user_email').val('email@example.com');
-      $('#user_password').val('password');
-      document.getElementById('user_password').dispatchEvent(new Event('keyup'))
+      emailField.value = 'email@example.com';
+      emailField.dispatchEvent(new Event('keyup'))
+      passwordField.value = 'password';
+      passwordField.dispatchEvent(new Event('keyup'))
       expect($('button[type="submit"]').attr('disabled')).toBe(undefined)
     });
   });
