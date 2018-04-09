@@ -1,5 +1,5 @@
 import { Controller } from 'stimulus'
-import Email from '../models/email'
+import Email from '../../models/email'
 
 export default class extends Controller {
   get email() { return this.targets.find("email") }

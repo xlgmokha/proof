@@ -1,14 +1,14 @@
-import SessionsController from '../../../app/javascript/controllers/sessions_controller'
+import Controller from '../../../../app/javascript/controllers/sessions/new_controller'
 import { Application } from 'stimulus';
 
-describe('SessionsController', () => {
+describe('sessions--new', () => {
   beforeEach(() => {
-    let $form = affix('form[data-controller="sessions"]')
-    $form.affix('input[data-target="sessions.email" data-action="keyup->sessions#validate" type="email" id="user_email"]')
-    $form.affix('input[data-target="sessions.password" data-action="keyup->sessions#validate" type="password" id="user_password"]')
-    $form.affix('button[name="button" type="submit" data-target="sessions.submit"]')
+    let $form = affix('form[data-controller="sessions--new"]')
+    $form.affix('input[data-target="sessions--new.email" data-action="keyup->sessions--new#validate" type="email" id="user_email"]')
+    $form.affix('input[data-target="sessions--new.password" data-action="keyup->sessions--new#validate" type="password" id="user_password"]')
+    $form.affix('button[name="button" type="submit" data-target="sessions--new.submit"]')
     const application = Application.start();
-    application.register('sessions', SessionsController);
+    application.register('sessions--new', Controller);
   });
 
   describe("validate", () => {
