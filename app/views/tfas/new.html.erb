@@ -2,12 +2,12 @@
   <div class="row">
     <div class="col">
       <h1>Two Factor Authentication (TFA) - Setup</h1>
-      <div data-controller="tfa">
-        <canvas id="canvas" data-target="tfa.canvas"></canvas>
+      <div data-controller="tfa--setup">
+        <canvas id="canvas" data-target="tfa--setup.canvas"></canvas>
         <p>Secret: <%= current_user.tfa_secret %></p>
         <p>Provisioning URI: <%= current_user.tfa_provisioning_uri %></p>
         <%= form_for current_user, url: tfa_path, method: :post do |form| %>
-          <%= form.hidden_field :tfa_secret, data: { target: 'tfa.secret' } %>
+          <%= form.hidden_field :tfa_secret, data: { target: 'tfa--setup.secret' } %>
           <%= form.submit "Save", class: 'btn btn-primary', data: { disable_with: 'Saving…' } %>
           <%= link_to "Cancel", dashboard_path, class: 'btn' %>
         <% end %>
