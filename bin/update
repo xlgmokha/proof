@@ -1,16 +1,30 @@
-#!/bin/sh
+#!/usr/bin/env ruby
+require 'fileutils'
+include FileUtils
 
-# bin/update: Update application to run for its current checkout.
+# path to your application root.
+APP_ROOT = File.expand_path('..', __dir__)
 
-set -e
+def system!(*args)
+  system(*args) || abort("\n== Command #{args} failed ==")
+end
 
-cd "$(dirname "$0")/.."
+chdir APP_ROOT do
+  # This script is a way to update your development environment automatically.
+  # Add necessary update steps to this file.
 
-bin/bootstrap
+  puts '== Installing dependencies =='
+  system('bin/bootstrap')
 
-echo "==> Updating database…"
-bin/rake db:migrate
-echo "==> Removing old logs and tempfiles…"
-bin/rails log:clear tmp:clear
-echo "==> Restarting application server…"
-bin/rails restart
+  # Install JavaScript dependencies if using Yarn
+  system('bin/yarn')
+
+  puts "\n== Updating database =="
+  system! 'bin/rails db:migrate'
+
+  puts "\n== Removing old logs and tempfiles =="
+  system! 'bin/rails log:clear tmp:clear'
+
+  puts "\n== Restarting application server =="
+  system! 'bin/rails restart'
+end
