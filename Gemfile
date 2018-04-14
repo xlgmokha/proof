@@ -1,23 +1,19 @@
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
+git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby '2.5.1'
-
-git_source(:github) do |repo_name|
-  repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
-  "https://github.com/#{repo_name}.git"
-end
 
 gem 'activerecord-session_store'
 gem 'bcrypt', '~> 3.1.7'
-gem 'bootsnap'
+gem 'bootsnap', '>= 1.1.0', require: false
 gem 'coffee-rails', '~> 4.2'
 gem 'dotenv'
 gem 'email_validator'
 gem 'foreman'
 gem 'jbuilder', '~> 2.5'
 gem 'jwt'
-gem 'puma', '~> 3.7'
+gem 'puma', '~> 3.11'
 gem 'rails', '~> 5.2.0'
 gem 'rotp'
 gem 'saml-kit', '~> 1.0'
@@ -39,8 +35,9 @@ end
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
-  gem 'capybara', '~> 2.13'
+  gem 'capybara', '>= 2.15', '< 4.0'
   gem 'capybara-screenshot'
+  gem 'chromedriver-helper'
   gem 'factory_bot_rails'
   gem 'ffaker'
   gem 'rails-controller-testing'
