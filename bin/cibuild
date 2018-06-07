@@ -7,9 +7,6 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-echo "Tests started at…"
-date "+%H:%M:%S"
-
 # GC customizations
 export RUBY_GC_MALLOC_LIMIT=79000000
 export RUBY_GC_HEAP_INIT_SLOTS=800000
@@ -31,7 +28,6 @@ test -d "/usr/share/rbenv/shims" && {
 export PATH="$RACK_ROOT/bin:$PATH"
 
 echo "Running tests …" "$(date "+%H:%M:%S")"
-bin/webpack
 bin/test
 
 echo "Running linters …"
