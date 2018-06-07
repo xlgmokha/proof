@@ -23,7 +23,6 @@ export RAILS_ROOT
 export RAILS_ENV="test"
 export RACK_ROOT="$RAILS_ROOT"
 export RACK_ENV="$RAILS_ENV"
-export DISABLE_SPRING=1
 export HEADLESS=1
 
 test -d "/usr/share/rbenv/shims" && {
@@ -32,4 +31,9 @@ test -d "/usr/share/rbenv/shims" && {
 export PATH="$RACK_ROOT/bin:$PATH"
 
 echo "Running tests …" "$(date "+%H:%M:%S")"
+bin/webpack
 bin/test
+
+echo "Running linters …"
+date "+%H:%M:%S"
+bin/lint

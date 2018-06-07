@@ -16,13 +16,8 @@ class User < ApplicationRecord
     request.trusted? ? trusted_attributes_for(request) : {}
   end
 
-  def tfa_provisioning_uri
-    totp = ::ROTP::TOTP.new(tfa_secret, issuer: 'saml-kit')
-    totp.provisioning_uri(email)
-  end
-
-  def tfa_setup?
-    tfa_secret.present?
+  def tfa
+    Tfa.new(self)
   end
 
   def self.login(email, password)

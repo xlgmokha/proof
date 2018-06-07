@@ -1,6 +1,19 @@
 #!/bin/sh
 
+# script/server: Launch the application and any extra required processes locally.
+
+set -e
+cd "$(dirname "$0")/.."
+
 if [ ! "$RAILS_ENV" = "production" ] ; then
+  PROCFILE=Procfile.development
   bin/webpack
+else
+  PROCFILE=Procfile
 fi
-bin/rails server
+test -z "$RACK_ENV" && RACK_ENV='development'
+if [ -n "$1" ]; then
+  bundle exec foreman start "$1" -f $PROCFILE
+else
+  bundle exec foreman start -f $PROCFILE
+fi

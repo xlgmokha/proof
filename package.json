@@ -2,31 +2,31 @@
   "name": "proof",
   "private": true,
   "scripts": {
-    "test": "karma start"
+    "start": "./bin/webpack-dev-server",
+    "test": "NODE_ENV=test karma start"
   },
   "dependencies": {
-    "@rails/webpacker": "^3.2.1",
+    "@rails/webpacker": "3.4",
+    "bootstrap": "^4.0.0",
+    "jquery": "^3.3.1",
+    "popper.js": "^1.14.3",
     "qrcode": "^1.2.0",
-    "stimulus": "^0.9.0"
+    "stimulus": "^1.0.1"
   },
   "devDependencies": {
-    "babel-jest": "^22.1.0",
     "babel-preset-env": "^1.6.1",
-    "jasmine-core": "^2.9.1",
-    "jest": "^22.1.4",
+    "jasmine": "^3.1.0",
+    "jasmine-core": "^3.1.0",
+    "jasmine-fixture": "^2.0.0",
     "karma": "^2.0.0",
     "karma-chrome-launcher": "^2.2.0",
     "karma-jasmine": "^1.1.1",
-    "karma-webpack": "^2.0.9",
-    "webpack-dev-server": "^2.11.1"
-  },
-  "jest": {
-    "roots": [
-      "spec/javascript"
-    ],
-    "moduleDirectories": [
-      "node_modules",
-      "app/javascript"
-    ]
+    "karma-jquery": "^0.2.2",
+    "karma-mocha-reporter": "^2.2.5",
+    "karma-sourcemap-loader": "^0.3.7",
+    "karma-webpack": "^3.0.0",
+    "testdouble": "^3.7.0",
+    "testdouble-jasmine": "^0.2.1",
+    "webpack-dev-server": "2.11.2"
   }
 }

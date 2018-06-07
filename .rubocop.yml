@@ -5,6 +5,7 @@ AllCops:
     2.5
   Exclude:
     - 'bin/**/*'
+    - 'config/initializers/*.rb'
     - 'config/routes.rb'
     - 'db/schema.rb'
     - 'db/seeds.rb'

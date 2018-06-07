@@ -34,3 +34,7 @@ en:
   registrations:
     new:
       register: "Register"
+  sessions:
+    new:
+      loading: "Loading…"
+      login: "Login"
