@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 module Scim
-  class Controller < ApplicationController
+  class Controller < ActionController::Base
     protect_from_forgery with: :null_session
-    rescue_from ActiveRecord::RecordNotFound, with: :not_found
     before_action :apply_scim_content_type
-
-    private
+    before_action :authenticate!
+    helper_method :current_user
+    rescue_from ActiveRecord::RecordNotFound, with: :not_found
 
     def current_user
       @current_user ||= authenticate_with_http_token do |token|
@@ -14,9 +14,11 @@ module Scim
       end
     end
 
-    def authenticate!
-      render plain: "Unauthorized", status: :unauthorized unless current_user?
+    def current_user?
+      current_user.present?
     end
+
+    protected
 
     def not_found
       render json: {
@@ -24,6 +26,12 @@ module Scim
         detail: "Resource #{params[:id]} not found",
         status: "404",
       }.to_json, status: :not_found
+    end
+
+    private
+
+    def authenticate!
+      render plain: "Unauthorized", status: :unauthorized unless current_user?
     end
 
     def apply_scim_content_type
