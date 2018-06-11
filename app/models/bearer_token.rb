@@ -13,7 +13,8 @@ class BearerToken
   def decode(token)
     decoded = JWT.decode(token, public_key, true, algorithm: 'RS256')[0]
     decoded.with_indifferent_access
-  rescue StandardError
+  rescue StandardError => error
+    Rails.logger.error(error)
     {}
   end
 
@@ -24,7 +25,7 @@ class BearerToken
   def defaults
     issued_at = Time.current.to_i
     {
-      exp: 1.hour.from_now,
+      exp: 1.hour.from_now.to_i,
       iat: issued_at,
       iss: Saml::Kit.configuration.entity_id,
       nbf: issued_at,

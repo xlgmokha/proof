@@ -8,7 +8,15 @@ module Scim
 
     private
 
-    def authenticate!; end
+    def current_user
+      @current_user ||= authenticate_with_http_token do |token|
+        User.authenticate_token(token)
+      end
+    end
+
+    def authenticate!
+      render plain: "Unauthorized", status: :unauthorized unless current_user?
+    end
 
     def not_found
       render json: {

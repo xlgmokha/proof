@@ -1,7 +1,8 @@
 require 'rails_helper'
 
 describe '/scim/v1/.search' do
-  let(:token) { SecureRandom.uuid }
+  let(:user) { create(:user) }
+  let(:token) { user.access_token('rspec') }
   let(:headers) do
     {
       'Authorization' => "Bearer #{token}",

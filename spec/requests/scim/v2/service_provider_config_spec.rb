@@ -1,8 +1,18 @@
 require 'rails_helper'
 
 describe "/ServiceProviderConfig" do
+  let(:user) { create(:user) }
+  let(:token) { user.access_token('rspec') }
+  let(:headers) do
+    {
+      'Authorization' => "Bearer #{token}",
+      'Accept' => 'application/scim+json',
+      'Content-Type' => 'application/scim+json',
+    }
+  end
+
   it 'returns a 200' do
-    get '/scim/v2/ServiceProviderConfig'
+    get '/scim/v2/ServiceProviderConfig', headers: headers
 
     expect(response).to have_http_status(:ok)
     expect(response.body).to be_present

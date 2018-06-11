@@ -1,7 +1,8 @@
 require 'rails_helper'
 
 describe '/scim/v2/users' do
-  let(:token) { SecureRandom.uuid }
+  let(:user) { create(:user) }
+  let(:token) { user.access_token("rspec") }
   let(:headers) do
     {
       'Authorization' => "Bearer #{token}",
@@ -100,18 +101,18 @@ describe '/scim/v2/users' do
   end
 
   describe "DELETE /scim/v2/users/:id" do
-    let(:user) { create(:user) }
+    let(:other_user) { create(:user) }
 
     it 'deletes the user' do
-      delete "/scim/v2/users/#{user.uuid}", headers: headers
+      delete "/scim/v2/users/#{other_user.uuid}", headers: headers
       expect(response).to have_http_status(:no_content)
 
-      get "/scim/v2/users/#{user.uuid}", headers: headers
+      get "/scim/v2/users/#{other_user.uuid}", headers: headers
       expect(response).to have_http_status(:not_found)
       expect(response.body).to be_present
       json = JSON.parse(response.body, symbolize_names: true)
       expect(json[:schemas]).to match_array([Scim::Shady::Messages::ERROR])
-      expect(json[:detail]).to eql("Resource #{user.uuid} not found")
+      expect(json[:detail]).to eql("Resource #{other_user.uuid} not found")
       expect(json[:status]).to eql("404")
     end
   end

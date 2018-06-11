@@ -29,11 +29,17 @@ class User < ApplicationRecord
     nil
   end
 
-  private
+  def self.authenticate_token(token)
+    token = BearerToken.new.decode(token)
+    return if token.empty?
+    User.find_by(uuid: token[:sub])
+  end
 
   def access_token(audience)
     BearerToken.new.encode(sub: uuid, aud: audience)
   end
+
+  private
 
   def trusted_attributes_for(request)
     {
