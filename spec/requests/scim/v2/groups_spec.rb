@@ -12,6 +12,7 @@ describe "/scim/v2/groups" do
 
   describe "GET /scim/v2/groups" do
     context "when retrieving all groups" do
+      let!(:user) { create(:user) }
       before { get '/scim/v2/groups', headers: headers }
 
       specify { expect(response).to have_http_status(:ok) }
@@ -19,8 +20,8 @@ describe "/scim/v2/groups" do
       specify { expect(response.body).to be_present }
       let(:json) { JSON.parse(response.body, symbolize_names: true) }
       specify { expect(json[:schemas]).to match_array([Scim::Shady::Messages::LIST_RESPONSE]) }
-      specify { expect(json[:totalResults]).to be_zero }
-      specify { expect(json[:Resources]).to be_empty }
+      specify { expect(json[:totalResults]).to eql(1) }
+      specify { expect(json[:Resources]).to match_array([id: user.uuid, userName: user.email]) }
     end
   end
 end
