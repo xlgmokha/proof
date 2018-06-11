@@ -14,7 +14,12 @@ module SCIM
 
     def create!(params)
       password = SecureRandom.hex(32)
-      mapper.map_from(User.create!(email: params[:userName], password: password))
+      mapper.map_from(
+        User.create!(
+          email: params[:userName],
+          password: password
+        )
+      )
     end
 
     def update!(id, params)

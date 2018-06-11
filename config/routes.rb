@@ -13,7 +13,7 @@ Rails.application.routes.draw do
       post ".search", to: "search#index"
       resources :users, only: [:index, :show, :create, :update, :destroy]
       get :ServiceProviderConfig, to: "service_providers#show"
-      #resources :groups
+      resources :groups, only: [:index]
       resources :resource_types, only: [:index]
       get :ResourceTypes, to: "resource_types#index"
       resources :schemas, only: [:index]
