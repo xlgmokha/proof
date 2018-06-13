@@ -1,5 +1,7 @@
 sudo: false
 language: ruby
+addons:
+  chrome: stable
 cache: bundler
 rvm:
   - 2.5.1
