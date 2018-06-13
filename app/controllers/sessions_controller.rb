@@ -60,6 +60,9 @@ class SessionsController < ApplicationController
       end
       reset_session
       redirect_to new_session_path
+    else
+      reset_session
+      redirect_to new_session_path
     end
   end
 

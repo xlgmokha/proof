@@ -17,9 +17,8 @@ describe SessionsController do
   describe '#new' do
     describe "POST #new" do
       let(:post_binding) { Saml::Kit::Bindings::HttpPost.new(location: new_session_url) }
-      let(:user) { User.create!(email: FFaker::Internet.email, password: FFaker::Internet.password) }
+      let(:user) { create(:user) }
       let(:saml_params) { post_binding.serialize(Saml::Kit::AuthenticationRequest.builder)[1] }
-
 
       it 'renders an error page when the service provider is not registered' do
         url, saml_params = post_binding.serialize(Saml::Kit::AuthenticationRequest.builder)
@@ -144,6 +143,26 @@ describe SessionsController do
       url, saml_params = post_binding.serialize(builder)
       post url, params: saml_params
       expect(response).to redirect_to(new_session_url)
+    end
+
+    context "when logging out of the IDP only" do
+      let(:user) { create(:user) }
+
+      def session_id_from(response)
+        cookies = response.headers['Set-Cookie']
+        return if cookies.nil?
+        cookies.split("\;")[0].split("=")[1]
+      end
+
+      before :each do
+        http_login(user)
+        @session_id = session_id_from(response)
+        delete session_path
+      end
+
+      specify { expect(session_id_from(response)).not_to eql(@session_id) }
+      specify { expect(session_id_from(response)).to be_present }
+      specify { expect(response).to redirect_to(new_session_path) }
     end
   end
 end
