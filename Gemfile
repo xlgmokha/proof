@@ -38,6 +38,7 @@ group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'capybara', '>= 2.15', '< 4.0'
   gem 'capybara-screenshot'
+  gem 'chromedriver-helper'
   gem 'factory_bot_rails'
   gem 'ffaker'
   gem 'rails-controller-testing'
