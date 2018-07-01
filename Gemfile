@@ -5,7 +5,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby '2.5.1'
 
 gem 'activerecord-session_store'
-gem 'bcrypt', '~> 3.1.7'
+gem 'bcrypt', '~> 3.1'
 gem 'bootsnap', '>= 1.1.0', require: false
 gem 'coffee-rails', '~> 4.2'
 gem 'dotenv'
@@ -38,7 +38,6 @@ group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'capybara', '>= 2.15', '< 4.0'
   gem 'capybara-screenshot'
-  gem 'chromedriver-helper'
   gem 'factory_bot_rails'
   gem 'ffaker'
   gem 'rails-controller-testing'
