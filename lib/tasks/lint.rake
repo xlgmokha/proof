@@ -1,12 +1,24 @@
 # frozen_string_literal: true
 
+# This is a temporary workaround until there is a patch for CVE-2018-1000544
+# https://github.com/rubyzip/rubyzip/issues/369
+namespace :bundle do
+  desc 'Updates the ruby-advisory-db then runs bundle-audit'
+  task :audit do
+    require 'bundler/audit/cli'
+
+    Bundler::Audit::CLI.start ['update']
+    Bundler::Audit::CLI.start ['check', '--ignore', 'CVE-2018-1000544']
+  end
+end
+
 namespace :lint do
   begin
     require 'rubocop/rake_task'
     require 'bundler/audit/task'
 
     RuboCop::RakeTask.new
-    Bundler::Audit::Task.new
+    # Bundler::Audit::Task.new
   rescue LoadError => error
     puts error.message
   end
