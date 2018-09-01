@@ -8,9 +8,9 @@
 // layout file, like app/views/layouts/application.html.erb
 
 import 'bootstrap/dist/js/bootstrap';
-import { Application } from "stimulus"
-import { definitionsFromContext } from "stimulus/webpack-helpers"
+import { Application } from 'stimulus';
+import { definitionsFromContext } from 'stimulus/webpack-helpers';
 
 const application = Application.start();
-const context = require.context("controllers", true, /.js$/);
+const context = require.context('controllers', true, /.js$/);
 application.load(definitionsFromContext(context));

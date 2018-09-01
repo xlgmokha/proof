@@ -1,16 +1,18 @@
-import { Controller } from 'stimulus'
-import Email from '../../models/email'
+import { Controller } from 'stimulus';
+import Email from '../../models/email';
 
 export default class extends Controller {
-  get email() { return this.targets.find("email") }
-  get password() { return this.targets.find("password") }
-  get submitButton() { return this.targets.find("submit") }
+  get email() { return this.targets.find('email'); }
+
+  get password() { return this.targets.find('password'); }
+
+  get submitButton() { return this.targets.find('submit'); }
 
   validate() {
     if (this.isValidEmail() && this.isValidPassword()) {
       this.enable(this.submitButton);
     } else {
-      this.disable(this.submitButton)
+      this.disable(this.submitButton);
     }
   }
 

@@ -34,6 +34,9 @@ namespace :lint do
     )
   end
 
+  desc "run eslint"
+  task(:eslint) { sh 'yarn lint' }
+
   desc "Run linters to check the quality of the code."
-  task all: [:rubocop, 'bundle:audit', :brakeman]
+  task all: [:rubocop, 'bundle:audit', :brakeman, :eslint]
 end
