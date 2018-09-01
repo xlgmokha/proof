@@ -35,8 +35,7 @@ class SessionsController < ApplicationController
         post_back(saml_request, user)
       end
     else
-      flash[:error] = "Invalid Credentials"
-      render :new
+      redirect_to new_session_path, error: "Invalid Credentials"
     end
   end
 

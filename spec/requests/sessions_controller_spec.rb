@@ -131,39 +131,56 @@ describe SessionsController do
     end
   end
 
-  describe "#create" do
-    let(:user) { User.create!(email: FFaker::Internet.email, password: password) }
-    let(:password) { FFaker::Internet.password }
+  describe "POST /session" do
+    let(:user) { create(:user) }
+    let(:password) { user.password }
 
     context "when a SAMLRequest is not present" do
-      before { post '/session', params: { user: { email: user.email, password: password } } }
-      specify { expect(response).to redirect_to(my_dashboard_path) }
+      context "when the credentials are correct" do
+        before { post '/session', params: { user: { email: user.email, password: password } } }
+        specify { expect(response).to redirect_to(my_dashboard_path) }
+      end
+
+      context "when the credentials are incorrect" do
+        before { post '/session', params: { user: { email: user.email, password: 'incorrect' } } }
+
+        specify { expect(response).to redirect_to(new_session_path) }
+        specify { expect(flash[:error]).to include('Invalid Credentials') }
+      end
     end
 
-    it 'posts the response back to the ACS endpoint' do
-      allow(registry).to receive(:metadata_for).with(issuer).and_return(sp_metadata)
-      redirect_binding = Saml::Kit::Bindings::HttpRedirect.new(location: new_session_url)
-      get redirect_binding.serialize(Saml::Kit::AuthenticationRequest.builder)[0]
+    context "when a SAMLRequest is found in session" do
+      let(:redirect_binding) { Saml::Kit::Bindings::HttpRedirect.new(location: new_session_url) }
+      let(:relay_state) { SecureRandom.uuid }
 
-      post '/session', params: { user: { email: user.email, password: password } }
+      before :each do
+        allow(registry).to receive(:metadata_for).with(issuer).and_return(sp_metadata)
+        get redirect_binding.serialize(Saml::Kit::AuthenticationRequest.builder, relay_state: relay_state)[0]
+      end
 
-      expect(response).to have_http_status(:ok)
-      expect(response.body).to include(sp_metadata.assertion_consumer_service_for(binding: :http_post).location)
-      expect(response.body).to include('SAMLResponse')
-    end
+      context "when the credentials are correct" do
+        before { post '/session', params: { user: { email: user.email, password: password } } }
 
-    it 'includes the RelayState in the response' do
-      relay_state = SecureRandom.uuid
-      allow(registry).to receive(:metadata_for).with(issuer).and_return(sp_metadata)
-      redirect_binding = Saml::Kit::Bindings::HttpRedirect.new(location: new_session_url)
+        specify { expect(response).to have_http_status(:ok) }
+        specify { expect(response.body).to include(sp_metadata.assertion_consumer_service_for(binding: :http_post).location) }
+        specify { expect(response.body).to include('SAMLResponse') }
+        specify { expect(response.body).to include('RelayState') }
+        specify { expect(response.body).to include(relay_state) }
+      end
 
-      get redirect_binding.serialize(Saml::Kit::AuthenticationRequest.builder, relay_state: relay_state)[0]
+      context "when the credentials are correct but the SAML request is no longer valid" do
+        before { allow_any_instance_of(Saml::Kit::AuthenticationRequest).to receive(:valid?).and_return(false) }
+        before { post '/session', params: { user: { email: user.email, password: password } } }
 
-      post '/session', params: { user: { email: user.email, password: password } }
+        specify { expect(response).to have_http_status(:forbidden) }
+      end
 
-      expect(response).to have_http_status(:ok)
-      expect(response.body).to include('RelayState')
-      expect(response.body).to include(relay_state)
+      context "when the credentials are incorrect" do
+        before { post '/session', params: { user: { email: user.email, password: 'incorrect' } } }
+
+        specify { expect(response).to redirect_to(new_session_path) }
+        specify { expect(flash[:error]).to include('Invalid Credentials') }
+      end
     end
   end
 
