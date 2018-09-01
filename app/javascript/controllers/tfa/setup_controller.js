@@ -1,5 +1,5 @@
-import ApplicationController from '../application_controller';
 import QRCode from 'qrcode';
+import ApplicationController from '../application_controller';
 
 export default class extends ApplicationController {
   get secret() { return this.targets.find('secret'); }

@@ -4,51 +4,45 @@ source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby '2.5.1'
 
-gem 'activerecord-session_store'
+gem 'activerecord-session_store', '~> 1.1'
 gem 'bcrypt', '~> 3.1'
 gem 'bootsnap', '>= 1.1.0', require: false
 gem 'coffee-rails', '~> 4.2'
-gem 'dotenv'
-gem 'email_validator'
-gem 'foreman'
+gem 'dotenv', '~> 2.5'
+gem 'email_validator', '~> 1.6'
+gem 'foreman', '~> 0.85'
 gem 'jbuilder', '~> 2.5'
-gem 'jwt'
+gem 'jwt', '~> 2.1'
 gem 'puma', '~> 3.11'
 gem 'rails', '~> 5.2.0'
-gem 'rotp'
+gem 'rotp', '~> 3.3'
 gem 'saml-kit', '~> 1.0'
 gem 'sass-rails', '~> 5.0'
 gem 'scim-shady', '~> 0.2'
-gem 'spank'
-gem 'therubyracer', platforms: :ruby
+gem 'spank', '~> 1.0'
 gem 'turbolinks', '~> 5'
 gem 'uglifier', '>= 1.3.0'
-gem 'webpacker'
+gem 'webpacker', '~> 3.5'
 # gem 'redis', '~> 4.0'
-
 group :development do
-  gem 'brakeman'
-  gem 'bundler-audit'
+  gem 'brakeman', '~> 4.3'
+  gem 'bundler-audit', '~> 0.6'
   gem 'listen', '>= 3.0.5', '< 3.2'
-  gem 'rubocop'
+  gem 'rubocop', '~> 0.58'
   gem 'web-console', '>= 3.3.0'
 end
-
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
-  gem 'capybara', '>= 2.15', '< 4.0'
-  gem 'capybara-screenshot'
-  gem 'chromedriver-helper'
-  gem 'factory_bot_rails'
-  gem 'ffaker'
-  gem 'rails-controller-testing'
+  gem 'capybara', '~> 3.6'
+  gem 'capybara-screenshot', '~> 1.0'
+  gem 'factory_bot_rails', '~> 4.11'
+  gem 'ffaker', '~> 2.10'
   gem 'rspec-rails', '~> 3.7'
-  gem 'selenium-webdriver'
+  gem 'selenium-webdriver', '~> 3.14'
   gem 'sqlite3'
-  gem 'webmock'
+  gem 'webmock', '~> 3.4'
 end
-
 group :production do
   gem 'pg'
-  gem 'rails_12factor'
+  gem 'rails_12factor', '~> 0.0'
 end
