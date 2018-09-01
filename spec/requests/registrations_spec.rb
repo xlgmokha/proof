@@ -20,9 +20,8 @@ RSpec.describe '/registrations' do
 
     context "when the new registration data is invalid" do
       let(:user) { create(:user) }
-      let(:email) { user.email }
 
-      before { post "/registrations", params: { user: { email: email, password: "password" } } }
+      before { post "/registrations", params: { user: { email: user.email, password: "password" } } }
 
       specify { expect(response).to redirect_to(new_registration_path) }
       specify { expect(flash[:error]).to be_present }
