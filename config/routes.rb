@@ -6,8 +6,9 @@ Rails.application.routes.draw do
   resource :metadata, only: [:show]
   resource :dashboard, only: [:show]
   resources :registrations, only: [:new, :create]
-  resource :tfa, only: [:new, :edit, :create, :destroy]
-
+  namespace :my do
+    resource :mfa, only: [:new, :edit, :create, :destroy]
+  end
   namespace :scim do
     namespace :v2, defaults: { format: :scim } do
       post ".search", to: "search#index"

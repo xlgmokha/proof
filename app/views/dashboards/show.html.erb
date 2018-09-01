@@ -3,9 +3,9 @@
     <div class="col">
       <h1>Dashboard</h1>
       <% if current_user.tfa.setup? %>
-        <%= link_to "TFA", edit_tfa_path %>
+        <%= link_to "TFA", edit_my_mfa_path %>
       <% else %>
-        <%= link_to "Setup TFA", new_tfa_path %>
+        <%= link_to "Setup TFA", new_my_mfa_path %>
       <% end %>
       <%= button_to "Logout", session_path, method: :delete %>
       <table class="table">
