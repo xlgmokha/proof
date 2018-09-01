@@ -79,10 +79,9 @@ describe SessionsController do
     let(:user) { User.create!(email: FFaker::Internet.email, password: password) }
     let(:password) { FFaker::Internet.password }
 
-    it 'redirects to the dashboard when a SAMLRequest is not present' do
-      post '/session', params: { user: { email: user.email, password: password } }
-
-      expect(response).to redirect_to('/dashboard')
+    context "when a SAMLRequest is not present" do
+      before { post '/session', params: { user: { email: user.email, password: password } } }
+      specify { expect(response).to redirect_to(my_dashboard_path) }
     end
 
     it 'posts the response back to the ACS endpoint' do

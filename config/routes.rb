@@ -4,9 +4,9 @@ Rails.application.routes.draw do
   post "/session/logout" => "sessions#destroy", as: :logout
   post "/session/new" => "sessions#new"
   resource :metadata, only: [:show]
-  resource :dashboard, only: [:show]
   resources :registrations, only: [:new, :create]
   namespace :my do
+    resource :dashboard, only: [:show]
     resource :mfa, only: [:new, :edit, :create, :destroy]
   end
   namespace :scim do

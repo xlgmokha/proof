@@ -27,7 +27,7 @@ RSpec.describe '/my/mfa' do
         before { post '/my/mfa', params: { user: { tfa_secret: secret } } }
 
         specify { expect(current_user.reload.tfa_secret).to eql(secret) }
-        specify { expect(response).to redirect_to(dashboard_path) }
+        specify { expect(response).to redirect_to(my_dashboard_path) }
         specify { expect(flash[:notice]).to include("successfully updated!") }
       end
     end
@@ -39,8 +39,14 @@ RSpec.describe '/my/mfa' do
         before { delete '/my/mfa' }
 
         specify { expect(current_user.reload.tfa_secret).to be_nil }
-        specify { expect(response).to redirect_to(dashboard_path) }
+        specify { expect(response).to redirect_to(my_dashboard_path) }
       end
     end
+  end
+
+  context "when not logged in" do
+    before { get '/my/mfa/new' }
+
+    specify { expect(response).to redirect_to(new_session_path) }
   end
 end

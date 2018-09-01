@@ -24,7 +24,7 @@ class SessionsController < ApplicationController
     if (user = User.login(user_params[:email], user_params[:password]))
       unless session[:saml].present?
         login(user)
-        return redirect_to(dashboard_path)
+        return redirect_to(my_dashboard_path)
       end
 
       saml_request = Saml::Kit::AuthenticationRequest.new(session[:saml][:xml])

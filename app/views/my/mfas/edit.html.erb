@@ -10,7 +10,7 @@
         <%= form_for current_user, url: tfa_path, method: :delete do |form| %>
           <%= form.hidden_field :tfa_secret, data: { target: 'tfa--setup.secret' } %>
           <%= form.submit "Disable", class: 'btn btn-danger', data: { disable_with: 'Saving…' } %>
-          <%= link_to "Cancel", dashboard_path, class: 'btn' %>
+          <%= link_to "Cancel", my_dashboard_path, class: 'btn' %>
         <% end %>
       </div>
     </div>

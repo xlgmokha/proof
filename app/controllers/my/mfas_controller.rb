@@ -9,14 +9,14 @@ module My
 
     def create
       current_user.update!(params.require(:user).permit(:tfa_secret))
-      redirect_to dashboard_path, notice: "successfully updated!"
+      redirect_to my_dashboard_path, notice: "successfully updated!"
     end
 
     def edit; end
 
     def destroy
       current_user.tfa.disable!
-      redirect_to dashboard_path
+      redirect_to my_dashboard_path
     end
   end
 end
