@@ -1,7 +1,7 @@
-import { Controller } from 'stimulus';
+import ApplicationController from '../application_controller';
 import Email from '../../models/email';
 
-export default class extends Controller {
+export default class extends ApplicationController {
   get email() { return this.targets.find('email'); }
 
   get password() { return this.targets.find('password'); }
