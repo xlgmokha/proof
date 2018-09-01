@@ -1,24 +1,31 @@
 require 'rails_helper'
 
-RSpec.describe RegistrationsController do
-  describe "#new" do
-    it 'renders a registration page' do
-      get '/registrations/new'
+RSpec.describe '/registrations' do
+  describe "GET /registrations/new" do
+    before { get '/registrations/new' }
 
-      expect(response).to have_http_status(:ok)
-      expect(response.body).to include("Register")
-    end
+    specify { expect(response).to have_http_status(:ok) }
+    specify { expect(response.body).to include("Register") }
   end
 
-  describe "#create" do
-    let(:email) { FFaker::Internet.email }
+  describe "POST /registrations" do
+    context "when the new registration data is valid" do
+      let(:email) { FFaker::Internet.email }
+      before { post "/registrations", params: { user: { email: email, password: "password" } } }
 
-    it 'registers a new user' do
-      post "/registrations", params: { user: { email: email, password: "password" } }
+      specify { expect(response).to redirect_to(new_session_url) }
+      specify { expect(User.count).to eql(1) }
+      specify { expect(User.last.email).to eql(email) }
+    end
 
-      expect(response).to redirect_to(new_session_url)
-      expect(User.count).to eql(1)
-      expect(User.last.email).to eql(email)
+    context "when the new registration data is invalid" do
+      let(:user) { create(:user) }
+      let(:email) { user.email }
+
+      before { post "/registrations", params: { user: { email: email, password: "password" } } }
+
+      specify { expect(response).to redirect_to(new_registration_path) }
+      specify { expect(flash[:error]).to be_present }
     end
   end
 end
