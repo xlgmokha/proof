@@ -17,6 +17,7 @@ class SessionsController < ApplicationController
     end
   rescue StandardError => error
     logger.error(error)
+    redirect_to my_dashboard_path if current_user?
   end
 
   def create

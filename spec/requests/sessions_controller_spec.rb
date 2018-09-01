@@ -9,68 +9,124 @@ describe SessionsController do
       x.add_single_logout_service(FFaker::Internet.uri("https"), binding: :http_post)
     end
   end
-  def http_login(user)
-    post '/session', params: { user: { email: user.email, password: user.password } }
-  end
+
   before { Saml::Kit.configuration.registry = registry }
 
-  describe '#new' do
-    describe "POST #new" do
-      let(:post_binding) { Saml::Kit::Bindings::HttpPost.new(location: new_session_url) }
+  describe "POST /session/new" do
+    let(:post_binding) { Saml::Kit::Bindings::HttpPost.new(location: new_session_url) }
+
+    context "when the user is already logged in" do
       let(:user) { create(:user) }
-      let(:saml_params) { post_binding.serialize(Saml::Kit::AuthenticationRequest.builder)[1] }
+      before { http_login(user) }
 
-      it 'renders an error page when the service provider is not registered' do
-        url, saml_params = post_binding.serialize(Saml::Kit::AuthenticationRequest.builder)
-        post url, params: saml_params
-        expect(response).to have_http_status(:forbidden)
-        expect(response.body).to include("Forbidden")
+      context "when a registered SAML request is provided" do
+        before { allow(registry).to receive(:metadata_for).with(issuer).and_return(sp_metadata) }
+        before :each do
+          url, saml_params = post_binding.serialize(Saml::Kit::AuthenticationRequest.builder)
+          post url, params: saml_params
+        end
+
+        specify { expect(response).to have_http_status(:ok) }
+        specify { expect(response.body).to include("Sending Response to Service Provider") }
       end
 
-      it 'renders the login page when the service provider is registered and the user is not logged in' do
-        allow(registry).to receive(:metadata_for).with(issuer).and_return(sp_metadata)
-        url, saml_params = post_binding.serialize(Saml::Kit::AuthenticationRequest.builder)
-        post url, params: saml_params
+      context "when an unregistered SAML request is provided" do
+        before :each do
+          url, saml_params = post_binding.serialize(Saml::Kit::AuthenticationRequest.builder)
+          post url, params: saml_params
+        end
 
-        expect(response).to have_http_status(:ok)
-        expect(session[:saml]).to be_present
-        expect(session[:saml][:params]).to be_present
-        expect(session[:saml][:xml]).to be_present
+        specify { expect(response).to have_http_status(:forbidden) }
       end
 
-      it 'generates a response for the user when they are already logged in' do
-        allow(registry).to receive(:metadata_for).with(issuer).and_return(sp_metadata)
-        url, saml_params = post_binding.serialize(Saml::Kit::AuthenticationRequest.builder)
+      context "when a SAML request is not provided" do
+        before { post '/session/new' }
 
-        post url, params: saml_params
-        http_login(user)
-        post url, params: saml_params
-
-        expect(response).to have_http_status(:ok)
-        expect(response.body).to include("Sending Response to Service Provider")
-      end
-
-      it 'renders a login page when there is no SAML Request' do
-        post '/session/new'
-        expect(response).to have_http_status(:ok)
-        expect(response.body).to include("Login")
+        specify { expect(response).to redirect_to(my_dashboard_path) }
       end
     end
 
-    describe "GET #new" do
-      let(:redirect_binding) { Saml::Kit::Bindings::HttpRedirect.new(location: new_session_url) }
+    context "when the user is not logged in" do
+      context "when a registered SAML request is provided" do
+        before { allow(registry).to receive(:metadata_for).with(issuer).and_return(sp_metadata) }
+        before :each do
+          url, saml_params = post_binding.serialize(Saml::Kit::AuthenticationRequest.builder)
+          post url, params: saml_params
+        end
 
-      it 'renders an error page when the service provider is not registered' do
-        get redirect_binding.serialize(Saml::Kit::AuthenticationRequest.builder)[0]
-        expect(response).to have_http_status(:forbidden)
-        expect(response.body).to include("Forbidden")
+        specify { expect(response).to have_http_status(:ok) }
+        specify { expect(session[:saml]).to be_present }
+        specify { expect(session[:saml][:params]).to be_present }
+        specify { expect(session[:saml][:xml]).to be_present }
       end
 
-      it 'renders the login page when the sp is registered' do
-        allow(registry).to receive(:metadata_for).with(issuer).and_return(sp_metadata)
-        get redirect_binding.serialize(Saml::Kit::AuthenticationRequest.builder)[0]
-        expect(response).to have_http_status(:ok)
-        expect(response.body).to include("Login")
+      context "when an unregistered SAML request is provided" do
+        before :each do
+          url, saml_params = post_binding.serialize(Saml::Kit::AuthenticationRequest.builder)
+          post url, params: saml_params
+        end
+
+        specify { expect(response).to have_http_status(:forbidden) }
+      end
+
+      context "when a SAML request is not provided" do
+        before { post '/session/new' }
+
+        specify { expect(response).to have_http_status(:ok) }
+        specify { expect(response.body).to include("Login") }
+      end
+    end
+  end
+
+  describe "GET /session/new" do
+    let(:redirect_binding) { Saml::Kit::Bindings::HttpRedirect.new(location: new_session_url) }
+
+    context "when the user is already logged in" do
+      before { http_login(create(:user)) }
+
+      context "when a registered SAML request is provided" do
+        before { allow(registry).to receive(:metadata_for).with(issuer).and_return(sp_metadata) }
+        before { get redirect_binding.serialize(Saml::Kit::AuthenticationRequest.builder)[0] }
+
+        specify { expect(response).to have_http_status(:ok) }
+        specify { expect(response.body).to include("Sending Response to Service Provider") }
+      end
+
+      context "when an unregistered SAML request is provided" do
+        before { get redirect_binding.serialize(Saml::Kit::AuthenticationRequest.builder)[0] }
+
+        specify { expect(response).to have_http_status(:forbidden) }
+      end
+
+      context "when a SAML request is not provided" do
+        before { get '/session/new' }
+
+        specify { expect(response).to redirect_to(my_dashboard_path) }
+      end
+    end
+
+    context "when the user is not logged in" do
+      context "when a registered SAML request is provided" do
+        before { allow(registry).to receive(:metadata_for).with(issuer).and_return(sp_metadata) }
+        before { get redirect_binding.serialize(Saml::Kit::AuthenticationRequest.builder)[0] }
+
+        specify { expect(response).to have_http_status(:ok) }
+        specify { expect(session[:saml]).to be_present }
+        specify { expect(session[:saml][:params]).to be_present }
+        specify { expect(session[:saml][:xml]).to be_present }
+      end
+
+      context "when an unregistered SAML request is provided" do
+        before { get redirect_binding.serialize(Saml::Kit::AuthenticationRequest.builder)[0] }
+
+        specify { expect(response).to have_http_status(:forbidden) }
+      end
+
+      context "when a SAML request is not provided" do
+        before { get '/session/new' }
+
+        specify { expect(response).to have_http_status(:ok) }
+        specify { expect(response.body).to include("Login") }
       end
     end
   end

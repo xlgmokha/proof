@@ -10,9 +10,9 @@ class OnDemandRegistry < SimpleDelegator
   end
 end
 
-Saml::Kit.configure do |configuration|
-  configuration.entity_id = ENV['ISSUER']
-  configuration.registry = OnDemandRegistry.new(configuration.registry)
-  configuration.logger = Rails.logger
-  5.times { configuration.generate_key_pair_for(use: :signing) }
+Saml::Kit.configure do |x|
+  x.entity_id = ENV['ISSUER']
+  x.registry = OnDemandRegistry.new(x.registry)
+  x.logger = Rails.logger
+  5.times { x.generate_key_pair_for(use: :signing) }
 end
