@@ -1,0 +1,7 @@
+<div class="container">
+  <% flash.each do |type, message| %>
+    <% Array(message).each do |value| %>
+      <div class="alert <%= alert_class_for(type) %>" role=alert><%= value %></div>
+    <% end %>
+  <% end %>
+</div>
