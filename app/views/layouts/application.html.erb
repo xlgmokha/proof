@@ -10,6 +10,7 @@
     <%= stylesheet_pack_tag 'vendor' %>
   </head>
   <body>
+    <%= render partial: 'navbar' if current_user? %>
     <%= render partial: 'flash' %>
     <%= yield %>
   </body>

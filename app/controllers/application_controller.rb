@@ -4,7 +4,7 @@ class ApplicationController < ActionController::Base
   include SamlRespondable
   protect_from_forgery with: :exception
   before_action :authenticate!
-  helper_method :current_user
+  helper_method :current_user, :current_user?
   add_flash_types :error, :warning
 
   def render_error(status, model: nil)

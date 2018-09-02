@@ -2,6 +2,10 @@
 
 module My
   class MfasController < ApplicationController
+    def show
+      redirect_to current_user.tfa.setup? ? edit_my_mfa_path : new_my_mfa_path
+    end
+
     def new
       return redirect_to edit_my_mfa_path if current_user.tfa.setup?
       current_user.tfa.build_secret

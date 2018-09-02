@@ -6,6 +6,19 @@ RSpec.describe '/my/mfa' do
     before { http_login(current_user) }
 
     describe "GET /my/mfa" do
+      context "when MFA is set up" do
+        let(:current_user) { create(:user, :mfa_configured) }
+        before { get '/my/mfa' }
+        specify { expect(response).to redirect_to(edit_my_mfa_path) }
+      end
+
+      context "when MFA is not set up" do
+        before { get '/my/mfa' }
+        specify { expect(response).to redirect_to(new_my_mfa_path) }
+      end
+    end
+
+    describe "GET /my/mfa/new" do
       context "when mfa has not been set up yet" do
         before { get '/my/mfa/new' }
 

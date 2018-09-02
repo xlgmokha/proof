@@ -7,7 +7,7 @@ Rails.application.routes.draw do
   resources :registrations, only: [:new, :create]
   namespace :my do
     resource :dashboard, only: [:show]
-    resource :mfa, only: [:new, :edit, :create, :destroy]
+    resource :mfa, only: [:show, :new, :edit, :create, :destroy]
   end
   namespace :scim do
     namespace :v2, defaults: { format: :scim } do
