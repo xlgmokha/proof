@@ -13,4 +13,17 @@ module ApplicationHelper
       'alert-primary'
     end
   end
+
+  def alert_message_for(type)
+    case type.to_sym
+    when :notice
+      'Hot dog!'
+    when :warning
+      'Holy guacamole!'
+    when :error
+      'Danger Will Robinson!'
+    else
+      '🤷'
+    end
+  end
 end
