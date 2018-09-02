@@ -81,6 +81,6 @@ class SessionsController < ApplicationController
 
   def login(user)
     reset_session
-    session[:user_id] = user.id
+    session[:user_id] = user.to_param
   end
 end

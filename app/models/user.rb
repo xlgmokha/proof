@@ -20,23 +20,29 @@ class User < ApplicationRecord
     Tfa.new(self)
   end
 
-  def self.login(email, password)
-    return if email.blank? || password.blank?
-
-    user = User.find_by!(email: email)
-    user.authenticate(password) ? user : nil
-  rescue ActiveRecord::RecordNotFound
-    nil
-  end
-
-  def self.authenticate_token(token)
-    token = BearerToken.new.decode(token)
-    return if token.empty?
-    User.find_by(uuid: token[:sub])
-  end
-
   def access_token(audience)
     BearerToken.new.encode(sub: uuid, aud: audience)
+  end
+
+  def to_param
+    uuid
+  end
+
+  class << self
+    def login(email, password)
+      return if email.blank? || password.blank?
+
+      user = User.find_by!(email: email)
+      user.authenticate(password) ? user : nil
+    rescue ActiveRecord::RecordNotFound
+      nil
+    end
+
+    def authenticate_token(token)
+      token = BearerToken.new.decode(token)
+      return if token.empty?
+      User.find_by(uuid: token[:sub])
+    end
   end
 
   private

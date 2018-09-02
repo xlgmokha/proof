@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
 
   def current_user
     return nil if session[:user_id].blank?
-    @current_user ||= User.find(session[:user_id])
+    @current_user ||= User.find_by!(uuid: session[:user_id])
   rescue ActiveRecord::RecordNotFound => error
     logger.error(error)
     nil
