@@ -11,6 +11,23 @@ RSpec.describe "/mfa" do
 
       specify { expect(response).to have_http_status(:ok) }
     end
+
+    describe "POST /mfa" do
+      context "when the code is correct" do
+        let(:correct_code) { current_user.tfa.current_totp }
+        before { post '/mfa', params: { mfa: { code: correct_code } } }
+
+        specify { expect(response).to redirect_to(response_path) }
+      end
+
+      context "when the code is incorrect" do
+        let(:incorrect_code) { rand(1_000) }
+        before { post '/mfa', params: { mfa: { code: incorrect_code } } }
+
+        specify { expect(response).to redirect_to(mfa_path) }
+        specify { expect(flash[:error]).to be_present }
+      end
+    end
   end
 
   context "when username/password entry has not been completed" do

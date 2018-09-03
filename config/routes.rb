@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   post "/session/new" => "sessions#new"
   resource :metadata, only: [:show]
   resource :mfa, only: [:new, :create]
+  resource :response, only: [:show]
   resource :session, only: [:new, :create, :destroy]
   resources :registrations, only: [:new, :create]
 

@@ -12,7 +12,6 @@ class Tfa
   end
 
   def provisioning_uri
-    totp = ::ROTP::TOTP.new(secret, issuer: 'saml-kit')
     totp.provisioning_uri(user.email)
   end
 
@@ -29,6 +28,16 @@ class Tfa
   end
 
   def current_totp
-    ROTP::TOTP.new(secret).now
+    totp.now
+  end
+
+  def authenticate(entered_code)
+    totp.verify(entered_code)
+  end
+
+  private
+
+  def totp
+    @totp ||= ::ROTP::TOTP.new(secret, issuer: 'saml-kit')
   end
 end
