@@ -23,17 +23,8 @@ class SessionsController < ApplicationController
   def create
     user_params = params.require(:user).permit(:email, :password)
     if (user = User.login(user_params[:email], user_params[:password]))
-      unless session[:saml].present?
-        login(user)
-        return redirect_to(my_dashboard_path)
-      end
-
-      saml_request = Saml::Kit::AuthenticationRequest.new(session[:saml][:xml])
-      if saml_request.invalid?
-        render_error(:forbidden, model: saml_request)
-      else
-        post_back(saml_request, user)
-      end
+      login(user)
+      redirect_to response_path
     else
       redirect_to new_session_path, error: "Invalid Credentials"
     end
@@ -80,7 +71,9 @@ class SessionsController < ApplicationController
   end
 
   def login(user)
+    saml_data = session[:saml]
     reset_session
     session[:user_id] = user.to_param
+    session[:saml] = saml_data
   end
 end

@@ -138,7 +138,7 @@ describe SessionsController do
     context "when a SAMLRequest is not present" do
       context "when the credentials are correct" do
         before { post '/session', params: { user: { email: user.email, password: password } } }
-        specify { expect(response).to redirect_to(my_dashboard_path) }
+        specify { expect(response).to redirect_to(response_path) }
       end
 
       context "when the credentials are incorrect" do
@@ -161,18 +161,9 @@ describe SessionsController do
       context "when the credentials are correct" do
         before { post '/session', params: { user: { email: user.email, password: password } } }
 
-        specify { expect(response).to have_http_status(:ok) }
-        specify { expect(response.body).to include(sp_metadata.assertion_consumer_service_for(binding: :http_post).location) }
-        specify { expect(response.body).to include('SAMLResponse') }
-        specify { expect(response.body).to include('RelayState') }
-        specify { expect(response.body).to include(relay_state) }
-      end
-
-      context "when the credentials are correct but the SAML request is no longer valid" do
-        before { allow_any_instance_of(Saml::Kit::AuthenticationRequest).to receive(:valid?).and_return(false) }
-        before { post '/session', params: { user: { email: user.email, password: password } } }
-
-        specify { expect(response).to have_http_status(:forbidden) }
+        specify { expect(response).to redirect_to(response_path) }
+        specify { expect(session[:saml]).to be_present }
+        specify { expect(session[:saml][:params][:RelayState]).to eql(relay_state) }
       end
 
       context "when the credentials are incorrect" do
