@@ -1,6 +1,7 @@
+# frozen_string_literal: true
+
 class MfasController < ApplicationController
-  def new
-  end
+  def new; end
 
   def create
     if current_user.tfa.authenticate(secure_params[:code])
