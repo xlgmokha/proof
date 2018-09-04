@@ -32,8 +32,10 @@ RSpec.describe "/mfa" do
   end
 
   context "when username/password entry has not been completed" do
-    before { get '/mfa/new' }
+    describe "GET /mfa/new" do
+      before { get '/mfa/new' }
 
-    specify { expect(response).to redirect_to(new_session_path) }
+      specify { expect(response).to redirect_to(new_session_path) }
+    end
   end
 end
