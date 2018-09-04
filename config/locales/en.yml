@@ -38,3 +38,8 @@ en:
     new:
       loading: "Loading…"
       login: "Login"
+  my:
+    mfas:
+      new:
+        enable: 'Enable'
+        cancel: 'Cancel'
