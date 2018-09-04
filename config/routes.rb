@@ -22,7 +22,7 @@ Rails.application.routes.draw do
       get :ResourceTypes, to: "resource_types#index"
       resources :schemas, only: [:index]
 
-      match 'me', to: lambda { |env| [501, {}, ['']] }, via: [:get, :post, :put, :patch, :delete]
+      match 'Me', to: lambda { |env| [501, {}, ['']] }, via: [:get, :post, :put, :patch, :delete]
       match 'Bulk', to: lambda { |env| [501, {}, ['']] }, via: [:post]
     end
   end

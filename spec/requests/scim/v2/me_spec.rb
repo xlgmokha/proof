@@ -1,8 +1,8 @@
 require 'rails_helper'
 
-describe '/scim/v2/me' do
-  it 'returns a 501' do
-    get '/scim/v2/me'
-    expect(response).to have_http_status(:not_implemented)
+RSpec.describe '/scim/v2/Me' do
+  describe "GET /scim/v2/Me" do
+    before { get '/scim/v2/Me' }
+    specify { expect(response).to have_http_status(:not_implemented) }
   end
 end
