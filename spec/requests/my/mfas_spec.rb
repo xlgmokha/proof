@@ -54,6 +54,7 @@ RSpec.describe '/my/mfa' do
 
         specify { expect(current_user.reload.tfa_secret).to be_nil }
         specify { expect(response).to redirect_to(my_dashboard_path) }
+        specify { expect(flash[:notice]).to include("MFA has been disabled") }
       end
     end
   end

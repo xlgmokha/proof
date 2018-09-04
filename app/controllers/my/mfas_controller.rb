@@ -20,7 +20,7 @@ module My
 
     def destroy
       current_user.tfa.disable!
-      redirect_to my_dashboard_path
+      redirect_to my_dashboard_path, notice: 'MFA has been disabled'
     end
   end
 end
