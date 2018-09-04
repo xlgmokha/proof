@@ -7,7 +7,9 @@ describe('tfa--setup', () => {
     $container.affix('canvas[data-target="tfa--setup.canvas"]')
     const $form = $container.affix('form')
     $form.affix('input[type="hidden" data-target="tfa--setup.secret" value="secret"]')
-    const application = Application.start();
+    const application = new Application();
+    application.router.start();
+    application.dispatcher.start();
     application.register('tfa--setup', Controller);
   });
 
