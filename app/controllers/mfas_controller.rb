@@ -10,7 +10,7 @@ class MfasController < ApplicationController
       session[:mfa] = { issued_at: Time.now.utc.to_i }
       redirect_to response_path
     else
-      redirect_to mfa_path, error: "Invalid code"
+      redirect_to new_mfa_path, error: "Invalid code"
     end
   end
 

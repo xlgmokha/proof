@@ -25,7 +25,7 @@ RSpec.describe "/mfa" do
         let(:incorrect_code) { rand(1_000) }
         before { post '/mfa', params: { mfa: { code: incorrect_code } } }
 
-        specify { expect(response).to redirect_to(mfa_path) }
+        specify { expect(response).to redirect_to(new_mfa_path) }
         specify { expect(flash[:error]).to be_present }
       end
     end
