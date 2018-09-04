@@ -15,12 +15,26 @@ Rails.application.routes.draw do
   namespace :scim do
     namespace :v2, defaults: { format: :scim } do
       post ".search", to: "search#index"
-      resources :users, only: [:index, :show, :create, :update, :destroy]
-      get :ServiceProviderConfig, to: "service_providers#show"
+
+      get 'Groups/:id', to: 'groups#show'
+      post :Groups, to: "groups#create"
+      put 'Groups/:id', to: "groups#update"
       resources :groups, only: [:index]
-      resources :resource_types, only: [:index]
+
       get :ResourceTypes, to: "resource_types#index"
-      resources :schemas, only: [:index]
+      get 'ResourceTypes/:id', to: "resource_types#show"
+      resources :resource_types, only: [:index, :show]
+
+      get :Schemas, to: 'schemas#index'
+      get 'Schemas/:id', to: "schemas#show"
+      resources :schemas, only: [:index, :show]
+
+      get :ServiceProviderConfig, to: "service_providers#show"
+
+      get 'Users/:id', to: 'users#show'
+      post :Users, to: "users#create"
+      put 'Users/:id', to: "users#update"
+      resources :users, only: [:index, :show, :create, :update, :destroy]
 
       match 'Me', to: lambda { |env| [501, {}, ['']] }, via: [:get, :post, :put, :patch, :delete]
       match 'Bulk', to: lambda { |env| [501, {}, ['']] }, via: [:post]
