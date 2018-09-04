@@ -4,6 +4,7 @@ class ApplicationController < ActionController::Base
   include SamlRespondable
   protect_from_forgery with: :exception
   before_action :authenticate!
+  before_action :authenticate_mfa!
   helper_method :current_user, :current_user?
   add_flash_types :error, :warning
 
@@ -28,5 +29,10 @@ class ApplicationController < ActionController::Base
 
   def authenticate!
     redirect_to new_session_path unless current_user?
+  end
+
+  def authenticate_mfa!
+    return unless current_user?
+    redirect_to mfa_path unless current_user.tfa.valid_session?(session[:mfa])
   end
 end

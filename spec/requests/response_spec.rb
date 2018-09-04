@@ -11,7 +11,7 @@ RSpec.describe "/response" do
     context "when the user has completed password authentication" do
       let(:current_user) { create(:user) }
 
-      before { http_login(current_user) }
+      before { http_login(current_user, skip_mfa: true) }
 
       context "when a saml request was present in session" do
         let(:registry) { Saml::Kit::DefaultRegistry.new }
@@ -53,6 +53,14 @@ RSpec.describe "/response" do
         before { get '/response' }
 
         specify { expect(response).to redirect_to(my_dashboard_path) }
+      end
+
+      context "when MFA authentication has not been completed" do
+        let(:current_user) { create(:user, :mfa_configured) }
+
+        before { get '/response' }
+
+        specify { expect(response).to redirect_to(mfa_path) }
       end
     end
   end

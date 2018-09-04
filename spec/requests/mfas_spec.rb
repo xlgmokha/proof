@@ -18,6 +18,7 @@ RSpec.describe "/mfa" do
         before { post '/mfa', params: { mfa: { code: correct_code } } }
 
         specify { expect(response).to redirect_to(response_path) }
+        specify { expect(session[:mfa]).to be_present }
       end
 
       context "when the code is incorrect" do

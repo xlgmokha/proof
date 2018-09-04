@@ -35,6 +35,11 @@ class Tfa
     totp.verify(entered_code)
   end
 
+  def valid_session?(session)
+    return true unless setup?
+    session && session[:issued_at].present?
+  end
+
   private
 
   def totp

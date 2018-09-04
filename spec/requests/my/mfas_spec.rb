@@ -8,6 +8,7 @@ RSpec.describe '/my/mfa' do
     describe "GET /my/mfa" do
       context "when MFA is set up" do
         let(:current_user) { create(:user, :mfa_configured) }
+
         before { get '/my/mfa' }
         specify { expect(response).to redirect_to(edit_my_mfa_path) }
       end
