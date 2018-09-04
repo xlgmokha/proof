@@ -37,6 +37,7 @@ group :development, :test do
   gem 'capybara-screenshot', '~> 1.0'
   gem 'factory_bot_rails', '~> 4.11'
   gem 'ffaker', '~> 2.10'
+  gem 'i18n-tasks', '~> 0.9.24'
   gem 'rspec-rails', '~> 3.7'
   gem 'selenium-webdriver', '~> 3.14'
   gem 'sqlite3'
