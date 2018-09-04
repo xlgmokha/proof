@@ -26,4 +26,13 @@ module ApplicationHelper
       '🤷'
     end
   end
+
+  def scim_type_for(error)
+    case error
+    when ActiveRecord::RecordInvalid
+      errors = error.record.errors.full_messages
+      return 'uniqueness' if errors.count == 1 && errors[0].end_with?('has already been taken')
+    end
+    "invalidValue"
+  end
 end

@@ -12,27 +12,44 @@ describe '/scim/v2/users' do
   end
 
   describe "POST /scim/v2/users" do
-    let(:email) { FFaker::Internet.email }
+    context "when a valid request is sent" do
+      let(:email) { FFaker::Internet.email }
 
-    it 'creates a new user' do
-      body = { schemas: [Scim::Shady::Schemas::USER], userName: email }
+      it 'creates a new user' do
+        body = { schemas: [Scim::Shady::Schemas::USER], userName: email }
 
-      post '/scim/v2/users', params: body.to_json, headers: headers
+        post '/scim/v2/users', params: body.to_json, headers: headers
 
-      expect(response).to have_http_status(:created)
-      expect(response.headers['Content-Type']).to eql('application/scim+json')
-      expect(response.headers['Location']).to be_present
-      expect(response.body).to be_present
+        expect(response).to have_http_status(:created)
+        expect(response.headers['Content-Type']).to eql('application/scim+json')
+        expect(response.headers['Location']).to be_present
+        expect(response.body).to be_present
 
-      json = JSON.parse(response.body, symbolize_names: true)
-      expect(json[:schemas]).to match_array([Scim::Shady::Schemas::USER])
-      expect(json[:id]).to be_present
-      expect(json[:userName]).to eql(email)
-      expect(json[:meta][:resourceType]).to eql('User')
-      expect(json[:meta][:created]).to be_present
-      expect(json[:meta][:lastModified]).to be_present
-      expect(json[:meta][:version]).to be_present
-      expect(json[:meta][:location]).to be_present
+        json = JSON.parse(response.body, symbolize_names: true)
+        expect(json[:schemas]).to match_array([Scim::Shady::Schemas::USER])
+        expect(json[:id]).to be_present
+        expect(json[:userName]).to eql(email)
+        expect(json[:meta][:resourceType]).to eql('User')
+        expect(json[:meta][:created]).to be_present
+        expect(json[:meta][:lastModified]).to be_present
+        expect(json[:meta][:version]).to be_present
+        expect(json[:meta][:location]).to be_present
+      end
+    end
+
+    context "when a duplicate email is specified" do
+      let(:other_user) { create(:user) }
+      let(:request_body) do
+        { schemas: [Scim::Shady::Schemas::USER], userName: other_user.email }
+      end
+
+      before { post '/scim/v2/users', params: request_body.to_json, headers: headers }
+
+      specify { expect(response).to have_http_status(:bad_request) }
+      specify { expect(JSON.parse(response.body, symbolize_names: true)[:schemas]).to match_array(['urn:ietf:params:scim:api:messages:2.0:Error']) }
+      specify { expect(JSON.parse(response.body, symbolize_names: true)[:scimType]).to eql('uniqueness') }
+      specify { expect(JSON.parse(response.body, symbolize_names: true)[:detail]).to be_instance_of(String) }
+      specify { expect(JSON.parse(response.body, symbolize_names: true)[:status]).to eql('400') }
     end
   end
 
