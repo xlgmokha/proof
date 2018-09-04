@@ -11,7 +11,7 @@ module Scim
 
       def configuration
         Scim::Shady::ServiceProviderConfig.build do |x|
-          x.patch = true
+          x.patch = false
           x.bulk do |y|
             y.supported = false
           end

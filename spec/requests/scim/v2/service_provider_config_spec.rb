@@ -20,7 +20,7 @@ describe "/ServiceProviderConfig" do
     json = JSON.parse(response.body, symbolize_names: true)
     expect(json[:schemas]).to match_array([Scim::Shady::Schemas::SERVICE_PROVIDER_CONFIG])
     expect(json[:documentationUri]).to be_blank
-    expect(json[:patch][:supported]).to be(true)
+    expect(json[:patch][:supported]).to be(false)
     expect(json[:bulk][:supported]).to be(false)
     expect(json[:filter][:supported]).to be(false)
     expect(json[:changePassword][:supported]).to be(false)

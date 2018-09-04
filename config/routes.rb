@@ -23,6 +23,7 @@ Rails.application.routes.draw do
       resources :schemas, only: [:index]
 
       match 'me', to: lambda { |env| [501, {}, ['']] }, via: [:get, :post, :put, :patch, :delete]
+      match 'Bulk', to: lambda { |env| [501, {}, ['']] }, via: [:post]
     end
   end
   root to: "sessions#new"
