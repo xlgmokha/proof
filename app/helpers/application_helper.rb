@@ -31,7 +31,10 @@ module ApplicationHelper
     case error
     when ActiveRecord::RecordInvalid
       errors = error.record.errors.full_messages
-      return 'uniqueness' if errors.count == 1 && errors[0].end_with?('has already been taken')
+      if errors.count == 1 &&
+         errors[0].end_with?('has already been taken')
+        return 'uniqueness'
+      end
     end
     "invalidValue"
   end

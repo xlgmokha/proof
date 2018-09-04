@@ -12,7 +12,7 @@ json.attributes [
     "name": "displayName",
     "type": "string",
     "multiValued": false,
-    "description": "A human-readable name for the Group.  REQUIRED.",
+    "description": "A human-readable name for the Group.",
     "required": false,
     "caseExact": false,
     "mutability": "readWrite",
@@ -45,7 +45,7 @@ json.attributes [
           Group
         ],
         "multiValued": false,
-        "description": "The URI corresponding to a SCIM resource that is a member of this Group.",
+        "description": "The URI corresponding to a SCIM resource.",
         "required": false,
         "caseExact": false,
         "mutability": "immutable",
@@ -56,7 +56,7 @@ json.attributes [
         "name": "type",
         "type": "string",
         "multiValued": false,
-        "description": "A label indicating the type of resource, e.g., 'User' or 'Group'.",
+        "description": "A label indicating the type of resource",
         "required": false,
         "caseExact": false,
         "canonicalValues": %w[

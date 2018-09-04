@@ -9,7 +9,9 @@ module Scim
       end
 
       def show
-        render partial: 'schema', formats: :scim, status: :ok, locals: { schema: current_schema }
+        render partial: 'schema', formats: :scim, status: :ok, locals: {
+          schema: current_schema
+        }
       end
 
       private
