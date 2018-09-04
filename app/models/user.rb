@@ -47,7 +47,7 @@ class User < ApplicationRecord
 
   private
 
-  def trusted_attributes_for(request)
+  def trusted_attributes_for(_request)
     {
       id: uuid,
       email: email,
