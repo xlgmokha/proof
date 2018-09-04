@@ -33,6 +33,7 @@ class ApplicationController < ActionController::Base
 
   def authenticate_mfa!
     return unless current_user?
-    redirect_to mfa_path unless current_user.tfa.valid_session?(session[:mfa])
+    mfa = current_user.tfa
+    redirect_to new_mfa_path unless mfa.valid_session?(session[:mfa])
   end
 end

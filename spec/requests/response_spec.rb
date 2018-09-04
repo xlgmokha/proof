@@ -60,7 +60,7 @@ RSpec.describe "/response" do
 
         before { get '/response' }
 
-        specify { expect(response).to redirect_to(mfa_path) }
+        specify { expect(response).to redirect_to(new_mfa_path) }
       end
     end
   end
