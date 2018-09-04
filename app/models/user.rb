@@ -52,7 +52,6 @@ class User < ApplicationRecord
       id: uuid,
       email: email,
       created_at: created_at,
-      access_token: access_token(request.issuer),
     }
   end
 end
