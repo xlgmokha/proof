@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_09_05_005659) do
+ActiveRecord::Schema.define(version: 2018_09_05_011437) do
+
+  create_table "clients", force: :cascade do |t|
+    t.string "uuid", null: false
+    t.string "name", null: false
+    t.string "secret", null: false
+    t.string "redirect_uri", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["uuid"], name: "index_clients_on_uuid"
+  end
 
   create_table "sessions", force: :cascade do |t|
     t.string "session_id", null: false

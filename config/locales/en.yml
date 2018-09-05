@@ -5,6 +5,10 @@ en:
       loading: Loading
       login: Login
   my:
+    clients:
+      new:
+        cancel: Cancel
+        enable: Enable
     mfas:
       new:
         cancel: Cancel

@@ -1,0 +1,20 @@
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <h1>Client</h1>
+      <div data-controller="clients--new">
+        <p>Client Id: <%= @client.to_param %></p>
+        <p>Secret: <%= @client.secret %></p>
+
+        <%= form_for @client, url: my_clients_path, method: :post do |form| %>
+          <%= form.label :name %>
+          <%= form.text_field :name, data: { target: 'clients--new.name' } %>
+          <%= form.label :redirect_uri %>
+          <%= form.url_field :redirect_uri, data: { target: 'clients--new.redirect_uri' } %>
+          <%= form.submit t(".enable"), class: 'btn btn-primary', data: { disable_with: 'Saving…' } %>
+          <%= link_to t(".cancel"), my_clients_path, class: 'btn' %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

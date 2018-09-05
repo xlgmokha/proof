@@ -11,7 +11,9 @@ Rails.application.routes.draw do
   namespace :my do
     resource :dashboard, only: [:show]
     resource :mfa, only: [:show, :new, :edit, :create, :destroy]
+    resources :clients, only: [:index, :new, :create]
   end
+
   namespace :scim do
     namespace :v2, defaults: { format: :scim } do
       post ".search", to: "search#index"
