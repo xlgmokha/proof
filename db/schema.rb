@@ -15,9 +15,11 @@ ActiveRecord::Schema.define(version: 2018_09_05_020708) do
   create_table "authorizations", force: :cascade do |t|
     t.integer "user_id"
     t.integer "client_id"
+    t.string "code", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["client_id"], name: "index_authorizations_on_client_id"
+    t.index ["code"], name: "index_authorizations_on_code"
     t.index ["user_id"], name: "index_authorizations_on_user_id"
   end
 
