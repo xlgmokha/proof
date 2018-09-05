@@ -13,7 +13,9 @@ class Client < ApplicationRecord
     uuid
   end
 
-  def redirect_uri_path(code:)
-    redirect_uri + '?code=' + code
+  def redirect_uri_path(code:, state: nil)
+    result = redirect_uri + '?code=' + code
+    result += "&state=#{state}" if state.present?
+    result
   end
 end

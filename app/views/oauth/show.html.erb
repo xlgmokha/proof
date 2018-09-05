@@ -6,6 +6,7 @@
 
       <%= form_for :authorization, url: oauth_index_path, method: :post do |form| %>
         <%= hidden_field_tag :client_id, @client.to_param %>
+        <%= hidden_field_tag :state, params[:state] %>
         <%= form.button t('.authorize'), type: 'submit', class: 'btn btn-primary', data: { disable_with: t('.loading') } %>
       <% end %>
     </div>
