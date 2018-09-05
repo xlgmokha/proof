@@ -1,4 +1,9 @@
 FactoryBot.define do
+  factory :authorization do
+    user
+    client
+  end
+
   factory :client do
     uuid { SecureRandom.uuid }
     name { FFaker::Name.name }

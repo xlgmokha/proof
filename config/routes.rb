@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   resource :mfa, only: [:new, :create]
   resource :response, only: [:show]
   resource :session, only: [:new, :create, :destroy]
+  resources :oauth, only: [:show]
   resources :registrations, only: [:new, :create]
 
   namespace :my do

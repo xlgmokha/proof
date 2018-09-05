@@ -1,0 +1,11 @@
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <h1>Authorize</h1>
+      <p>Do you authorize <%= @client.name %> to access your data?</p>
+      <%= form_for @authorization, url: oauth_path, method: :post do |form| %>
+        <%= form.button t('.authorize'), type: 'submit', class: 'btn btn-primary', data: { disable_with: t('.loading') } %>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -2,6 +2,7 @@
 
 class Client < ApplicationRecord
   has_secure_token :secret
+  has_many :authorizations
 
   after_initialize do
     self.uuid = SecureRandom.uuid unless uuid
