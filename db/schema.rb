@@ -16,6 +16,7 @@ ActiveRecord::Schema.define(version: 2018_09_05_020708) do
     t.integer "user_id"
     t.integer "client_id"
     t.string "code", null: false
+    t.datetime "expired_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["client_id"], name: "index_authorizations_on_client_id"
