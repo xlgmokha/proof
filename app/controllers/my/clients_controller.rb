@@ -2,7 +2,9 @@
 
 module My
   class ClientsController < ApplicationController
-    def index; end
+    def index
+      @clients = Client.all
+    end
 
     def new
       @client = Client.new

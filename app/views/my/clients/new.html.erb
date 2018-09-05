@@ -7,10 +7,14 @@
         <p>Secret: <%= @client.secret %></p>
 
         <%= form_for @client, url: my_clients_path, method: :post do |form| %>
-          <%= form.label :name %>
-          <%= form.text_field :name, data: { target: 'clients--new.name' } %>
-          <%= form.label :redirect_uri %>
-          <%= form.url_field :redirect_uri, data: { target: 'clients--new.redirect_uri' } %>
+          <div class="form-group">
+            <%= form.label :name %>
+            <%= form.text_field :name, data: { target: 'clients--new.name' } %>
+          </div>
+          <div class="form-group">
+            <%= form.label :redirect_uri %>
+            <%= form.url_field :redirect_uri, data: { target: 'clients--new.redirect_uri' } %>
+          </div>
           <%= form.submit t(".enable"), class: 'btn btn-primary', data: { disable_with: 'Saving…' } %>
           <%= link_to t(".cancel"), my_clients_path, class: 'btn' %>
         <% end %>
