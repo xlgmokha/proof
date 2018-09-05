@@ -16,15 +16,15 @@ class Mfa
   end
 
   def build_secret
-    user.tfa_secret = ::ROTP::Base32.random_base32
+    user.mfa_secret = ::ROTP::Base32.random_base32
   end
 
   def disable!
-    user.update!(tfa_secret: nil)
+    user.update!(mfa_secret: nil)
   end
 
   def secret
-    user.tfa_secret
+    user.mfa_secret
   end
 
   def current_totp

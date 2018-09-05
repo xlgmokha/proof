@@ -5,7 +5,7 @@ FactoryBot.define do
     password { FFaker::Internet.password }
 
     trait :mfa_configured do
-      tfa_secret { ::ROTP::Base32.random_base32 }
+      mfa_secret { ::ROTP::Base32.random_base32 }
     end
   end
 end

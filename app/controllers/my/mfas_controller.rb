@@ -12,7 +12,7 @@ module My
     end
 
     def create
-      current_user.update!(params.require(:user).permit(:tfa_secret))
+      current_user.update!(params.require(:user).permit(:mfa_secret))
       redirect_to my_dashboard_path, notice: "successfully updated!"
     end
 

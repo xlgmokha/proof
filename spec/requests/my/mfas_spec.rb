@@ -38,9 +38,9 @@ RSpec.describe '/my/mfa' do
     describe "POST /my/mfa" do
       context "when the secret is valid" do
         let(:secret) { SecureRandom.hex(20) }
-        before { post '/my/mfa', params: { user: { tfa_secret: secret } } }
+        before { post '/my/mfa', params: { user: { mfa_secret: secret } } }
 
-        specify { expect(current_user.reload.tfa_secret).to eql(secret) }
+        specify { expect(current_user.reload.mfa_secret).to eql(secret) }
         specify { expect(response).to redirect_to(my_dashboard_path) }
         specify { expect(flash[:notice]).to include("successfully updated!") }
       end
@@ -52,7 +52,7 @@ RSpec.describe '/my/mfa' do
 
         before { delete '/my/mfa' }
 
-        specify { expect(current_user.reload.tfa_secret).to be_nil }
+        specify { expect(current_user.reload.mfa_secret).to be_nil }
         specify { expect(response).to redirect_to(my_dashboard_path) }
         specify { expect(flash[:notice]).to include("MFA has been disabled") }
       end
