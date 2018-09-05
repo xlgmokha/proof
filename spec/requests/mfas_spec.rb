@@ -14,7 +14,7 @@ RSpec.describe "/mfa" do
 
     describe "POST /mfa" do
       context "when the code is correct" do
-        let(:correct_code) { current_user.tfa.current_totp }
+        let(:correct_code) { current_user.mfa.current_totp }
         before { post '/mfa', params: { mfa: { code: correct_code } } }
 
         specify { expect(response).to redirect_to(response_path) }

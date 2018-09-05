@@ -18,8 +18,8 @@ class User < ApplicationRecord
     request.trusted? ? trusted_attributes_for(request) : {}
   end
 
-  def tfa
-    Tfa.new(self)
+  def mfa
+    Mfa.new(self)
   end
 
   def access_token(audience)

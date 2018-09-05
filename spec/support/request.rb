@@ -3,11 +3,11 @@ RSpec.configure do |config|
     def http_login(user, skip_mfa: false)
       post '/session', params: { user: { email: user.email, password: user.password } }
       return if skip_mfa
-      mfa_login(user) if user.tfa.setup?
+      mfa_login(user) if user.mfa.setup?
     end
 
     def mfa_login(user)
-      post '/mfa', params: { mfa: { code: user.tfa.current_totp } }
+      post '/mfa', params: { mfa: { code: user.mfa.current_totp } }
     end
   end)
 end

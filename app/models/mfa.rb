@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Tfa
+class Mfa
   attr_reader :user
 
   def initialize(user)

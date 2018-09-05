@@ -6,7 +6,7 @@ class MfasController < ApplicationController
   def new; end
 
   def create
-    if current_user.tfa.authenticate(secure_params[:code])
+    if current_user.mfa.authenticate(secure_params[:code])
       session[:mfa] = { issued_at: Time.now.utc.to_i }
       redirect_to response_path
     else
