@@ -12,4 +12,8 @@ class Client < ApplicationRecord
   def to_param
     uuid
   end
+
+  def redirect_uri_path(code:)
+    redirect_uri + '?code=' + code
+  end
 end
