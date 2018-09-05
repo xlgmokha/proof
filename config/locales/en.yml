@@ -1,5 +1,12 @@
 ---
 en:
+  application:
+    navbar:
+      clients: Clients
+      home: Home
+      logout: Logout
+      mfa: MFA
+      proof: Proof
   mfas:
     new:
       loading: Loading
