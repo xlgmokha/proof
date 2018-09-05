@@ -6,6 +6,8 @@ en:
       login: Login
   my:
     clients:
+      index:
+        new: New
       new:
         cancel: Cancel
         enable: Enable
