@@ -25,8 +25,8 @@ class OauthsController < ApplicationController
       @access_token, @refresh_token = authorization.exchange
     elsif token_params[:grant_type] == 'refresh_token'
       refresh_token = token_params[:refresh_token]
-      claims = Token.claims_for(refresh_token, token_type: :refresh)
-      @access_token, @refresh_token = Token.find_by!(uuid: claims[:jti]).exchange
+      jti = Token.claims_for(refresh_token, token_type: :refresh)[:jti]
+      @access_token, @refresh_token = Token.find_by!(uuid: jti).exchange
     end
     render formats: :json
   rescue StandardError => error

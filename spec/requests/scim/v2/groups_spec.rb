@@ -3,7 +3,7 @@ require 'rails_helper'
 describe "/scim/v2/groups" do
   context "when authenticated" do
     let(:user) { create(:user) }
-    let(:token) { create(:access_token, subject: user, authorization: create(:authorization, user: user)) }
+    let(:token) { create(:access_token, subject: user) }
     let(:headers) do
       {
         'Authorization' => "Bearer #{token.to_jwt}",

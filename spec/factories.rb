@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :token do
     uuid { SecureRandom.uuid }
-    association :authorization
+    authorization { nil }
     association :audience, factory: :client
     association :subject, factory: :user
 

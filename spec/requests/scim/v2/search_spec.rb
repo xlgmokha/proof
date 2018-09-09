@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe '/scim/v1/.search' do
   let(:user) { create(:user) }
-  let(:token) { create(:access_token, subject: user, authorization: create(:authorization, user: user)).to_jwt }
+  let(:token) { create(:access_token, subject: user).to_jwt }
   let(:headers) do
     {
       'Authorization' => "Bearer #{token}",
