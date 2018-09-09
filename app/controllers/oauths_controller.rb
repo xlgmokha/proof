@@ -22,11 +22,6 @@ class OauthsController < ApplicationController
     response.headers['Cache-Control'] = 'no-store'
     response.headers['Pragma'] = 'no-cache'
     Authorization.find_by!(code: params[:code]).revoke!
-    render json: {
-      access_token: SecureRandom.hex(20),
-      token_type: 'access',
-      expires_in: 1.hour.to_i,
-      refresh_token: SecureRandom.hex(20)
-    }, status: :ok
+    render formats: :json
   end
 end
