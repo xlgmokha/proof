@@ -127,3 +127,4 @@ search:
 #
 # <%# I18n::Tasks.add_scanner 'I18n::Tasks::Scanners::PatternMapper',
 #       patterns: [['\bSpree\.t[( ]\s*%{key}', 'spree.%{key}']] %>
+<% I18n::Tasks.add_scanner('I18n::Tasks::Scanners::PatternMapper', only: %w(*.js), patterns: [['i18n.translate\(%{key}\)', '%{key}']]) %>
