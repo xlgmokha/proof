@@ -51,7 +51,7 @@ ActiveRecord::Schema.define(version: 2018_09_09_173139) do
     t.string "audience_type"
     t.integer "audience_id"
     t.integer "token_type", default: 0
-    t.datetime "expires_at"
+    t.datetime "expired_at"
     t.datetime "revoked_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

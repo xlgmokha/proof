@@ -5,7 +5,7 @@ class CreateTokens < ActiveRecord::Migration[5.2]
       t.references :subject, polymorphic: true
       t.references :audience, polymorphic: true
       t.integer :token_type, default: 0
-      t.datetime :expires_at
+      t.datetime :expired_at
       t.datetime :revoked_at
 
       t.timestamps
