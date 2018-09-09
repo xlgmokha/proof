@@ -24,6 +24,7 @@ describe SessionsController do
         before :each do
           url, saml_params = post_binding.serialize(Saml::Kit::AuthenticationRequest.builder)
           post url, params: saml_params
+          follow_redirect!
         end
 
         specify { expect(response).to have_http_status(:ok) }
@@ -87,6 +88,7 @@ describe SessionsController do
       context "when a registered SAML request is provided" do
         before { allow(registry).to receive(:metadata_for).with(issuer).and_return(sp_metadata) }
         before { get redirect_binding.serialize(Saml::Kit::AuthenticationRequest.builder)[0] }
+        before { follow_redirect! }
 
         specify { expect(response).to have_http_status(:ok) }
         specify { expect(response.body).to include("Sending Response to Service Provider") }

@@ -19,7 +19,7 @@ class SessionsController < ApplicationController
     @saml_request = binding.deserialize(saml_params)
     if @saml_request.valid?
       session[:saml] = { params: saml_params.to_h, xml: @saml_request.to_xml }
-      return post_back(@saml_request, current_user) if current_user?
+      return redirect_to response_path if current_user?
     else
       render_error(:forbidden, model: @saml_request)
     end
@@ -66,17 +66,6 @@ class SessionsController < ApplicationController
   end
 
   private
-
-  def post_back(saml_request, user)
-    relay_state = session[:saml][:params][:RelayState]
-    @url, @saml_params = saml_request.response_for(
-      user, binding: :http_post, relay_state: relay_state
-    ) do |builder|
-      @saml_response_builder = builder
-    end
-    login(user)
-    render :create
-  end
 
   def login(user)
     saml_data = session[:saml]
