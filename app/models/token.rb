@@ -1,5 +1,6 @@
 class Token < ApplicationRecord
   enum token_type: { access: 0, refresh: 1 }
+  belongs_to :authorization
   belongs_to :subject, polymorphic: true
   belongs_to :audience, polymorphic: true
 
@@ -8,7 +9,9 @@ class Token < ApplicationRecord
 
   after_initialize do |x|
     x.uuid = SecureRandom.uuid if x.uuid.nil?
-    x.expired_at = 1.hour.from_now if x.expired_at.nil?
+    if x.expired_at.nil?
+      x.expired_at = access? ? 1.hour.from_now  : 1.day.from_now
+    end
   end
 
   def revoke!

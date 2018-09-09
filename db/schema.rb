@@ -46,6 +46,7 @@ ActiveRecord::Schema.define(version: 2018_09_09_173139) do
 
   create_table "tokens", force: :cascade do |t|
     t.string "uuid"
+    t.integer "authorization_id"
     t.string "subject_type"
     t.integer "subject_id"
     t.string "audience_type"
@@ -56,6 +57,7 @@ ActiveRecord::Schema.define(version: 2018_09_09_173139) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["audience_type", "audience_id"], name: "index_tokens_on_audience_type_and_audience_id"
+    t.index ["authorization_id"], name: "index_tokens_on_authorization_id"
     t.index ["subject_type", "subject_id"], name: "index_tokens_on_subject_type_and_subject_id"
     t.index ["uuid"], name: "index_tokens_on_uuid", unique: true
   end

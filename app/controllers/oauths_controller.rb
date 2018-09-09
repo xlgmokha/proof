@@ -21,11 +21,18 @@ class OauthsController < ApplicationController
   def token
     response.headers['Cache-Control'] = 'no-store'
     response.headers['Pragma'] = 'no-cache'
-    Authorization.find_by!(code: params[:code]).revoke!
-    #@access_token, @refresh_token = Authorization.find_by!(code: params[:code]).exchange
+    if token_params[:grant_type] == 'authorization_code'
+      @access_token, @refresh_token = Authorization.find_by!(code: token_params[:code]).exchange
+    end
     render formats: :json
   rescue StandardError => error
     Rails.logger.error(error)
     render "bad_request", formats: :json, status: :bad_request
+  end
+
+  private
+
+  def token_params
+    params.permit(:grant_type, :code)
   end
 end
