@@ -7,6 +7,9 @@ en:
       logout: Logout
       mfa: MFA
       proof: Proof
+  layouts:
+    application:
+      title: Proof
   mfas:
     new:
       loading: Loading
