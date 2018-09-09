@@ -3,12 +3,7 @@
 class ResponsesController < ApplicationController
   def show
     if session[:saml].present?
-      xml = session[:saml][:xml]
-      saml = if session[:saml][:type] == 'authnrequest'
-               Saml::Kit::AuthenticationRequest.new(xml)
-             else
-               Saml::Kit::LogoutRequest.new(xml)
-             end
+      saml = Saml::Kit::Document.to_saml_document(session[:saml][:xml])
       return render_error(:forbidden, model: saml) if saml.invalid?
       post_back(saml, session[:saml][:params][:RelayState])
     else
