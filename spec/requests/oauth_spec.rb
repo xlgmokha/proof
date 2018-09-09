@@ -69,8 +69,8 @@ RSpec.describe '/oauth' do
 
         let(:json) { JSON.parse(response.body, symbolize_names: true) }
         specify { expect(json[:access_token]).to be_present }
-        specify { expect(json[:token_type]).to be_present }
-        specify { expect(json[:expires_in]).to be_present }
+        specify { expect(json[:token_type]).to eql('Bearer') }
+        specify { expect(json[:expires_in]).to eql(1.hour.to_i) }
         specify { expect(json[:refresh_token]).to be_present }
         specify { expect(authorization.reload).to be_revoked }
       end
