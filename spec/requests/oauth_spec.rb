@@ -55,12 +55,9 @@ RSpec.describe '/oauth' do
   describe "POST /oauth/token" do
     context "when exchanging a code for a token" do
       context "when the code is still valid" do
-        let(:authorization) { create(:authorization, client: client, user: user) }
-        let(:client) { create(:client) }
-        let(:user) { create(:user) }
-        let(:code) { authorization.code }
+        let(:authorization) { create(:authorization) }
 
-        before { post '/oauth/token', params: { grant_type: 'authorization_code', code: code } }
+        before { post '/oauth/token', params: { grant_type: 'authorization_code', code: authorization.code } }
 
         specify { expect(response).to have_http_status(:ok) }
         specify { expect(response.headers['Content-Type']).to include('application/json') }
@@ -73,6 +70,20 @@ RSpec.describe '/oauth' do
         specify { expect(json[:expires_in]).to eql(1.hour.to_i) }
         specify { expect(json[:refresh_token]).to be_present }
         specify { expect(authorization.reload).to be_revoked }
+      end
+
+      context "when the code is expired" do
+        let(:authorization) { create(:authorization, expired_at: 1.second.ago) }
+
+        before { post '/oauth/token', params: { grant_type: 'authorization_code', code: authorization.code } }
+
+        specify { expect(response).to have_http_status(:bad_request) }
+        specify { expect(response.headers['Content-Type']).to include('application/json') }
+        specify { expect(response.headers['Cache-Control']).to include('no-store') }
+        specify { expect(response.headers['Pragma']).to eql('no-cache') }
+
+        let(:json) { JSON.parse(response.body, symbolize_names: true) }
+        specify { expect(json[:error]).to eql('invalid_request') }
       end
 
       context "when the code is not known" do

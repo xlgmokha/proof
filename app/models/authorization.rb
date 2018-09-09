@@ -6,6 +6,10 @@ class Authorization < ApplicationRecord
   belongs_to :client
   has_many :tokens
 
+  scope :active, ->{ where.not(id: revoked.or(where(id: expired))) }
+  scope :revoked, ->{ where('revoked_at < ?', DateTime.now) }
+  scope :expired, ->{ where('expired_at < ?', DateTime.now) }
+
   after_initialize do
     self.expired_at = 10.minutes.from_now unless expired_at.present?
   end
