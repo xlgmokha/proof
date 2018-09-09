@@ -72,6 +72,7 @@ RSpec.describe '/oauth' do
         specify { expect(json[:token_type]).to be_present }
         specify { expect(json[:expires_in]).to be_present }
         specify { expect(json[:refresh_token]).to be_present }
+        specify { expect(authorization.reload).to be_revoked }
       end
     end
   end

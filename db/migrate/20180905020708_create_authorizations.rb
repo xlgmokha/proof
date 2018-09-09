@@ -7,6 +7,7 @@ class CreateAuthorizations < ActiveRecord::Migration[5.2]
       t.references :client, foreign_key: true
       t.string :code, null: false, index: true
       t.datetime :expired_at, null: false
+      t.datetime :revoked_at
 
       t.timestamps
     end

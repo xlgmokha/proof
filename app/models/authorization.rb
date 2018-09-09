@@ -8,4 +8,12 @@ class Authorization < ApplicationRecord
   after_initialize do
     self.expired_at = 10.minutes.from_now unless expired_at.present?
   end
+
+  def revoke!
+    update!(revoked_at: Time.now)
+  end
+
+  def revoked?
+    revoked_at.present?
+  end
 end

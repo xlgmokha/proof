@@ -21,6 +21,7 @@ class OauthsController < ApplicationController
   def token
     response.headers['Cache-Control'] = 'no-store'
     response.headers['Pragma'] = 'no-cache'
+    Authorization.find_by!(code: params[:code]).revoke!
     render json: {
       access_token: SecureRandom.hex(20),
       token_type: 'access',
