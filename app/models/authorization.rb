@@ -10,6 +10,7 @@ class Authorization < ApplicationRecord
   end
 
   def revoke!
+    raise 'already revoked' if revoked?
     update!(revoked_at: Time.now)
   end
 
