@@ -26,6 +26,8 @@ en:
         cancel: Cancel
         enable: Enable
   oauths:
+    bad_request:
+      invalid_request: invalid_request
     show:
       authorize: Authorize
       authorize_prompt_html: Do you authorize <strong>%{name}</strong> to access your data?
