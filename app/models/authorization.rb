@@ -18,8 +18,8 @@ class Authorization < ApplicationRecord
     transaction do
       revoke!
       [
-        tokens.create(subject: user, audience: client, token_type: :access),
-        tokens.create(subject: user, audience: client, token_type: :refresh),
+        tokens.create!(subject: user, audience: client, token_type: :access),
+        tokens.create!(subject: user, audience: client, token_type: :refresh),
       ]
     end
   end

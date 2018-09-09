@@ -23,6 +23,10 @@ class OauthsController < ApplicationController
     if token_params[:grant_type] == 'authorization_code'
       authorization = Authorization.active.find_by!(code: token_params[:code])
       @access_token, @refresh_token = authorization.exchange
+    elsif token_params[:grant_type] == 'refresh_token'
+      refresh_token = token_params[:refresh_token]
+      claims = Token.claims_for(refresh_token, token_type: :refresh)
+      @access_token, @refresh_token = Token.find_by!(uuid: claims[:jti]).exchange
     end
     render formats: :json
   rescue StandardError => error
@@ -33,6 +37,6 @@ class OauthsController < ApplicationController
   private
 
   def token_params
-    params.permit(:grant_type, :code)
+    params.permit(:grant_type, :code, :refresh_token)
   end
 end

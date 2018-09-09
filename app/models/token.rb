@@ -2,7 +2,7 @@
 
 class Token < ApplicationRecord
   enum token_type: { access: 0, refresh: 1 }
-  belongs_to :authorization
+  belongs_to :authorization, optional: true
   belongs_to :subject, polymorphic: true
   belongs_to :audience, polymorphic: true
 
@@ -20,6 +20,10 @@ class Token < ApplicationRecord
     update!(revoked_at: Time.now)
   end
 
+  def revoked?
+    revoked_at.present?
+  end
+
   def claims(custom_claims = {})
     {
       aud: audience.to_param,
@@ -35,6 +39,16 @@ class Token < ApplicationRecord
 
   def to_jwt(custom_claims = {})
     @to_jwt ||= BearerToken.new.encode(claims(custom_claims))
+  end
+
+  def exchange
+    transaction do
+      revoke!
+      [
+        Token.create!(subject: subject, audience: audience, token_type: :access),
+        Token.create!(subject: subject, audience: audience, token_type: :refresh),
+      ]
+    end
   end
 
   class << self

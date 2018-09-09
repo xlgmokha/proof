@@ -98,5 +98,25 @@ RSpec.describe '/oauth' do
         specify { expect(json[:error]).to eql('invalid_request') }
       end
     end
+
+    context "when exchanging a refresh token for a new access token" do
+      context "when the refresh token is still active" do
+        let(:refresh_token) { create(:refresh_token) }
+
+        before { post '/oauth/token', params: { grant_type: 'refresh_token', refresh_token: refresh_token.to_jwt } }
+
+        specify { expect(response).to have_http_status(:ok) }
+        specify { expect(response.headers['Content-Type']).to include('application/json') }
+        specify { expect(response.headers['Cache-Control']).to include('no-store') }
+        specify { expect(response.headers['Pragma']).to eql('no-cache') }
+
+        let(:json) { JSON.parse(response.body, symbolize_names: true) }
+        specify { expect(json[:access_token]).to be_present }
+        specify { expect(json[:token_type]).to eql('Bearer') }
+        specify { expect(json[:expires_in]).to eql(1.hour.to_i) }
+        specify { expect(json[:refresh_token]).to be_present }
+        specify { expect(refresh_token.reload).to be_revoked }
+      end
+    end
   end
 end
