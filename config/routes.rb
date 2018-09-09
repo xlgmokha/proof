@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   resource :session, only: [:new, :create, :destroy]
   resource :oauth, only: [:show, :create] do
     get :authorize, to: "oauths#show"
+    post :token, to: "oauths#token"
   end
 
   resources :registrations, only: [:new, :create]

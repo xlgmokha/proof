@@ -51,4 +51,28 @@ RSpec.describe '/oauth' do
       end
     end
   end
+
+  describe "POST /oauth/token" do
+    context "when exchanging a code for a token" do
+      context "when the code is still valid" do
+        let(:authorization) { create(:authorization, client: client, user: user) }
+        let(:client) { create(:client) }
+        let(:user) { create(:user) }
+        let(:code) { authorization.code }
+
+        before { post '/oauth/token', params: { grant_type: 'authorization_code', code: code } }
+
+        specify { expect(response).to have_http_status(:ok) }
+        specify { expect(response.headers['Content-Type']).to include('application/json') }
+        specify { expect(response.headers['Cache-Control']).to include('no-store') }
+        specify { expect(response.headers['Pragma']).to eql('no-cache') }
+
+        let(:json) { JSON.parse(response.body, symbolize_names: true) }
+        specify { expect(json[:access_token]).to be_present }
+        specify { expect(json[:token_type]).to be_present }
+        specify { expect(json[:expires_in]).to be_present }
+        specify { expect(json[:refresh_token]).to be_present }
+      end
+    end
+  end
 end
