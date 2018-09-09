@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class ApplicationController < ActionController::Base
-  include SamlRespondable
   protect_from_forgery with: :exception
   before_action :authenticate!
   before_action :authenticate_mfa!
