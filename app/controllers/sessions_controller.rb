@@ -41,22 +41,19 @@ class SessionsController < ApplicationController
   def destroy
     binding = binding_for(:http_post, session_url)
     if saml_params[:SAMLRequest].present?
-      saml_request = binding.deserialize(saml_params).tap do |saml|
-        raise ActiveRecord::RecordInvalid.new(saml) if saml.invalid?
-      end
-      raise 'Unknown NameId' unless current_user.uuid == saml_request.name_id
+      saml = binding.deserialize(saml_params)
+      raise ActiveRecord::RecordInvalid.new(saml) if saml.invalid?
+      raise 'Unknown NameId' unless current_user.uuid == saml.name_id
 
-      @url, @saml_params = saml_request.response_for(
+      @url, @saml_params = saml.response_for(
         binding: :http_post, relay_state: saml_params[:RelayState]
       ) do |builder|
         @saml_response_builder = builder
       end
       reset_session
     elsif saml_params[:SAMLResponse].present?
-      saml_request = binding.deserialize(saml_params)
-      if saml_request.invalid?
-        raise ActiveRecord::RecordInvalid.new(saml_request)
-      end
+      saml = binding.deserialize(saml_params)
+      raise ActiveRecord::RecordInvalid.new(saml) if saml.invalid?
       reset_session
       redirect_to new_session_path
     else
