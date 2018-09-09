@@ -22,7 +22,8 @@ class OauthsController < ApplicationController
     response.headers['Cache-Control'] = 'no-store'
     response.headers['Pragma'] = 'no-cache'
     if token_params[:grant_type] == 'authorization_code'
-      @access_token, @refresh_token = Authorization.active.find_by!(code: token_params[:code]).exchange
+      authorization = Authorization.active.find_by!(code: token_params[:code])
+      @access_token, @refresh_token = authorization.exchange
     end
     render formats: :json
   rescue StandardError => error
