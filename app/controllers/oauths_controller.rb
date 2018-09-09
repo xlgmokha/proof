@@ -2,7 +2,6 @@
 
 class OauthsController < ApplicationController
   skip_before_action :authenticate!, only: [:token]
-  skip_before_action :authenticate_mfa!, only: [:token]
 
   def show
     return render_error(:not_found) unless params[:response_type] == 'code'
