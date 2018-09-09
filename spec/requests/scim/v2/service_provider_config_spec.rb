@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe "/ServiceProviderConfig" do
   let(:user) { create(:user) }
-  let(:token) { user.access_token('rspec') }
+  let(:token) { create(:access_token, subject: user, authorization: create(:authorization, user: user)).to_jwt }
   let(:headers) do
     {
       'Authorization' => "Bearer #{token}",

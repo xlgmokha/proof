@@ -22,10 +22,6 @@ class User < ApplicationRecord
     Mfa.new(self)
   end
 
-  def access_token(audience)
-    BearerToken.new.encode(sub: uuid, aud: audience)
-  end
-
   def to_param
     uuid
   end
