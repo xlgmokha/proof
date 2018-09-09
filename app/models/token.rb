@@ -1,16 +1,18 @@
+# frozen_string_literal: true
+
 class Token < ApplicationRecord
   enum token_type: { access: 0, refresh: 1 }
   belongs_to :authorization
   belongs_to :subject, polymorphic: true
   belongs_to :audience, polymorphic: true
 
-  scope :expired, ->{ where('expired_at < ?', Time.now) }
-  scope :revoked, ->{ where('revoked_at < ?', Time.now) }
+  scope :expired, -> { where('expired_at < ?', Time.now) }
+  scope :revoked, -> { where('revoked_at < ?', Time.now) }
 
   after_initialize do |x|
     x.uuid = SecureRandom.uuid if x.uuid.nil?
     if x.expired_at.nil?
-      x.expired_at = access? ? 1.hour.from_now  : 1.day.from_now
+      x.expired_at = access? ? 1.hour.from_now : 1.day.from_now
     end
   end
 
