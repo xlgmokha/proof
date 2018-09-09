@@ -9,7 +9,7 @@
         <div class="form-group">
           <%= form.password_field :password, class: 'form-control', placeholder: User.human_attribute_name(:password), required: :required, data: { target: 'sessions--new.password', action: "keyup->sessions--new#validate" } %>
         </div>
-        <%= form.button t('.login'), type: 'submit', class: 'btn btn-primary', data: { disable_with: t('.loading'), target: 'sessions--new.submit' } %>
+        <%= form.button t('.login'), type: 'submit', class: 'btn btn-primary', data: { disable_with: t('loading'), target: 'sessions--new.submit' } %>
         <%= link_to "Register", new_registration_path %>
       <% end %>
 

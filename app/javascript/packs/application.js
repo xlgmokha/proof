@@ -10,7 +10,7 @@
 import 'bootstrap/dist/js/bootstrap';
 import { Application } from 'stimulus';
 import { definitionsFromContext } from 'stimulus/webpack-helpers';
-import '../application.scss'
+import '../application.scss';
 
 const application = Application.start();
 const context = require.context('controllers', true, /.js$/);

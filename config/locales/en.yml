@@ -10,9 +10,9 @@ en:
   layouts:
     application:
       title: Proof
+  loading: Loading…
   mfas:
     new:
-      loading: Loading
       login: Login
   my:
     clients:
@@ -25,15 +25,15 @@ en:
       new:
         cancel: Cancel
         enable: Enable
-  oauth:
+  oauths:
     show:
       authorize: Authorize
-      loading: Loading
+      authorize_prompt_html: Do you authorize <strong>%{name}</strong> to access your data?
+      title: Authorize
   registrations:
     new:
-      loading: Loading
       register: Register
+      title: Register
   sessions:
     new:
-      loading: Loading…
       login: Login

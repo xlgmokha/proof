@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
-class OauthController < ApplicationController
+class OauthsController < ApplicationController
   def show
-    @client = Client.find_by!(uuid: params[:id])
+    return render_error(:not_found) unless params[:response_type] == 'code'
+    @client = Client.find_by!(uuid: params[:client_id])
   end
 
   def create
