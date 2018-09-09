@@ -12,6 +12,12 @@ describe SessionsController do
 
   before { Saml::Kit.configuration.registry = registry }
 
+  def session_id_from(response)
+    cookies = response.headers['Set-Cookie']
+    return if cookies.nil?
+    cookies.split("\;")[0].split("=")[1]
+  end
+
   describe "POST /session/new" do
     let(:post_binding) { Saml::Kit::Bindings::HttpPost.new(location: new_session_url) }
 
@@ -184,6 +190,7 @@ describe SessionsController do
     context "when receiving a logout request" do
       before :each do
         http_login(user)
+        @session_id = session_id_from(response)
 
         allow(registry).to receive(:metadata_for).with(issuer).and_return(sp_metadata)
         builder = Saml::Kit::LogoutRequest.builder(user) do |x|
@@ -192,11 +199,14 @@ describe SessionsController do
         end
         url, saml_params = post_binding.serialize(builder)
         post url, params: saml_params
+        follow_redirect!
       end
 
       specify { expect(response).to have_http_status(:ok) }
       specify { expect(response.body).to include("SAMLResponse") }
       specify { expect(response.body).to include(sp_metadata.single_logout_service_for(binding: :http_post).location) }
+      specify { expect(session_id_from(response)).to be_present }
+      specify { expect(session_id_from(response)).not_to eql(@session_id) }
     end
 
     context "when receiving a logout response" do
@@ -215,12 +225,6 @@ describe SessionsController do
 
     context "when logging out of the IDP only" do
       let(:user) { create(:user) }
-
-      def session_id_from(response)
-        cookies = response.headers['Set-Cookie']
-        return if cookies.nil?
-        cookies.split("\;")[0].split("=")[1]
-      end
 
       before :each do
         http_login(user)

@@ -18,7 +18,11 @@ class SessionsController < ApplicationController
     )
     @saml_request = binding.deserialize(saml_params)
     if @saml_request.valid?
-      session[:saml] = { params: saml_params.to_h, xml: @saml_request.to_xml }
+      session[:saml] = {
+        type: 'authnrequest',
+        params: saml_params.to_h,
+        xml: @saml_request.to_xml
+      }
       return redirect_to response_path if current_user?
     else
       render_error(:forbidden, model: @saml_request)
@@ -44,13 +48,12 @@ class SessionsController < ApplicationController
       saml = binding.deserialize(saml_params)
       raise ActiveRecord::RecordInvalid.new(saml) if saml.invalid?
       raise 'Unknown NameId' unless current_user.uuid == saml.name_id
-
-      @url, @saml_params = saml.response_for(
-        binding: :http_post, relay_state: saml_params[:RelayState]
-      ) do |builder|
-        @saml_response_builder = builder
-      end
-      reset_session
+      session[:saml] = {
+        type: 'logout_request',
+        params: saml_params.to_h,
+        xml: saml.to_xml
+      }
+      redirect_to response_path
     elsif saml_params[:SAMLResponse].present?
       saml = binding.deserialize(saml_params)
       raise ActiveRecord::RecordInvalid.new(saml) if saml.invalid?

@@ -3,7 +3,12 @@
 class ResponsesController < ApplicationController
   def show
     if session[:saml].present?
-      saml = Saml::Kit::AuthenticationRequest.new(session[:saml][:xml])
+      xml = session[:saml][:xml]
+      saml = if session[:saml][:type] == 'authnrequest'
+               Saml::Kit::AuthenticationRequest.new(xml)
+             else
+               Saml::Kit::LogoutRequest.new(xml)
+             end
       return render_error(:forbidden, model: saml) if saml.invalid?
       post_back(saml, session[:saml][:params][:RelayState])
     else
@@ -14,10 +19,24 @@ class ResponsesController < ApplicationController
   private
 
   def post_back(saml, relay_state)
-    @url, @saml_params = saml.response_for(
-      current_user, binding: :http_post, relay_state: relay_state
-    ) do |builder|
-      @saml_response_builder = builder
+    if saml.is_a?(Saml::Kit::AuthenticationRequest)
+      @url, @saml_params = saml.response_for(
+        current_user, binding: :http_post, relay_state: relay_state
+      ) do |builder|
+        @saml_response_builder = builder
+      end
+      user_id = current_user.to_param
+      mfa_issued_at = session[:mfa].present? ? session[:mfa][:issued_at] : nil
+      reset_session
+      session[:user_id] = user_id
+      session[:mfa] = { issued_at: mfa_issued_at } if mfa_issued_at.present?
+    else
+      @url, @saml_params = saml.response_for(
+        binding: :http_post, relay_state: relay_state
+      ) do |builder|
+        @saml_response_builder = builder
+      end
+      reset_session
     end
   end
 end
