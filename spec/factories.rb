@@ -1,4 +1,8 @@
 FactoryBot.define do
+  factory :token do
+    uuid { SecureRandom.uuid }
+  end
+
   factory :authorization do
     user
     client
