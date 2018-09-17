@@ -21,24 +21,34 @@ class OauthsController < ApplicationController
   def token
     response.headers['Cache-Control'] = 'no-store'
     response.headers['Pragma'] = 'no-cache'
-    if token_params[:grant_type] == 'authorization_code'
-      authorization = Authorization.active.find_by!(code: token_params[:code])
+
+    if params[:grant_type] == 'authorization_code'
+      authorization = Authorization.active.find_by!(code: params[:code])
       @access_token, @refresh_token = authorization.exchange
-    elsif token_params[:grant_type] == 'refresh_token'
-      refresh_token = token_params[:refresh_token]
+    elsif params[:grant_type] == 'refresh_token'
+      refresh_token = params[:refresh_token]
       jti = Token.claims_for(refresh_token, token_type: :refresh)[:jti]
       @access_token, @refresh_token = Token.find_by!(uuid: jti).exchange
-    elsif token_params[:grant_type] == 'client_credentials'
+    elsif params[:grant_type] == 'client_credentials'
       @access_token = current_client.exchange
-    elsif token_params[:grant_type] == 'password'
+    elsif params[:grant_type] == 'password'
       user = User.login(params[:username], params[:password])
       return render "bad_request", formats: :json, status: :bad_request unless user
       @access_token, @refresh_token = user.issue_tokens_to(current_client)
+    elsif params[:grant_type] == 'urn:ietf:params:oauth:grant-type:saml2-bearer'
+      xml = Nokogiri::XML(Base64.urlsafe_decode64(params[:assertion]))
+      assertion = Saml::Kit::Assertion.new(xml)
+      if assertion.valid?
+        @access_token, @refresh_token = User.find_by!(uuid: assertion.name_id).issue_tokens_to(current_client)
+      else
+        return render "bad_request", formats: :json, status: :bad_request
+      end
     else
       return render "bad_request", formats: :json, status: :bad_request
     end
     render formats: :json
   rescue StandardError => error
+    puts error.inspect
     Rails.logger.error(error)
     render "bad_request", formats: :json, status: :bad_request
   end
@@ -46,10 +56,6 @@ class OauthsController < ApplicationController
   private
 
   attr_reader :current_client
-
-  def token_params
-    params.permit(:grant_type, :code, :refresh_token)
-  end
 
   def http_basic_authenticate!
     @current_client = authenticate_with_http_basic do |client_id, client_secret|

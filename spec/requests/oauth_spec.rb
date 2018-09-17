@@ -174,5 +174,31 @@ RSpec.describe '/oauth' do
         specify { expect(refresh_token.reload).to be_revoked }
       end
     end
+
+    context "when exchanging a SAML 2.0 assertion grant for tokens" do
+      context "when the assertion is valid" do
+        let(:user) { instance_double(User, name_id_for: SecureRandom.uuid, assertion_attributes_for: {}) }
+        let(:saml_request) { double(id: SecureRandom.uuid, issuer: Saml::Kit.configuration.entity_id) }
+
+        before :each do
+          saml = Saml::Kit::Response.build(user, saml_request)
+          post '/oauth/token', params: {
+            grant_type: 'urn:ietf:params:oauth:grant-type:saml2-bearer',
+            assertion: Base64.urlsafe_encode64(saml.assertion.to_xml),
+          }, headers: headers
+        end
+
+        specify { expect(response).to have_http_status(:ok) }
+        specify { expect(response.headers['Content-Type']).to include('application/json') }
+        specify { expect(response.headers['Cache-Control']).to include('no-store') }
+        specify { expect(response.headers['Pragma']).to eql('no-cache') }
+
+        let(:json) { JSON.parse(response.body, symbolize_names: true) }
+        specify { expect(json[:access_token]).to be_present }
+        specify { expect(json[:token_type]).to eql('Bearer') }
+        specify { expect(json[:expires_in]).to eql(1.hour.to_i) }
+        specify { expect(json[:refresh_token]).to be_present }
+      end
+    end
   end
 end
