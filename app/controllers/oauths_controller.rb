@@ -2,6 +2,7 @@
 
 class OauthsController < ApplicationController
   skip_before_action :authenticate!, only: [:token]
+  before_action :http_basic_authenticate!, only: [:token]
 
   def show
     return render_error(:not_found) unless params[:response_type] == 'code'
@@ -27,6 +28,10 @@ class OauthsController < ApplicationController
       refresh_token = token_params[:refresh_token]
       jti = Token.claims_for(refresh_token, token_type: :refresh)[:jti]
       @access_token, @refresh_token = Token.find_by!(uuid: jti).exchange
+    elsif token_params[:grant_type] == 'client_credentials'
+      @access_token, @refresh_token = current_client.exchange
+    else
+      return render "bad_request", formats: :json, status: :bad_request
     end
     render formats: :json
   rescue StandardError => error
@@ -36,7 +41,15 @@ class OauthsController < ApplicationController
 
   private
 
+  attr_reader :current_client
+
   def token_params
     params.permit(:grant_type, :code, :refresh_token)
+  end
+
+  def http_basic_authenticate!
+    @current_client = authenticate_with_http_basic do |client_id, client_secret|
+      Client.find_by(uuid: client_id)&.authenticate(client_secret)
+    end
   end
 end

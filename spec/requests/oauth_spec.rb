@@ -53,7 +53,7 @@ RSpec.describe '/oauth' do
   end
 
   describe "POST /oauth/token" do
-    context "when exchanging a code for a token" do
+    context "when using the authorization_code grant" do
       context "when the code is still valid" do
         let(:authorization) { create(:authorization) }
 
@@ -96,6 +96,27 @@ RSpec.describe '/oauth' do
 
         let(:json) { JSON.parse(response.body, symbolize_names: true) }
         specify { expect(json[:error]).to eql('invalid_request') }
+      end
+    end
+
+    context "when requesting a token using the client_credentials grant" do
+      context "when the client credentials are valid" do
+        let(:client) { create(:client) }
+        let(:credentials) { ActionController::HttpAuthentication::Basic.encode_credentials(client.uuid, client.secret) }
+        let(:headers) { { 'Authorization' => credentials } }
+
+        before { post '/oauth/token', params: { grant_type: 'client_credentials' }, headers: headers }
+
+        specify { expect(response).to have_http_status(:ok) }
+        specify { expect(response.headers['Content-Type']).to include('application/json') }
+        specify { expect(response.headers['Cache-Control']).to include('no-store') }
+        specify { expect(response.headers['Pragma']).to eql('no-cache') }
+
+        let(:json) { JSON.parse(response.body, symbolize_names: true) }
+        specify { expect(json[:access_token]).to be_present }
+        specify { expect(json[:token_type]).to eql('Bearer') }
+        specify { expect(json[:expires_in]).to eql(1.hour.to_i) }
+        specify { expect(json[:refresh_token]).to be_present }
       end
     end
 

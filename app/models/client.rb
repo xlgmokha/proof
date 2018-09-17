@@ -9,6 +9,20 @@ class Client < ApplicationRecord
     self.secret = self.class.generate_unique_secure_token unless secret
   end
 
+  def authenticate(provided_secret)
+    return self if self.secret == provided_secret
+  end
+
+  def exchange
+    transaction do
+      Token.active.where(subject: self, audience: self).update_all(revoked_at: Time.now)
+      [
+        Token.create!(subject: self, audience: self, token_type: :access),
+        Token.create!(subject: self, audience: self, token_type: :refresh),
+      ]
+    end
+  end
+
   def to_param
     uuid
   end

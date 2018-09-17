@@ -6,6 +6,7 @@ class Token < ApplicationRecord
   belongs_to :subject, polymorphic: true
   belongs_to :audience, polymorphic: true
 
+  scope :active, -> { where.not(id: revoked.or(where(id: expired))) }
   scope :expired, -> { where('expired_at < ?', Time.now) }
   scope :revoked, -> { where('revoked_at < ?', Time.now) }
 
