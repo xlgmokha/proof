@@ -18,6 +18,15 @@ class User < ApplicationRecord
     request.trusted? ? trusted_attributes_for(request) : {}
   end
 
+  def issue_tokens_to(client)
+    transaction do
+      [
+        Token.create!(subject: self, audience: client, token_type: :access),
+        Token.create!(subject: self, audience: client, token_type: :refresh)
+      ]
+    end
+  end
+
   def mfa
     Mfa.new(self)
   end
@@ -46,10 +55,6 @@ class User < ApplicationRecord
   private
 
   def trusted_attributes_for(_request)
-    {
-      id: uuid,
-      email: email,
-      created_at: created_at,
-    }
+    { id: uuid, email: email, created_at: created_at }
   end
 end

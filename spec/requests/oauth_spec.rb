@@ -129,6 +129,32 @@ RSpec.describe '/oauth' do
       end
     end
 
+    context "when requesting tokens using the resource owner password credentials grant" do
+      context "when the credentials are valid" do
+        let(:user) { create(:user) }
+        before { post '/oauth/token', params: { grant_type: 'password', username: user.email, password: user.password }, headers: headers }
+
+        specify { expect(response).to have_http_status(:ok) }
+        specify { expect(response.headers['Content-Type']).to include('application/json') }
+        specify { expect(response.headers['Cache-Control']).to include('no-store') }
+        specify { expect(response.headers['Pragma']).to eql('no-cache') }
+
+        let(:json) { JSON.parse(response.body, symbolize_names: true) }
+        specify { expect(json[:access_token]).to be_present }
+        specify { expect(json[:token_type]).to eql('Bearer') }
+        specify { expect(json[:expires_in]).to eql(1.hour.to_i) }
+        specify { expect(json[:refresh_token]).to be_present }
+      end
+
+      context "when the credentials are invalid" do
+        before { post '/oauth/token', params: { grant_type: 'password', username: generate(:email), password: generate(:password) }, headers: headers }
+
+        specify { expect(response).to have_http_status(:bad_request) }
+        let(:json) { JSON.parse(response.body, symbolize_names: true) }
+        specify { expect(json[:error]).to eql('invalid_request') }
+      end
+    end
+
     context "when exchanging a refresh token for a new access token" do
       context "when the refresh token is still active" do
         let(:refresh_token) { create(:refresh_token) }

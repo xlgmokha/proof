@@ -30,6 +30,10 @@ class OauthsController < ApplicationController
       @access_token, @refresh_token = Token.find_by!(uuid: jti).exchange
     elsif token_params[:grant_type] == 'client_credentials'
       @access_token = current_client.exchange
+    elsif token_params[:grant_type] == 'password'
+      user = User.login(params[:username], params[:password])
+      return render "bad_request", formats: :json, status: :bad_request unless user
+      @access_token, @refresh_token = user.issue_tokens_to(current_client)
     else
       return render "bad_request", formats: :json, status: :bad_request
     end
