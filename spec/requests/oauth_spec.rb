@@ -53,11 +53,15 @@ RSpec.describe '/oauth' do
   end
 
   describe "POST /oauth/token" do
+    let(:client) { create(:client) }
+    let(:credentials) { ActionController::HttpAuthentication::Basic.encode_credentials(client.uuid, client.secret) }
+    let(:headers) { { 'Authorization' => credentials } }
+
     context "when using the authorization_code grant" do
       context "when the code is still valid" do
         let(:authorization) { create(:authorization) }
 
-        before { post '/oauth/token', params: { grant_type: 'authorization_code', code: authorization.code } }
+        before { post '/oauth/token', params: { grant_type: 'authorization_code', code: authorization.code }, headers: headers }
 
         specify { expect(response).to have_http_status(:ok) }
         specify { expect(response.headers['Content-Type']).to include('application/json') }
@@ -75,7 +79,7 @@ RSpec.describe '/oauth' do
       context "when the code is expired" do
         let(:authorization) { create(:authorization, expired_at: 1.second.ago) }
 
-        before { post '/oauth/token', params: { grant_type: 'authorization_code', code: authorization.code } }
+        before { post '/oauth/token', params: { grant_type: 'authorization_code', code: authorization.code }, headers: headers }
 
         specify { expect(response).to have_http_status(:bad_request) }
         specify { expect(response.headers['Content-Type']).to include('application/json') }
@@ -87,7 +91,7 @@ RSpec.describe '/oauth' do
       end
 
       context "when the code is not known" do
-        before { post '/oauth/token', params: { grant_type: 'authorization_code', code: SecureRandom.hex(20) } }
+        before { post '/oauth/token', params: { grant_type: 'authorization_code', code: SecureRandom.hex(20) }, headers: headers }
 
         specify { expect(response).to have_http_status(:bad_request) }
         specify { expect(response.headers['Content-Type']).to include('application/json') }
@@ -101,10 +105,6 @@ RSpec.describe '/oauth' do
 
     context "when requesting a token using the client_credentials grant" do
       context "when the client credentials are valid" do
-        let(:client) { create(:client) }
-        let(:credentials) { ActionController::HttpAuthentication::Basic.encode_credentials(client.uuid, client.secret) }
-        let(:headers) { { 'Authorization' => credentials } }
-
         before { post '/oauth/token', params: { grant_type: 'client_credentials' }, headers: headers }
 
         specify { expect(response).to have_http_status(:ok) }
@@ -116,7 +116,16 @@ RSpec.describe '/oauth' do
         specify { expect(json[:access_token]).to be_present }
         specify { expect(json[:token_type]).to eql('Bearer') }
         specify { expect(json[:expires_in]).to eql(1.hour.to_i) }
-        specify { expect(json[:refresh_token]).to be_present }
+        specify { expect(json[:refresh_token]).to be_nil }
+      end
+
+      context "when the credentials are unknown" do
+        let(:headers) { { 'Authorization' => 'invalid' } }
+        before { post '/oauth/token', params: { grant_type: 'client_credentials' }, headers: headers }
+
+        specify { expect(response).to have_http_status(:unauthorized) }
+        let(:json) { JSON.parse(response.body, symbolize_names: true) }
+        specify { expect(json[:error]).to eql('invalid_client') }
       end
     end
 
@@ -124,7 +133,7 @@ RSpec.describe '/oauth' do
       context "when the refresh token is still active" do
         let(:refresh_token) { create(:refresh_token) }
 
-        before { post '/oauth/token', params: { grant_type: 'refresh_token', refresh_token: refresh_token.to_jwt } }
+        before { post '/oauth/token', params: { grant_type: 'refresh_token', refresh_token: refresh_token.to_jwt }, headers: headers }
 
         specify { expect(response).to have_http_status(:ok) }
         specify { expect(response.headers['Content-Type']).to include('application/json') }

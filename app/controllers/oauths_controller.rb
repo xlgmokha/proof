@@ -29,7 +29,7 @@ class OauthsController < ApplicationController
       jti = Token.claims_for(refresh_token, token_type: :refresh)[:jti]
       @access_token, @refresh_token = Token.find_by!(uuid: jti).exchange
     elsif token_params[:grant_type] == 'client_credentials'
-      @access_token, @refresh_token = current_client.exchange
+      @access_token = current_client.exchange
     else
       return render "bad_request", formats: :json, status: :bad_request
     end
@@ -51,5 +51,6 @@ class OauthsController < ApplicationController
     @current_client = authenticate_with_http_basic do |client_id, client_secret|
       Client.find_by(uuid: client_id)&.authenticate(client_secret)
     end
+    render "invalid_client", formats: :json, status: :unauthorized unless current_client
   end
 end
