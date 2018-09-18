@@ -19,6 +19,10 @@ FactoryBot.define do
     trait :revoked do
       revoked_at { Time.now }
     end
+
+    trait :expired do
+      expired_at { 1.minute.ago }
+    end
   end
 
   factory :authorization do

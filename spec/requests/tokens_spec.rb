@@ -269,5 +269,16 @@ RSpec.describe '/tokens' do
       let(:json) { JSON.parse(response.body, symbolize_names: true) }
       specify { expect(json[:active]).to eql(false) }
     end
+
+    context "when the token is expired" do
+      let(:token) { create(:access_token, :expired) }
+
+      before { post '/tokens/introspect', params: { token: token.to_jwt }, headers: headers }
+
+      specify { expect(response).to have_http_status(:ok) }
+      specify { expect(response['Content-Type']).to include('application/json') }
+      let(:json) { JSON.parse(response.body, symbolize_names: true) }
+      specify { expect(json[:active]).to eql(false) }
+    end
   end
 end

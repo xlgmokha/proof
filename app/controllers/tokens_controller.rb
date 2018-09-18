@@ -15,7 +15,7 @@ class TokensController < ApplicationController
 
   def introspect
     claims = Token.claims_for(params[:token], token_type: :any)
-    if revoked_tokens[claims[:jti]]
+    if claims.empty? || revoked_tokens[claims[:jti]]
       render json: { active: false }, status: :ok
     else
       render json: claims.merge(active: true), status: :ok
