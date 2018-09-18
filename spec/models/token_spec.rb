@@ -37,4 +37,32 @@ RSpec.describe Token, type: :model do
     specify { expect(subject.claims_for(access_token, token_type: :access)).to be_present }
     specify { expect(subject.claims_for(refresh_token, token_type: :refresh)).to be_present }
   end
+
+  describe ".authenticate" do
+    subject { described_class }
+
+    context "when the access_token is active" do
+      let(:token) { create(:access_token) }
+
+      specify { expect(subject.authenticate(token.to_jwt)).to eql(token.subject) }
+    end
+
+    context "when the token is a refresh token" do
+      let(:token) { create(:refresh_token) }
+
+      specify { expect(subject.authenticate(token.to_jwt)).to be_nil }
+    end
+
+    context "when the access token has been revoked" do
+      let(:token) { create(:access_token, :revoked) }
+
+      specify { expect(subject.authenticate(token.to_jwt)).to be_nil }
+    end
+
+    context "when the access token is expired" do
+      let(:token) { create(:access_token, :expired) }
+
+      specify { expect(subject.authenticate(token.to_jwt)).to be_nil }
+    end
+  end
 end

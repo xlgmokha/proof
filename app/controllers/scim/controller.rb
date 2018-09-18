@@ -16,7 +16,7 @@ module Scim
 
     def current_user
       @current_user ||= authenticate_with_http_token do |token|
-        User.authenticate_token(token)
+        Token.authenticate(token)
       end
     end
 

@@ -44,16 +44,6 @@ class User < ApplicationRecord
     rescue ActiveRecord::RecordNotFound
       nil
     end
-
-    def authenticate_token(jwt)
-      claims = BearerToken.new.decode(jwt)
-      return if claims.empty?
-
-      token = Token.find_by!(uuid: claims[:jti])
-      return if token.refresh? || token.revoked?
-
-      token.subject
-    end
   end
 
   private

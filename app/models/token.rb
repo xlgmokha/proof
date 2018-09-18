@@ -61,5 +61,15 @@ class Token < ApplicationRecord
       end
       BearerToken.new.decode(token)
     end
+
+    def authenticate(jwt)
+      claims = claims_for(jwt, token_type: :access)
+      return if claims.empty?
+
+      token = Token.find_by!(uuid: claims[:jti])
+      return if token.refresh? || token.revoked?
+
+      token.subject
+    end
   end
 end
