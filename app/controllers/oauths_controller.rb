@@ -36,19 +36,17 @@ class OauthsController < ApplicationController
       return render "bad_request", formats: :json, status: :bad_request unless user
       @access_token, @refresh_token = user.issue_tokens_to(current_client)
     elsif params[:grant_type] == 'urn:ietf:params:oauth:grant-type:saml2-bearer'
-      xml = Nokogiri::XML(Base64.urlsafe_decode64(params[:assertion]))
-      assertion = Saml::Kit::Assertion.new(xml)
-      if assertion.valid?
-        @access_token, @refresh_token = User.find_by!(uuid: assertion.name_id).issue_tokens_to(current_client)
-      else
-        return render "bad_request", formats: :json, status: :bad_request
-      end
+      assertion = Saml::Kit::Assertion.new(Base64.urlsafe_decode64(params[:assertion]))
+      return render "bad_request", formats: :json, status: :bad_request if assertion.invalid?
+      user = assertion.name_id_format == Saml::Kit::Namespaces::PERSISTENT ?
+        User.find_by!(uuid: assertion.name_id) :
+        User.find_by!(email: assertion.name_id)
+      @access_token, @refresh_token = user.issue_tokens_to(current_client)
     else
       return render "bad_request", formats: :json, status: :bad_request
     end
     render formats: :json
   rescue StandardError => error
-    puts error.inspect
     Rails.logger.error(error)
     render "bad_request", formats: :json, status: :bad_request
   end

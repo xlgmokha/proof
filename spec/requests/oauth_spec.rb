@@ -176,15 +176,17 @@ RSpec.describe '/oauth' do
     end
 
     context "when exchanging a SAML 2.0 assertion grant for tokens" do
-      context "when the assertion is valid" do
-        let(:user) { instance_double(User, name_id_for: SecureRandom.uuid, assertion_attributes_for: {}) }
-        let(:saml_request) { double(id: SecureRandom.uuid, issuer: Saml::Kit.configuration.entity_id) }
+      context "when the assertion contains a valid email address" do
+        let(:user) { create(:user) }
+        let(:saml_request) { double(id: Xml::Kit::Id.generate, issuer: Saml::Kit.configuration.entity_id, trusted?: true) }
+        let(:saml) { Saml::Kit::Assertion.build_xml(user, saml_request, true) }
+        let(:metadata) { Saml::Kit::Metadata.build(&:build_identity_provider) }
 
         before :each do
-          saml = Saml::Kit::Response.build(user, saml_request)
+          allow(Saml::Kit.configuration.registry).to receive(:metadata_for).and_return(metadata)
           post '/oauth/token', params: {
             grant_type: 'urn:ietf:params:oauth:grant-type:saml2-bearer',
-            assertion: Base64.urlsafe_encode64(saml.assertion.to_xml),
+            assertion: Base64.urlsafe_encode64(saml),
           }, headers: headers
         end
 
@@ -199,6 +201,79 @@ RSpec.describe '/oauth' do
         specify { expect(json[:expires_in]).to eql(1.hour.to_i) }
         specify { expect(json[:refresh_token]).to be_present }
       end
+
+      context "when the assertion contains a valid uuid" do
+        let(:user) { create(:user) }
+        let(:saml_request) { double(id: Xml::Kit::Id.generate, issuer: Saml::Kit.configuration.entity_id, trusted?: true, name_id_format: Saml::Kit::Namespaces::PERSISTENT) }
+        let(:saml) { Saml::Kit::Assertion.build_xml(user, saml_request, true) }
+        let(:metadata) { Saml::Kit::Metadata.build(&:build_identity_provider) }
+
+        before :each do
+          allow(Saml::Kit.configuration.registry).to receive(:metadata_for).and_return(metadata)
+          post '/oauth/token', params: {
+            grant_type: 'urn:ietf:params:oauth:grant-type:saml2-bearer',
+            assertion: Base64.urlsafe_encode64(saml),
+          }, headers: headers
+        end
+
+        specify { expect(response).to have_http_status(:ok) }
+        specify { expect(response.headers['Content-Type']).to include('application/json') }
+        specify { expect(response.headers['Cache-Control']).to include('no-store') }
+        specify { expect(response.headers['Pragma']).to eql('no-cache') }
+
+        let(:json) { JSON.parse(response.body, symbolize_names: true) }
+        specify { expect(json[:access_token]).to be_present }
+        specify { expect(json[:token_type]).to eql('Bearer') }
+        specify { expect(json[:expires_in]).to eql(1.hour.to_i) }
+        specify { expect(json[:refresh_token]).to be_present }
+      end
+    end
+
+    context "when the assertion is not a valid document" do
+      let(:user) { create(:user) }
+      let(:saml_request) { double(id: Xml::Kit::Id.generate, issuer: Saml::Kit.configuration.entity_id) }
+      let(:saml) { 'invalid' }
+      let(:metadata) { Saml::Kit::Metadata.build(&:build_identity_provider) }
+
+      before :each do
+        allow(Saml::Kit.configuration.registry).to receive(:metadata_for).and_return(metadata)
+        post '/oauth/token', params: {
+          grant_type: 'urn:ietf:params:oauth:grant-type:saml2-bearer',
+          assertion: Base64.urlsafe_encode64(saml),
+        }, headers: headers
+      end
+
+      specify { expect(response).to have_http_status(:bad_request) }
+      specify { expect(response.headers['Content-Type']).to include('application/json') }
+      specify { expect(response.headers['Cache-Control']).to include('no-store') }
+      specify { expect(response.headers['Pragma']).to eql('no-cache') }
+
+      let(:json) { JSON.parse(response.body, symbolize_names: true) }
+      specify { expect(json[:error]).to eql('invalid_request') }
+    end
+
+    context "when the assertion has an invalid signature" do
+      let(:user) { create(:user) }
+      let(:saml_request) { double(id: Xml::Kit::Id.generate, issuer: Saml::Kit.configuration.entity_id, trusted?: false) }
+      let(:key_pair) { Xml::Kit::KeyPair.generate(use: :signing) }
+      let(:saml) { Saml::Kit::Assertion.build_xml(user, saml_request, true, signing_key_pair: key_pair) }
+      let(:metadata) { Saml::Kit::Metadata.build(&:build_identity_provider) }
+
+      before :each do
+        allow(Saml::Kit.configuration.registry).to receive(:metadata_for).and_return(metadata)
+        post '/oauth/token', params: {
+          grant_type: 'urn:ietf:params:oauth:grant-type:saml2-bearer',
+          assertion: Base64.urlsafe_encode64(saml),
+        }, headers: headers
+      end
+
+      specify { expect(response).to have_http_status(:bad_request) }
+      specify { expect(response.headers['Content-Type']).to include('application/json') }
+      specify { expect(response.headers['Cache-Control']).to include('no-store') }
+      specify { expect(response.headers['Pragma']).to eql('no-cache') }
+
+      let(:json) { JSON.parse(response.body, symbolize_names: true) }
+      specify { expect(json[:error]).to eql('invalid_request') }
     end
   end
 end
