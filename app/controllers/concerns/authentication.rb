@@ -3,7 +3,7 @@
 module Authentication
   extend ActiveSupport::Concern
   included do
-    before_action :set_current_request_details
+    before_action :apply_current_request_details
     before_action :authenticate!
     before_action :authenticate_mfa!
     helper_method :current_user, :current_user?
@@ -29,7 +29,7 @@ module Authentication
     redirect_to new_mfa_path unless mfa.valid_session?(session[:mfa])
   end
 
-  def set_current_request_details(uuid: session[:user_id])
+  def apply_current_request_details(uuid: session[:user_id])
     Current.request_id = request.uuid
     Current.user_agent = request.user_agent
     Current.ip_address = request.ip
