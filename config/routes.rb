@@ -3,15 +3,17 @@ Rails.application.routes.draw do
   post "/session/logout" => "sessions#destroy", as: :logout
   post "/session/new" => "sessions#new"
   post '/oauth/token', to: 'tokens#create'
-  resource :metadata, only: [:show]
   resource :mfa, only: [:new, :create]
-  resource :response, only: [:show]
-  resource :session, only: [:new, :create, :destroy]
+  resource :metadata, only: [:show]
   resource :oauth, only: [:show, :create] do
     get :authorize, to: "oauths#show"
   end
-  resource :tokens, only: [:create]
+  resource :session, only: [:new, :create, :destroy]
   resources :registrations, only: [:new, :create]
+  resource :response, only: [:show]
+  resource :tokens, only: [:create] do
+    post :introspect
+  end
 
   namespace :my do
     resource :dashboard, only: [:show]

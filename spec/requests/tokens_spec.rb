@@ -1,11 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe '/tokens' do
-  describe "POST /oauth/token" do
-    let(:client) { create(:client) }
-    let(:credentials) { ActionController::HttpAuthentication::Basic.encode_credentials(client.uuid, client.secret) }
-    let(:headers) { { 'Authorization' => credentials } }
+  let(:client) { create(:client) }
+  let(:credentials) { ActionController::HttpAuthentication::Basic.encode_credentials(client.uuid, client.secret) }
+  let(:headers) { { 'Authorization' => credentials } }
 
+  describe "POST /oauth/token" do
     context "when using the authorization_code grant" do
       context "when the code is still valid" do
         let(:authorization) { create(:authorization, client: client) }
@@ -223,6 +223,40 @@ RSpec.describe '/tokens' do
 
       let(:json) { JSON.parse(response.body, symbolize_names: true) }
       specify { expect(json[:error]).to eql('invalid_request') }
+    end
+  end
+
+  describe "POST /tokens/introspect" do
+    context "when the access_token is valid" do
+      let(:token) { create(:access_token) }
+
+      before { post '/tokens/introspect', params: { token: token.to_jwt }, headers: headers }
+
+      specify { expect(response).to have_http_status(:ok) }
+      specify { expect(response['Content-Type']).to include('application/json') }
+      let(:json) { JSON.parse(response.body, symbolize_names: true) }
+      specify { expect(json[:active]).to eql(true) }
+      specify { expect(json[:sub]).to eql(token.claims[:sub]) }
+      specify { expect(json[:aud]).to eql(token.claims[:aud]) }
+      specify { expect(json[:iss]).to eql(token.claims[:iss]) }
+      specify { expect(json[:exp]).to eql(token.claims[:exp]) }
+      specify { expect(json[:iat]).to eql(token.claims[:iat]) }
+    end
+
+    context "when the refresh_token is valid" do
+      let(:token) { create(:refresh_token) }
+
+      before { post '/tokens/introspect', params: { token: token.to_jwt }, headers: headers }
+
+      specify { expect(response).to have_http_status(:ok) }
+      specify { expect(response['Content-Type']).to include('application/json') }
+      let(:json) { JSON.parse(response.body, symbolize_names: true) }
+      specify { expect(json[:active]).to eql(true) }
+      specify { expect(json[:sub]).to eql(token.claims[:sub]) }
+      specify { expect(json[:aud]).to eql(token.claims[:aud]) }
+      specify { expect(json[:iss]).to eql(token.claims[:iss]) }
+      specify { expect(json[:exp]).to eql(token.claims[:exp]) }
+      specify { expect(json[:iat]).to eql(token.claims[:iat]) }
     end
   end
 end

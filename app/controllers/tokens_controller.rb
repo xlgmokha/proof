@@ -13,6 +13,11 @@ class TokensController < ApplicationController
     bad_request
   end
 
+  def introspect
+    claims = Token.claims_for(params[:token], token_type: :any)
+    render json: claims.merge(active: true), status: :ok
+  end
+
   private
 
   attr_reader :current_client
