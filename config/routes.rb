@@ -2,15 +2,15 @@ Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
   post "/session/logout" => "sessions#destroy", as: :logout
   post "/session/new" => "sessions#new"
+  post '/oauth/token', to: 'tokens#create'
   resource :metadata, only: [:show]
   resource :mfa, only: [:new, :create]
   resource :response, only: [:show]
   resource :session, only: [:new, :create, :destroy]
   resource :oauth, only: [:show, :create] do
     get :authorize, to: "oauths#show"
-    post :token, to: "oauths#token"
   end
-
+  resource :tokens, only: [:create]
   resources :registrations, only: [:new, :create]
 
   namespace :my do

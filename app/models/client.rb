@@ -10,7 +10,7 @@ class Client < ApplicationRecord
   end
 
   def authenticate(provided_secret)
-    return self if self.secret == provided_secret
+    return self if secret == provided_secret
   end
 
   def access_token
