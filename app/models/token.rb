@@ -69,7 +69,7 @@ class Token < ApplicationRecord
       token = Token.find_by!(uuid: claims[:jti])
       return if token.refresh? || token.revoked?
 
-      token.subject
+      token
     end
   end
 end

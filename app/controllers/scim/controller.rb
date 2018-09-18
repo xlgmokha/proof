@@ -35,7 +35,7 @@ module Scim
     private
 
     def authenticate!
-      Current.user = authenticate_with_http_token do |token|
+      Current.token = authenticate_with_http_token do |token|
         Token.authenticate(token)
       end
       render plain: "Unauthorized", status: :unauthorized unless Current.user?

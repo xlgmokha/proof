@@ -44,7 +44,7 @@ RSpec.describe Token, type: :model do
     context "when the access_token is active" do
       let(:token) { create(:access_token) }
 
-      specify { expect(subject.authenticate(token.to_jwt)).to eql(token.subject) }
+      specify { expect(subject.authenticate(token.to_jwt)).to eql(token) }
     end
 
     context "when the token is a refresh token" do
