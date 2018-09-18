@@ -14,7 +14,7 @@ class Authorization < ApplicationRecord
     self.expired_at = 10.minutes.from_now unless expired_at.present?
   end
 
-  def exchange
+  def issue_tokens_to(client)
     transaction do
       revoke!
       [

@@ -59,7 +59,7 @@ RSpec.describe '/oauth' do
 
     context "when using the authorization_code grant" do
       context "when the code is still valid" do
-        let(:authorization) { create(:authorization) }
+        let(:authorization) { create(:authorization, client: client) }
 
         before { post '/oauth/token', params: { grant_type: 'authorization_code', code: authorization.code }, headers: headers }
 
@@ -77,7 +77,7 @@ RSpec.describe '/oauth' do
       end
 
       context "when the code is expired" do
-        let(:authorization) { create(:authorization, expired_at: 1.second.ago) }
+        let(:authorization) { create(:authorization, client: client, expired_at: 1.second.ago) }
 
         before { post '/oauth/token', params: { grant_type: 'authorization_code', code: authorization.code }, headers: headers }
 
@@ -179,7 +179,7 @@ RSpec.describe '/oauth' do
       context "when the assertion contains a valid email address" do
         let(:user) { create(:user) }
         let(:saml_request) { double(id: Xml::Kit::Id.generate, issuer: Saml::Kit.configuration.entity_id, trusted?: true) }
-        let(:saml) { Saml::Kit::Assertion.build_xml(user, saml_request, true) }
+        let(:saml) { Saml::Kit::Assertion.build_xml(user, saml_request) }
         let(:metadata) { Saml::Kit::Metadata.build(&:build_identity_provider) }
 
         before :each do
@@ -205,7 +205,7 @@ RSpec.describe '/oauth' do
       context "when the assertion contains a valid uuid" do
         let(:user) { create(:user) }
         let(:saml_request) { double(id: Xml::Kit::Id.generate, issuer: Saml::Kit.configuration.entity_id, trusted?: true, name_id_format: Saml::Kit::Namespaces::PERSISTENT) }
-        let(:saml) { Saml::Kit::Assertion.build_xml(user, saml_request, true) }
+        let(:saml) { Saml::Kit::Assertion.build_xml(user, saml_request) }
         let(:metadata) { Saml::Kit::Metadata.build(&:build_identity_provider) }
 
         before :each do
@@ -256,7 +256,7 @@ RSpec.describe '/oauth' do
       let(:user) { create(:user) }
       let(:saml_request) { double(id: Xml::Kit::Id.generate, issuer: Saml::Kit.configuration.entity_id, trusted?: false) }
       let(:key_pair) { Xml::Kit::KeyPair.generate(use: :signing) }
-      let(:saml) { Saml::Kit::Assertion.build_xml(user, saml_request, true, signing_key_pair: key_pair) }
+      let(:saml) { Saml::Kit::Assertion.build_xml(user, saml_request) { |x| x.sign_with(key_pair) } }
       let(:metadata) { Saml::Kit::Metadata.build(&:build_identity_provider) }
 
       before :each do

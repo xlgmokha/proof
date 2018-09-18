@@ -13,7 +13,7 @@ class Client < ApplicationRecord
     return self if self.secret == provided_secret
   end
 
-  def exchange
+  def access_token
     transaction do
       Token.active.where(subject: self, audience: self).update_all(revoked_at: Time.now)
       Token.create!(subject: self, audience: self, token_type: :access)

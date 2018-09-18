@@ -23,14 +23,14 @@ class OauthsController < ApplicationController
     response.headers['Pragma'] = 'no-cache'
 
     if params[:grant_type] == 'authorization_code'
-      authorization = Authorization.active.find_by!(code: params[:code])
-      @access_token, @refresh_token = authorization.exchange
+      authorization = current_client.authorizations.active.find_by!(code: params[:code])
+      @access_token, @refresh_token = authorization.issue_tokens_to(current_client)
     elsif params[:grant_type] == 'refresh_token'
       refresh_token = params[:refresh_token]
       jti = Token.claims_for(refresh_token, token_type: :refresh)[:jti]
-      @access_token, @refresh_token = Token.find_by!(uuid: jti).exchange
+      @access_token, @refresh_token = Token.find_by!(uuid: jti).issue_tokens_to(current_client)
     elsif params[:grant_type] == 'client_credentials'
-      @access_token = current_client.exchange
+      @access_token = current_client.access_token
     elsif params[:grant_type] == 'password'
       user = User.login(params[:username], params[:password])
       return render "bad_request", formats: :json, status: :bad_request unless user
