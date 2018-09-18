@@ -15,13 +15,11 @@ module Scim
     end
 
     def current_user
-      @current_user ||= authenticate_with_http_token do |token|
-        Token.authenticate(token)
-      end
+      Current.user
     end
 
     def current_user?
-      current_user.present?
+      Current.user?
     end
 
     protected
@@ -37,7 +35,10 @@ module Scim
     private
 
     def authenticate!
-      render plain: "Unauthorized", status: :unauthorized unless current_user?
+      Current.user = authenticate_with_http_token do |token|
+        Token.authenticate(token)
+      end
+      render plain: "Unauthorized", status: :unauthorized unless Current.user?
     end
 
     def apply_scim_content_type
