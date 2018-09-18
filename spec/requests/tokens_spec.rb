@@ -258,5 +258,16 @@ RSpec.describe '/tokens' do
       specify { expect(json[:exp]).to eql(token.claims[:exp]) }
       specify { expect(json[:iat]).to eql(token.claims[:iat]) }
     end
+
+    context "when the token is revoked" do
+      let(:token) { create(:access_token, :revoked) }
+
+      before { post '/tokens/introspect', params: { token: token.to_jwt }, headers: headers }
+
+      specify { expect(response).to have_http_status(:ok) }
+      specify { expect(response['Content-Type']).to include('application/json') }
+      let(:json) { JSON.parse(response.body, symbolize_names: true) }
+      specify { expect(json[:active]).to eql(false) }
+    end
   end
 end

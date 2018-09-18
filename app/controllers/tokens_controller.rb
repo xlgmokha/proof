@@ -15,7 +15,11 @@ class TokensController < ApplicationController
 
   def introspect
     claims = Token.claims_for(params[:token], token_type: :any)
-    render json: claims.merge(active: true), status: :ok
+    if revoked_tokens[claims[:jti]]
+      render json: { active: false }, status: :ok
+    else
+      render json: claims.merge(active: true), status: :ok
+    end
   end
 
   private
@@ -75,6 +79,12 @@ class TokensController < ApplicationController
       password_grant
     when 'urn:ietf:params:oauth:grant-type:saml2-bearer'
       assertion_grant
+    end
+  end
+
+  def revoked_tokens
+    Rails.cache.fetch("revoked-tokens", expires_in: 10.minutes) do
+      Hash[Token.revoked.pluck(:uuid).map { |x| [x, true] }]
     end
   end
 end

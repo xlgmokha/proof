@@ -15,6 +15,10 @@ FactoryBot.define do
     factory :refresh_token do
       token_type { :refresh }
     end
+
+    trait :revoked do
+      revoked_at { Time.now }
+    end
   end
 
   factory :authorization do
