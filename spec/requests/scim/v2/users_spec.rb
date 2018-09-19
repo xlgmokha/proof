@@ -88,6 +88,20 @@ describe '/scim/v2/users' do
       specify { expect(json[:detail]).to be_present }
       specify { expect(json[:status]).to eql('404') }
     end
+
+    context "when a valid Authorization header is not provided" do
+      let(:user) { create(:user) }
+      let(:token) { SecureRandom.uuid }
+      let(:json) { JSON.parse(response.body, symbolize_names: true) }
+
+      before { get "/scim/v2/users/#{user.to_param}", headers: headers }
+
+      specify { expect(response).to have_http_status(:unauthorized) }
+      specify { expect(json[:schemas]).to match_array(['urn:ietf:params:scim:api:messages:2.0:Error']) }
+      specify { expect(json[:detail]).to be_present }
+      specify { expect(json[:detail]).to be_instance_of(String) }
+      specify { expect(json[:status]).to eql('401') }
+    end
   end
 
   describe "GET /scim/v2/users" do

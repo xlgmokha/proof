@@ -38,7 +38,7 @@ module Scim
       Current.token = authenticate_with_http_token do |token|
         Token.authenticate(token)
       end
-      render plain: "Unauthorized", status: :unauthorized unless Current.user?
+      render "unauthorized", status: :unauthorized unless Current.user?
     end
 
     def apply_scim_content_type
