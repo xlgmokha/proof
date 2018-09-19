@@ -13,7 +13,7 @@ describe '/scim/v2/users' do
 
   describe "POST /scim/v2/users" do
     context "when a valid request is sent" do
-      let(:email) { FFaker::Internet.email }
+      let(:email) { generate(:email) }
 
       it 'creates a new user' do
         body = { schemas: [Scim::Shady::Schemas::USER], userName: email }
@@ -56,23 +56,27 @@ describe '/scim/v2/users' do
   describe "GET /scim/v2/users/:id" do
     let(:user) { create(:user) }
 
-    it 'returns the requested resource' do
-      get "/scim/v2/users/#{user.uuid}", headers: headers
+    context "when the resource is available" do
+      before { get "/scim/v2/users/#{user.uuid}", headers: headers }
 
-      expect(response).to have_http_status(:ok)
-      expect(response.headers['Content-Type']).to eql('application/scim+json')
-      expect(response.headers['Location']).to be_present
-      expect(response.body).to be_present
+      specify { expect(response).to have_http_status(:ok) }
+      specify { expect(response.headers['Content-Type']).to eql('application/scim+json') }
+      specify { expect(response.headers['Location']).to eql(scim_v2_user_url(user)) }
+      specify { expect(response.headers['ETag']).to be_present }
+      specify { expect(response.body).to be_present }
 
-      json = JSON.parse(response.body, symbolize_names: true)
-      expect(json[:schemas]).to match_array([Scim::Shady::Schemas::USER])
-      expect(json[:id]).to eql(user.uuid)
-      expect(json[:userName]).to eql(user.email)
-      expect(json[:meta][:resourceType]).to eql('User')
-      expect(json[:meta][:created]).to eql(user.created_at.iso8601)
-      expect(json[:meta][:lastModified]).to eql(user.updated_at.iso8601)
-      expect(json[:meta][:version]).to eql(user.lock_version)
-      expect(json[:meta][:location]).to eql(scim_v2_users_url(user))
+      let(:json) { JSON.parse(response.body, symbolize_names: true) }
+      specify { expect(json[:schemas]).to match_array([Scim::Shady::Schemas::USER]) }
+      specify { expect(json[:id]).to eql(user.uuid) }
+      specify { expect(json[:userName]).to eql(user.email) }
+      specify { expect(json[:meta][:resourceType]).to eql('User') }
+      specify { expect(json[:meta][:created]).to eql(user.created_at.iso8601) }
+      specify { expect(json[:meta][:lastModified]).to eql(user.updated_at.iso8601) }
+      specify { expect(json[:meta][:version]).to eql(response.headers['ETag']) }
+      specify { expect(json[:meta][:location]).to eql(scim_v2_user_url(user)) }
+      specify { expect(json[:name][:formatted]).to eql(user.email) }
+      specify { expect(json[:name][:familyName]).to eql(user.email) }
+      specify { expect(json[:name][:givenName]).to eql(user.email) }
     end
   end
 
@@ -101,7 +105,7 @@ describe '/scim/v2/users' do
 
       expect(response).to have_http_status(:ok)
       expect(response.headers['Content-Type']).to eql('application/scim+json')
-      expect(response.headers['Location']).to eql(scim_v2_users_url(user))
+      expect(response.headers['Location']).to eql(scim_v2_user_url(user))
       expect(response.body).to be_present
 
       json = JSON.parse(response.body, symbolize_names: true)
