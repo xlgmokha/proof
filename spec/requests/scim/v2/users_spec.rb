@@ -78,6 +78,16 @@ describe '/scim/v2/users' do
       specify { expect(json[:name][:familyName]).to eql(user.email) }
       specify { expect(json[:name][:givenName]).to eql(user.email) }
     end
+
+    context "when the resource does not exist" do
+      before { get "/scim/v2/users/#{SecureRandom.uuid}", headers: headers }
+
+      specify { expect(response).to have_http_status(:not_found) }
+      let(:json) { JSON.parse(response.body, symbolize_names: true) }
+      specify { expect(json[:schemas]).to match_array(['urn:ietf:params:scim:api:messages:2.0:Error']) }
+      specify { expect(json[:detail]).to be_present }
+      specify { expect(json[:status]).to eql('404') }
+    end
   end
 
   describe "GET /scim/v2/users" do

@@ -3,6 +3,11 @@
 module Scim
   module V2
     class UsersController < ::Scim::Controller
+      rescue_from ActiveRecord::RecordNotFound do |_error|
+        @resource_id = params[:id] if params[:id].present?
+        render "record_not_found", status: :not_found
+      end
+
       def index
         render json: {
           schemas: [Scim::Shady::Messages::LIST_RESPONSE],
