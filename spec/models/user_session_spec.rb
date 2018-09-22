@@ -10,6 +10,8 @@ RSpec.describe UserSession do
   end
 
   describe "#access" do
+    subject { create(:user_session) }
+    let!(:original_key) { subject.key }
     let(:request) { double(ip: "192.168.1.1", user_agent: "blah") }
 
     before { freeze_time }
@@ -19,6 +21,7 @@ RSpec.describe UserSession do
     specify { expect(subject.ip).to eql(request.ip) }
     specify { expect(subject.user_agent).to eql(request.user_agent) }
     specify { expect(subject).to be_persisted }
+    specify { expect(subject.key).not_to eql(original_key) }
   end
 
   describe ".active" do
