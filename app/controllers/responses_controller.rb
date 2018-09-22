@@ -20,10 +20,9 @@ class ResponsesController < ApplicationController
       ) do |builder|
         @saml_response_builder = builder
       end
-      user_id = current_user.to_param
       mfa_issued_at = session[:mfa].present? ? session[:mfa][:issued_at] : nil
       reset_session
-      session[:user_id] = user_id
+      session[:user_session_key] = Current.user_session.key
       session[:mfa] = { issued_at: mfa_issued_at } if mfa_issued_at.present?
     else
       @url, @saml_params = saml.response_for(

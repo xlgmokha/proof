@@ -59,7 +59,7 @@ class SessionsController < ApplicationController
   def login(user)
     saml_data = session[:saml]
     reset_session
-    session[:user_id] = user.to_param
+    session[:user_session_key] = user.sessions.build.access(request)
     session[:saml] = saml_data
   end
 

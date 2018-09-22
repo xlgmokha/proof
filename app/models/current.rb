@@ -3,7 +3,7 @@
 class Current < ActiveSupport::CurrentAttributes
   attribute :user, :token
   attribute :request
-  attribute :session
+  attribute :user_session
   attribute :request_id, :user_agent, :ip_address
 
   def user?
@@ -17,8 +17,8 @@ class Current < ActiveSupport::CurrentAttributes
 
   def access(request, session)
     self.request = request
-    self.session = session
-    uuid = session[:user_id]
-    self.user = User.find_by(uuid: uuid) if uuid.present?
+    self.user_session = UserSession.authenticate(session[:user_session_key])
+    self.user = user_session&.user
+    session[:user_session_key] = user_session&.access(request)
   end
 end

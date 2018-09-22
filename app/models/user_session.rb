@@ -13,6 +13,7 @@ class UserSession < ApplicationRecord
   scope :absolute_timeout, -> { where('created_at < ?', 24.hours.ago) }
 
   def self.authenticate(key)
+    return if key.blank?
     active.find_by(key: key)
   end
 
@@ -34,5 +35,6 @@ class UserSession < ApplicationRecord
       ip: request.ip,
       user_agent: request.user_agent,
     )
+    key
   end
 end

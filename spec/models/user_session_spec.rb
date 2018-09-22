@@ -15,13 +15,14 @@ RSpec.describe UserSession do
     let(:request) { double(ip: "192.168.1.1", user_agent: "blah") }
 
     before { freeze_time }
-    before { subject.access(request) }
+    before { @result = subject.access(request) }
 
     specify { expect(subject.accessed_at).to eql(Time.now) }
     specify { expect(subject.ip).to eql(request.ip) }
     specify { expect(subject.user_agent).to eql(request.user_agent) }
     specify { expect(subject).to be_persisted }
     specify { expect(subject.key).not_to eql(original_key) }
+    specify { expect(@result).to eql(subject.key) }
   end
 
   describe ".active" do
@@ -48,6 +49,8 @@ RSpec.describe UserSession do
     specify { expect(UserSession.authenticate(inactive_session.key)).to be_nil }
     specify { expect(UserSession.authenticate(expired_session.key)).to be_nil }
     specify { expect(UserSession.authenticate(revoked_session.key)).to be_nil }
+    specify { expect(UserSession.authenticate(nil)).to be_nil }
+    specify { expect(UserSession.authenticate("")).to be_nil }
   end
 
   describe ".sudo?" do
