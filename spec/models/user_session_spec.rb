@@ -31,6 +31,10 @@ RSpec.describe UserSession do
     let!(:revoked_session) { create(:user_session, :revoked) }
 
     specify { expect(UserSession.active).to match_array([active_session]) }
+    specify { expect(UserSession.revoked).to match_array([revoked_session]) }
+    specify { expect(UserSession.expired).to match_array([inactive_session, expired_session]) }
+    specify { expect(UserSession.idle_timeout).to match_array([inactive_session]) }
+    specify { expect(UserSession.absolute_timeout).to match_array([expired_session]) }
   end
 
   describe ".authenticate" do

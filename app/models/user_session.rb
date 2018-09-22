@@ -6,7 +6,11 @@ class UserSession < ApplicationRecord
     model.key = SecureRandom.urlsafe_base64(32)
   end
 
-  scope :active, ->{ where("accessed_at > ?", 30.minutes.ago).where('created_at > ?', 24.hours.ago).where(revoked_at: nil) }
+  scope :active, -> { where.not(id: revoked).where.not(id: expired) }
+  scope :revoked, -> { where.not(revoked_at: nil) }
+  scope :expired, -> { where(id: idle_timeout).or(where(id: absolute_timeout)) }
+  scope :idle_timeout, -> { where("accessed_at < ?", 30.minutes.ago) }
+  scope :absolute_timeout, -> { where('created_at < ?', 24.hours.ago) }
 
   def self.authenticate(key)
     active.find_by(key: key)
