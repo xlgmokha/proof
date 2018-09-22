@@ -7,6 +7,8 @@ class User < ApplicationRecord
   validates :email, presence: true, email: true, uniqueness: {
     case_sensitive: false
   }
+  validates :timezone, inclusion: ActiveSupport::TimeZone::MAPPING.values
+  validates :locale, inclusion: { in: proc { I18n.available_locales.map(&:to_s) } }
 
   after_initialize do
     self.uuid = SecureRandom.uuid unless uuid
