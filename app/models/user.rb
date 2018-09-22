@@ -3,6 +3,7 @@
 class User < ApplicationRecord
   has_secure_password
   has_many :sessions, foreign_key: "user_id", class_name: UserSession.name
+  has_many :authentications
 
   validates :email, presence: true, email: true, uniqueness: {
     case_sensitive: false

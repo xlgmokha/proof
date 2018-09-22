@@ -35,7 +35,7 @@ RSpec.describe '/oauth' do
         before { get "/oauth/authorize", params: { client_id: client.to_param, response_type: 'code', state: state } }
 
         specify { expect(response).to have_http_status(:ok) }
-        specify { expect(response.body).to include(client.name) }
+        specify { expect(response.body).to include(CGI.escapeHTML(client.name)) }
         specify { expect(response.body).to include(state) }
       end
     end
