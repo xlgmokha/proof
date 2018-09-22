@@ -16,8 +16,8 @@ json.name do
   json.givenName @user.email
 end
 json.displayName @user.email
-json.locale @user.try(:locale)
-json.timezone @user.try(:timezone)
+json.locale @user.locale
+json.timezone @user.timezone
 json.active true
 json.emails [{ value: @user.email, primary: true }]
 json.groups []
