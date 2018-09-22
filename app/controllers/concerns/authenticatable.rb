@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Authentication
+module Authenticatable
   extend ActiveSupport::Concern
   included do
     before_action :apply_current_request_details
