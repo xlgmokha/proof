@@ -29,10 +29,7 @@ module Authentication
     redirect_to new_mfa_path unless mfa.valid_session?(session[:mfa])
   end
 
-  def apply_current_request_details(uuid: session[:user_id])
-    Current.request_id = request.uuid
-    Current.user_agent = request.user_agent
-    Current.ip_address = request.ip
-    Current.user = User.find_by(uuid: uuid) if uuid.present?
+  def apply_current_request_details
+    Current.access(request, session)
   end
 end

@@ -12,4 +12,12 @@ class Current < ActiveSupport::CurrentAttributes
     super
     self.user = token&.subject
   end
+
+  def access(request, session)
+    self.request_id = request.uuid
+    self.user_agent = request.user_agent
+    self.ip_address = request.ip
+    uuid = session[:user_id]
+    self.user = User.find_by(uuid: uuid) if uuid.present?
+  end
 end

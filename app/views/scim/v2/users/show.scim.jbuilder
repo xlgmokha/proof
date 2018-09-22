@@ -20,4 +20,4 @@ json.locale @user.try(:locale)
 json.timezone @user.try(:timezone)
 json.active true
 json.emails [{ value: @user.email, primary: true }]
-json.groups [ ]
+json.groups []

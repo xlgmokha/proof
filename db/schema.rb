@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_09_09_173139) do
+ActiveRecord::Schema.define(version: 2018_09_22_153546) do
 
   create_table "authorizations", force: :cascade do |t|
     t.integer "user_id"
@@ -60,6 +60,20 @@ ActiveRecord::Schema.define(version: 2018_09_09_173139) do
     t.index ["authorization_id"], name: "index_tokens_on_authorization_id"
     t.index ["subject_type", "subject_id"], name: "index_tokens_on_subject_type_and_subject_id"
     t.index ["uuid"], name: "index_tokens_on_uuid", unique: true
+  end
+
+  create_table "user_sessions", force: :cascade do |t|
+    t.integer "user_id"
+    t.string "key"
+    t.string "ip"
+    t.text "user_agent"
+    t.datetime "sudo_enabled_at"
+    t.datetime "accessed_at"
+    t.datetime "revoked_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_user_sessions_on_key", unique: true
+    t.index ["user_id"], name: "index_user_sessions_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
