@@ -13,6 +13,8 @@ module SCIM
         x.created_at = user.created_at
         x.updated_at = user.updated_at
         x.location = @url_helpers.scim_v2_user_url(user)
+        x.locale = user.locale
+        x.timezone = user.timezone
         x.version = user.lock_version
         x.emails do |y|
           y.add(user.email, primary: true)

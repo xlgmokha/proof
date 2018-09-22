@@ -1,13 +1,14 @@
 # frozen_string_literal: true
 
 class User < ApplicationRecord
+  VALID_TIMEZONES = ActiveSupport::TimeZone::MAPPING.values
   has_secure_password
   has_many :sessions, foreign_key: "user_id", class_name: UserSession.name
 
   validates :email, presence: true, email: true, uniqueness: {
     case_sensitive: false
   }
-  validates :timezone, inclusion: ActiveSupport::TimeZone::MAPPING.values
+  validates :timezone, inclusion: VALID_TIMEZONES
   validates :locale, inclusion: { in: proc { I18n.available_locales.map(&:to_s) } }
 
   after_initialize do

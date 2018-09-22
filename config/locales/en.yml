@@ -1,5 +1,14 @@
 ---
 en:
+  '':
+    password_update_not_permitted: Password update not permitted
+  activemodel:
+    attributes:
+      scim/user:
+        locale: locale
+        password: password
+        schemas: schemas
+        userName: userName
   application:
     navbar:
       clients: Clients

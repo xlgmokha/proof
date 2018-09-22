@@ -42,7 +42,7 @@ module Scim
       private
 
       def user_params
-        params.permit(:schemas, :userName)
+        params.permit(:schemas, :userName, :locale, :timezone)
       end
 
       def repository(container = Spank::IOC)

@@ -14,42 +14,41 @@ describe '/scim/v2/users' do
   describe "POST /scim/v2/users" do
     context "when a valid request is sent" do
       let(:email) { generate(:email) }
+      let(:locale) { 'en' }
+      let(:timezone) { 'Etc/UTC' }
+      let(:body) { { schemas: [Scim::Shady::Schemas::USER], userName: email, locale: locale, timezone: timezone } }
 
-      it 'creates a new user' do
-        body = { schemas: [Scim::Shady::Schemas::USER], userName: email }
+      before { post '/scim/v2/users', params: body.to_json, headers: headers }
 
-        post '/scim/v2/users', params: body.to_json, headers: headers
-
-        expect(response).to have_http_status(:created)
-        expect(response.headers['Content-Type']).to eql('application/scim+json')
-        expect(response.headers['Location']).to be_present
-        expect(response.body).to be_present
-
-        json = JSON.parse(response.body, symbolize_names: true)
-        expect(json[:schemas]).to match_array([Scim::Shady::Schemas::USER])
-        expect(json[:id]).to be_present
-        expect(json[:userName]).to eql(email)
-        expect(json[:meta][:resourceType]).to eql('User')
-        expect(json[:meta][:created]).to be_present
-        expect(json[:meta][:lastModified]).to be_present
-        expect(json[:meta][:version]).to be_present
-        expect(json[:meta][:location]).to be_present
-      end
+      specify { expect(response).to have_http_status(:created) }
+      specify { expect(response.headers['Content-Type']).to eql('application/scim+json') }
+      specify { expect(response.headers['Location']).to be_present }
+      specify { expect(response.body).to be_present }
+      let(:json) { JSON.parse(response.body, symbolize_names: true) }
+      specify { expect(json[:schemas]).to match_array([Scim::Shady::Schemas::USER]) }
+      specify { expect(json[:id]).to be_present }
+      specify { expect(json[:userName]).to eql(email) }
+      specify { expect(json[:meta][:resourceType]).to eql('User') }
+      specify { expect(json[:meta][:created]).to be_present }
+      specify { expect(json[:meta][:lastModified]).to be_present }
+      specify { expect(json[:meta][:version]).to be_present }
+      specify { expect(json[:meta][:location]).to be_present }
+      specify { expect(json[:locale]).to eql(locale) }
+      specify { expect(json[:timezone]).to eql(timezone) }
     end
 
     context "when a duplicate email is specified" do
       let(:other_user) { create(:user) }
-      let(:request_body) do
-        { schemas: [Scim::Shady::Schemas::USER], userName: other_user.email }
-      end
+      let(:request_body) { attributes_for(:scim_user, userName: other_user.email) }
 
       before { post '/scim/v2/users', params: request_body.to_json, headers: headers }
 
       specify { expect(response).to have_http_status(:bad_request) }
-      specify { expect(JSON.parse(response.body, symbolize_names: true)[:schemas]).to match_array(['urn:ietf:params:scim:api:messages:2.0:Error']) }
-      specify { expect(JSON.parse(response.body, symbolize_names: true)[:scimType]).to eql('uniqueness') }
-      specify { expect(JSON.parse(response.body, symbolize_names: true)[:detail]).to be_instance_of(String) }
-      specify { expect(JSON.parse(response.body, symbolize_names: true)[:status]).to eql('400') }
+      let(:json) { JSON.parse(response.body, symbolize_names: true) }
+      specify { expect(json[:schemas]).to match_array(['urn:ietf:params:scim:api:messages:2.0:Error']) }
+      specify { expect(json[:scimType]).to eql('uniqueness') }
+      specify { expect(json[:detail]).to be_instance_of(String) }
+      specify { expect(json[:status]).to eql('400') }
     end
   end
 
@@ -105,44 +104,42 @@ describe '/scim/v2/users' do
   end
 
   describe "GET /scim/v2/users" do
-    it 'returns an empty set of results' do
-      get "/scim/v2/users?attributes=userName", headers: headers
+    before { get "/scim/v2/users?attributes=userName", headers: headers }
 
-      expect(response).to have_http_status(:ok)
-      expect(response.headers['Content-Type']).to eql('application/scim+json')
-      expect(response.body).to be_present
-
-      json = JSON.parse(response.body, symbolize_names: true)
-      expect(json[:schemas]).to match_array([Scim::Shady::Messages::LIST_RESPONSE])
-      expect(json[:totalResults]).to be_zero
-      expect(json[:Resources]).to be_empty
-    end
+    specify { expect(response).to have_http_status(:ok) }
+    specify { expect(response.headers['Content-Type']).to eql('application/scim+json') }
+    specify { expect(response.body).to be_present }
+    let(:json) { JSON.parse(response.body, symbolize_names: true) }
+    specify { expect(json[:schemas]).to match_array([Scim::Shady::Messages::LIST_RESPONSE]) }
+    specify { expect(json[:totalResults]).to be_zero }
+    specify { expect(json[:Resources]).to be_empty }
   end
 
   describe "PUT /scim/v2/users" do
     let(:user) { create(:user) }
     let(:new_email) { FFaker::Internet.email }
+    let(:locale) { 'ja' }
+    let(:timezone) { 'America/Denver' }
+    let(:body) { { schemas: [Scim::Shady::Schemas::USER], userName: new_email, locale: locale, timezone: timezone } }
 
-    it 'updates the user' do
-      body = { schemas: [Scim::Shady::Schemas::USER], userName: new_email }
-      put "/scim/v2/users/#{user.uuid}", headers: headers, params: body.to_json
+    before { put "/scim/v2/users/#{user.uuid}", headers: headers, params: body.to_json }
 
-      expect(response).to have_http_status(:ok)
-      expect(response.headers['Content-Type']).to eql('application/scim+json')
-      expect(response.headers['Location']).to eql(scim_v2_user_url(user))
-      expect(response.body).to be_present
-
-      json = JSON.parse(response.body, symbolize_names: true)
-      expect(json[:schemas]).to match_array([Scim::Shady::Schemas::USER])
-      expect(json[:id]).to be_present
-      expect(json[:userName]).to eql(new_email)
-      expect(json[:meta][:resourceType]).to eql('User')
-      expect(json[:meta][:created]).to be_present
-      expect(json[:meta][:lastModified]).to be_present
-      expect(json[:meta][:version]).to be_present
-      expect(json[:meta][:location]).to be_present
-      expect(json[:emails]).to match_array([value: new_email, type: 'work', primary: true])
-    end
+    specify { expect(response).to have_http_status(:ok) }
+    specify { expect(response.headers['Content-Type']).to eql('application/scim+json') }
+    specify { expect(response.headers['Location']).to eql(scim_v2_user_url(user)) }
+    specify { expect(response.body).to be_present }
+    let(:json) { JSON.parse(response.body, symbolize_names: true) }
+    specify { expect(json[:schemas]).to match_array([Scim::Shady::Schemas::USER]) }
+    specify { expect(json[:id]).to be_present }
+    specify { expect(json[:userName]).to eql(new_email) }
+    specify { expect(json[:meta][:resourceType]).to eql('User') }
+    specify { expect(json[:meta][:created]).to be_present }
+    specify { expect(json[:meta][:lastModified]).to be_present }
+    specify { expect(json[:meta][:version]).to be_present }
+    specify { expect(json[:meta][:location]).to be_present }
+    specify { expect(json[:emails]).to match_array([value: new_email, type: 'work', primary: true]) }
+    specify { expect(json[:locale]).to eql(locale) }
+    specify { expect(json[:timezone]).to eql(timezone) }
   end
 
   describe "DELETE /scim/v2/users/:id" do

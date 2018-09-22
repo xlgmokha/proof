@@ -9,27 +9,33 @@ module SCIM
     end
 
     def find!(id)
-      mapper.map_from(User.find_by!(uuid: id))
+      mapper.map_from(::User.find_by!(uuid: id))
     end
 
     def create!(params)
       password = SecureRandom.hex(32)
       mapper.map_from(
-        User.create!(
+        ::User.create!(
           email: params[:userName],
-          password: password
+          password: password,
+          locale: params[:locale],
+          timezone: params[:timezone]
         )
       )
     end
 
     def update!(id, params)
-      user = User.find_by!(uuid: id)
-      user.update!(email: params[:userName])
+      user = ::User.find_by!(uuid: id)
+      user.update!(
+        email: params[:userName],
+        locale: params[:locale],
+        timezone: params[:timezone]
+      )
       mapper.map_from(user)
     end
 
     def destroy!(id)
-      User.find_by!(uuid: id).destroy!
+      ::User.find_by!(uuid: id).destroy!
     end
   end
 end
