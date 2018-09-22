@@ -2,6 +2,8 @@
 
 class Current < ActiveSupport::CurrentAttributes
   attribute :user, :token
+  attribute :request
+  attribute :session
   attribute :request_id, :user_agent, :ip_address
 
   def user?
@@ -14,9 +16,8 @@ class Current < ActiveSupport::CurrentAttributes
   end
 
   def access(request, session)
-    self.request_id = request.uuid
-    self.user_agent = request.user_agent
-    self.ip_address = request.ip
+    self.request = request
+    self.session = session
     uuid = session[:user_id]
     self.user = User.find_by(uuid: uuid) if uuid.present?
   end
