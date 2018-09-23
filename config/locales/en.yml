@@ -16,6 +16,7 @@ en:
       logout: Logout
       mfa: MFA
       proof: Proof
+      sessions: Sessions
   layouts:
     application:
       title: Proof
@@ -35,6 +36,9 @@ en:
       new:
         cancel: Cancel
         enable: Enable
+    sessions:
+      index:
+        title: Sessions
   oauths:
     show:
       authorize: Authorize
