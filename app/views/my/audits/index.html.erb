@@ -4,6 +4,7 @@
       <h1><%= t('.title') %> <%= @audits.count %></h1>
       <table class="table">
         <thead>
+          <th>Action</th>
           <th>Auditable</th>
           <th>Associated</th>
           <th>User</th>
@@ -14,6 +15,7 @@
         <tbody>
         <% @audits.each do |audit| %>
           <tr>
+            <td><%= audit.action %></td>
             <td><%= audit.auditable %></td>
             <td><%= audit.associated %></td>
             <td><%= audit.user %></td>
