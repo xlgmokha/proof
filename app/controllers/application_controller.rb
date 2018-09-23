@@ -2,6 +2,7 @@
 
 class ApplicationController < ActionController::Base
   include Authenticatable
+  include Featurable
   protect_from_forgery with: :exception
   add_flash_types :error, :warning
 
