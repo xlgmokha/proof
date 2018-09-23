@@ -4,10 +4,11 @@ module SCIM
   class User
     include ActiveModel::Model
     attr_accessor :id, :schemas, :userName, :name, :locale, :timezone, :password
+    UUID_REGEX = /\A\h{8}-\h{4}-\h{4}-\h{4}-\h{12}\z/
 
     validate :must_be_user_schema
-    validates :id, format: { with: /\A\h{8}-\h{4}-\h{4}-\h{4}-\h{12}\z/ }, if: proc { |x| x.id.present? }
-    validates :locale, presence: true, inclusion: I18n.available_locales.map(&:to_s)
+    validates :id, format: { with: UUID_REGEX }, if: proc { |x| x.id.present? }
+    validates :locale, presence: true, inclusion: ::User::VALID_LOCALES
     validates :timezone, presence: true, inclusion: ::User::VALID_TIMEZONES
     validates :userName, presence: true, email: true
 
@@ -30,7 +31,8 @@ module SCIM
     end
 
     def ensure_password_update_is_allowed!(user)
-      raise StandardError.new(I18n.t('.password_update_not_permitted')) unless Current.user == user
+      error = I18n.t('.password_update_not_permitted')
+      raise StandardError.new(error) unless Current.user == user
     end
 
     def to_h(extra = {})

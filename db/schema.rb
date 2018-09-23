@@ -12,14 +12,6 @@
 
 ActiveRecord::Schema.define(version: 2018_09_22_211216) do
 
-  create_table "authentications", force: :cascade do |t|
-    t.integer "user_id"
-    t.string "type", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_authentications_on_user_id"
-  end
-
   create_table "authorizations", force: :cascade do |t|
     t.integer "user_id"
     t.integer "client_id"

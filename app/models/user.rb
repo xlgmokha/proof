@@ -2,6 +2,7 @@
 
 class User < ApplicationRecord
   VALID_TIMEZONES = ActiveSupport::TimeZone::MAPPING.values
+  VALID_LOCALES = I18n.available_locales.map(&:to_s)
   has_secure_password
   has_many :sessions, foreign_key: "user_id", class_name: UserSession.name
 
@@ -9,7 +10,7 @@ class User < ApplicationRecord
     case_sensitive: false
   }
   validates :timezone, inclusion: VALID_TIMEZONES
-  validates :locale, inclusion: { in: proc { I18n.available_locales.map(&:to_s) } }
+  validates :locale, inclusion: VALID_LOCALES
 
   after_initialize do
     self.uuid = SecureRandom.uuid unless uuid
