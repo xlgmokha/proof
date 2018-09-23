@@ -19,6 +19,7 @@ Rails.application.routes.draw do
     resource :dashboard, only: [:show]
     resource :mfa, only: [:show, :new, :edit, :create, :destroy]
     resources :clients, only: [:index, :new, :create]
+    resources :sessions, only: [:index]
   end
 
   namespace :scim do

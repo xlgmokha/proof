@@ -1,0 +1,19 @@
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <h1><%= t('.title') %></h1>
+      <table class="table">
+        <thead>
+          <th>User Agent</th>
+        </thead>
+        <tbody>
+        <% @sessions.each do |user_session| %>
+          <tr>
+            <td><%= user_session.user_agent %></td>
+          </tr>
+        <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

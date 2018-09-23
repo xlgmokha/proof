@@ -27,6 +27,7 @@ en:
     clients:
       index:
         new: New
+        title: OAuth Clients
       new:
         cancel: Cancel
         enable: Enable
