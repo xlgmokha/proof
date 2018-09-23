@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Token < ApplicationRecord
+  audited associated_with: :subject
   enum token_type: { access: 0, refresh: 1 }
   belongs_to :authorization, optional: true
   belongs_to :subject, polymorphic: true

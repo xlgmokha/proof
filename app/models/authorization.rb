@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Authorization < ApplicationRecord
+  audited associated_with: :user
   has_secure_token :code
   belongs_to :user
   belongs_to :client

@@ -10,7 +10,7 @@
 import 'bootstrap/dist/js/bootstrap';
 import { Application } from 'stimulus';
 import { definitionsFromContext } from 'stimulus/webpack-helpers';
-import LocalTime from "local-time";
+import LocalTime from 'local-time';
 import Rails from 'rails-ujs';
 import '../application.scss';
 

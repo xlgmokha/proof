@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class UserSession < ApplicationRecord
+  audited associated_with: :user
   belongs_to :user
   before_validation do |model|
     model.key = SecureRandom.urlsafe_base64(32)

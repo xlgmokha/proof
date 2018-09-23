@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Client < ApplicationRecord
+  audited
   has_secure_token :secret
   has_many :authorizations
 
