@@ -4,12 +4,16 @@
       <h1><%= t('.title') %></h1>
       <table class="table">
         <thead>
+          <th>Last Used</th>
           <th>User Agent</th>
+          <th>IP Address</th>
         </thead>
         <tbody>
         <% @sessions.each do |user_session| %>
           <tr>
+            <td><%= local_time_ago(user_session.accessed_at) %></td>
             <td><%= user_session.user_agent %></td>
+            <td><%= user_session.ip %></td>
           </tr>
         <% end %>
         </tbody>

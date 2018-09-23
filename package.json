@@ -11,9 +11,11 @@
     "bootstrap": "^4.0.0",
     "jquery": "^3.3.1",
     "json-loader": "^0.5.7",
+    "local-time": "^2.1.0",
     "popper.js": "^1.14.3",
     "qrcode": "^1.2.0",
     "rails-translations-webpack-plugin": "^1.1.0",
+    "rails-ujs": "^5.2.1",
     "stimulus": "^1.0.1"
   },
   "devDependencies": {
