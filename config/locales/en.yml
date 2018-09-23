@@ -11,6 +11,7 @@ en:
         userName: userName
   application:
     navbar:
+      audits: Audits
       clients: Clients
       home: Home
       logout: Logout
