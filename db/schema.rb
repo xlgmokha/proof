@@ -27,19 +27,11 @@ ActiveRecord::Schema.define(version: 2018_09_23_222720) do
     t.string "remote_address"
     t.string "request_uuid"
     t.datetime "created_at"
-    t.index ["associated_type", "associated_id"], name: "associated_index"
-    t.index ["auditable_type", "auditable_id", "version"], name: "auditable_index"
+    t.index ["associated_type", "associated_id"], name: "index_audits_on_associated_type_and_associated_id"
+    t.index ["auditable_type", "auditable_id", "version"], name: "index_audits_on_auditable_type_and_auditable_id_and_version"
     t.index ["created_at"], name: "index_audits_on_created_at"
     t.index ["request_uuid"], name: "index_audits_on_request_uuid"
-    t.index ["user_id", "user_type"], name: "user_index"
-  end
-
-  create_table "authentications", force: :cascade do |t|
-    t.integer "user_id"
-    t.string "type", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_authentications_on_user_id"
+    t.index ["user_id", "user_type"], name: "index_audits_on_user_id_and_user_type"
   end
 
   create_table "authorizations", force: :cascade do |t|

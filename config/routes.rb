@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   namespace :my do
     resource :dashboard, only: [:show]
     resource :mfa, only: [:show, :new, :edit, :create, :destroy]
+    resources :audits, only: [:index]
     resources :clients, only: [:index, :new, :create]
     resources :sessions, only: [:index]
   end

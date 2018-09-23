@@ -25,6 +25,9 @@ en:
     new:
       login: Login
   my:
+    audits:
+      index:
+        title: Audits
     clients:
       index:
         new: New

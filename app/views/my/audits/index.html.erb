@@ -1,0 +1,29 @@
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <h1><%= t('.title') %></h1>
+      <table class="table">
+        <thead>
+          <th>Auditable</th>
+          <th>Associated</th>
+          <th>User</th>
+          <th>Version</th>
+          <th>Remote Address</th>
+          <th>Created At</th>
+        </thead>
+        <tbody>
+        <% @audits.each do |audit| %>
+          <tr>
+            <td><%= audit.auditable %></td>
+            <td><%= audit.associated %></td>
+            <td><%= audit.user %></td>
+            <td><%= audit.version %></td>
+            <td><%= audit.remote_address %></td>
+            <td><%= local_time_ago(audit.created_at) %></td>
+          </tr>
+        <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
