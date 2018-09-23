@@ -6,6 +6,7 @@
         <thead>
           <th>Action</th>
           <th>Auditable</th>
+          <th>Changes</th>
           <th>Associated</th>
           <th>User</th>
           <th>Version</th>
@@ -16,9 +17,10 @@
         <% @audits.each do |audit| %>
           <tr>
             <td><%= audit.action %></td>
-            <td><%= audit.auditable %></td>
-            <td><%= audit.associated %></td>
-            <td><%= audit.user %></td>
+            <td><%= audit.auditable.class if audit.auditable %></td>
+            <td><%= audit.audited_changes %></td>
+            <td><%= audit.associated&.flipper_id %></td>
+            <td><%= audit.user&.email %></td>
             <td><%= audit.version %></td>
             <td><%= audit.remote_address %></td>
             <td><%= local_time_ago(audit.created_at) %></td>

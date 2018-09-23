@@ -11,6 +11,8 @@ gem 'bootsnap', '>= 1.1.0', require: false
 gem 'coffee-rails', '~> 4.2'
 gem 'dotenv', '~> 2.5'
 gem 'email_validator', '~> 1.6'
+gem 'flipper', '~> 0.16'
+gem 'flipper-active_record', '~> 0.16'
 gem 'foreman', '~> 0.85'
 gem 'jbuilder', '~> 2.5'
 gem 'jwt', '~> 2.1'
