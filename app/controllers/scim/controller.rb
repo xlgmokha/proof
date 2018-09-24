@@ -7,12 +7,13 @@ module Scim
     before_action :ensure_correct_content_type!
     before_action :authenticate!
     helper_method :current_user
-    rescue_from ActiveRecord::RecordNotFound, with: :not_found
-    rescue_from ActiveRecord::RecordInvalid do |error|
-      @error = error
-      @model = error.record
-      render "record_invalid", status: :bad_request
+    rescue_from StandardError do |error|
+      Rails.logger.error(error)
+      render "server_error", status: :server_error
     end
+    rescue_from ActiveRecord::RecordInvalid, with: :record_invalid
+    rescue_from ActiveModel::ValidationError, with: :record_invalid
+    rescue_from ActiveRecord::RecordNotFound, with: :not_found
 
     def current_user
       Current.user
@@ -30,6 +31,12 @@ module Scim
         detail: "Resource #{params[:id]} not found",
         status: "404",
       }.to_json, status: :not_found
+    end
+
+    def record_invalid(error)
+      @error = error
+      @model = error.model
+      render "record_invalid", status: :bad_request
     end
 
     private
