@@ -2,7 +2,7 @@
 
 namespace :doc do
   desc "Build static pages"
-  task :build do
+  task build: [:clean] do
     sh "jekyll b --config config/jekyll.yml"
   end
 
@@ -13,7 +13,7 @@ namespace :doc do
 
   desc "Clean up after Jekyll"
   task :clean do
-    sh "jekyll clean --config config/jekyll.yml"
+    sh "rm -fr public/doc"
     sh "mkdir public/doc && touch public/doc/.keep"
   end
 end

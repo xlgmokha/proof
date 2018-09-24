@@ -2,7 +2,7 @@
 
 namespace :package do
   desc "create a tarball"
-  task tarball: ['assets:clobber', 'assets:precompile'] do
+  task tarball: ['webpacker:clobber', 'webpacker:compile', 'doc:build'] do
     require 'package'
     Package.execute
   end
