@@ -30,11 +30,11 @@ class Package
 
     build = `git rev-parse --short HEAD`.strip
     IO.write("./BUILD", build)
-    Rake::PackageTask.new("proof", build) do |package|
+    name = Rails.application.class.name.split(':')[0].downcase
+    Rake::PackageTask.new(name, build) do |package|
       package.need_tar_gz = true
       package.package_files.add INCLUDED_FILES
       package.package_files.exclude EXCLUDED_FILES
-      #package.package_files.exclude { |path| path.start_with?(*EXCLUDED_FILES) }
     end
     Rake::Task['repackage'].invoke
   end
