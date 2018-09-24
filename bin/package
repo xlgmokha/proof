@@ -1,0 +1,8 @@
+#!/bin/sh
+
+export RAILS_ENV=production
+export SECRET_KEY_BASE='package'
+
+rm -fr pkg
+bundle package --all
+bin/rake package:tarball
