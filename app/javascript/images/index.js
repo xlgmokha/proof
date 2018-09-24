@@ -1,2 +1,2 @@
-import './icon.png'
-import './logo.png'
+import './icon.png';
+import './logo.png';

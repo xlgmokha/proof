@@ -1,4 +1,9 @@
+require 'capybara/rails'
 require 'capybara-screenshot/rspec'
+
+Capybara.register_driver :selenium do |app|
+  Capybara::Selenium::Driver.new(app, browser: :chrome)
+end
 
 RSpec.configure do |config|
   config.before(:each, type: :system) do
@@ -6,6 +11,6 @@ RSpec.configure do |config|
   end
 
   config.before(:each, type: :system, js: true) do
-    driven_by :selenium_chrome_headless
+    driven_by ENV['HEADLESS'].present? ? :selenium_chrome_headless : :selenium
   end
 end
