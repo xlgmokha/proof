@@ -25,6 +25,7 @@ module Authenticatable
 
   def authenticate_mfa!
     return unless Current.user?
+
     mfa = Current.user.mfa
     redirect_to new_mfa_path unless mfa.valid_session?(session[:mfa])
   end

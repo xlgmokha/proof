@@ -8,6 +8,7 @@ module My
 
     def new
       return redirect_to edit_my_mfa_path if current_user.mfa.setup?
+
       current_user.mfa.build_secret
     end
 

@@ -7,6 +7,7 @@ class TokensController < ApplicationController
 
     @access_token, @refresh_token = tokens_for(params[:grant_type])
     return bad_request if @access_token.nil?
+
     render formats: :json
   rescue StandardError => error
     Rails.logger.error(error)
@@ -31,6 +32,7 @@ class TokensController < ApplicationController
       Client.find_by(uuid: client_id)&.authenticate(client_secret)
     end
     return if current_client
+
     render "invalid_client", formats: :json, status: :unauthorized
   end
 
@@ -59,6 +61,7 @@ class TokensController < ApplicationController
       Base64.urlsafe_decode64(raw)
     )
     return if assertion.invalid?
+
     user = if assertion.name_id_format == Saml::Kit::Namespaces::PERSISTENT
              User.find_by!(uuid: assertion.name_id)
            else

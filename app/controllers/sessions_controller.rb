@@ -18,6 +18,7 @@ class SessionsController < ApplicationController
     )
     @saml = binding.deserialize(saml_params)
     return render_error(:forbidden, model: @saml) if @saml.invalid?
+
     session[:saml] = { params: saml_params.to_h, xml: @saml.to_xml }
     redirect_to response_path if current_user?
   rescue StandardError => error
@@ -41,11 +42,13 @@ class SessionsController < ApplicationController
       saml = binding.deserialize(saml_params)
       raise ActiveRecord::RecordInvalid.new(saml) if saml.invalid?
       raise 'Unknown NameId' unless current_user.uuid == saml.name_id
+
       session[:saml] = { params: saml_params.to_h, xml: saml.to_xml }
       redirect_to response_path
     elsif saml_params[:SAMLResponse].present?
       saml = binding.deserialize(saml_params)
       raise ActiveRecord::RecordInvalid.new(saml) if saml.invalid?
+
       reset_session
       redirect_to new_session_path
     else

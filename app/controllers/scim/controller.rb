@@ -54,6 +54,7 @@ module Scim
 
     def ensure_correct_content_type!
       return if acceptable_content_type?
+
       status = :unsupported_media_type
       render 'unsupported_media_type', status: status, formats: :scim
     end

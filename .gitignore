@@ -39,3 +39,5 @@ package-lock.json
 vendor/cache
 pkg
 BUILD
+.sass-cache
+public/doc

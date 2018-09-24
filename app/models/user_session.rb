@@ -15,6 +15,7 @@ class UserSession < ApplicationRecord
 
   def self.authenticate(key)
     return if key.blank?
+
     active.find_by(key: key)
   end
 

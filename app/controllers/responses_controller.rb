@@ -5,6 +5,7 @@ class ResponsesController < ApplicationController
     if session[:saml].present?
       saml = Saml::Kit::Document.to_saml_document(session[:saml][:xml])
       return render_error(:forbidden, model: saml) if saml.invalid?
+
       post_back(saml, session[:saml][:params][:RelayState])
     else
       redirect_to my_dashboard_path

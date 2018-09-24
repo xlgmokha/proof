@@ -29,7 +29,9 @@ gem 'webpacker', '~> 3.5'
 group :development do
   gem 'brakeman', '~> 4.3'
   gem 'bundler-audit', '~> 0.6'
+  gem 'jekyll', '~> 3.8'
   gem 'listen', '>= 3.0.5', '< 3.2'
+  gem "minima", "~> 2.0" # This is the default theme for new Jekyll sites. You may change this to anything you like.
   gem 'rubocop', '~> 0.58'
   gem 'web-console', '>= 3.3.0'
 end
