@@ -15,7 +15,6 @@ class Package
     "db/**/*",
     "lib/**/*",
     "public/**/*",
-    "public/assets/.sprockets*",
     "vendor/cache/**/*"
   ].freeze
 

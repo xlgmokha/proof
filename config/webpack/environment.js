@@ -8,13 +8,10 @@ environment.plugins.prepend('RailsTranslationsPlugin', new RailsTranslationsPlug
   localesPath: path.resolve(__dirname, "../locales/"),
   root: './app/javascript'
 }))
-environment.plugins.append(
-  'Provide',
-  new webpack.ProvidePlugin({
-    $: 'jquery',
-    jQuery: 'jquery',
-    'window.jQuery': 'jquery',
-  })
-)
+environment.plugins.append('Provide', new webpack.ProvidePlugin({
+  $: 'jquery',
+  jQuery: 'jquery',
+  'window.jQuery': 'jquery',
+}));
 
 module.exports = environment

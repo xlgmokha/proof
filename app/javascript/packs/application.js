@@ -12,6 +12,7 @@ import { Application } from 'stimulus';
 import { definitionsFromContext } from 'stimulus/webpack-helpers';
 import LocalTime from 'local-time';
 import Rails from 'rails-ujs';
+import Turbolinks from 'turbolinks';
 import '../application.scss';
 
 const application = Application.start();
@@ -19,3 +20,4 @@ const context = require.context('controllers', true, /.js$/);
 application.load(definitionsFromContext(context));
 LocalTime.start();
 Rails.start();
+Turbolinks.start();
