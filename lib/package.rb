@@ -6,6 +6,7 @@ class Package
     "BUILD",
     "Dockerfile",
     "Gemfile*",
+    "Procfile",
     "Rakefile",
     "app/**/*",
     "bin/*",
