@@ -35,7 +35,7 @@ module Scim
 
     def record_invalid(error)
       @error = error
-      @model = error.model
+      @model = error.respond_to?(:model) ? error.model : error.record
       render "record_invalid", status: :bad_request
     end
 
