@@ -4,6 +4,7 @@ class Package
   INCLUDED_FILES = [
     ".ruby-version",
     "BUILD",
+    "Dockerfile",
     "Gemfile*",
     "Rakefile",
     "app/**/*",

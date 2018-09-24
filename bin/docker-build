@@ -1,0 +1,16 @@
+#!/bin/sh
+
+set -e
+
+bin/package
+
+FULL_NAME=$(ls pkg/*.tar.gz | xargs basename | cut -d'.' -f1)
+NAME=$(echo "$FULL_NAME" | cut -d'-' -f1)
+VERSION=$(echo "$FULL_NAME" | cut -d'-' -f2)
+
+docker pull ruby:2.5
+echo "Building..." $NAME:$VERSION
+docker image build \
+  -t "$NAME":"$VERSION" \
+  -t "$NAME":latest \
+  -f Dockerfile pkg/
