@@ -16,7 +16,6 @@ en:
       home: Home
       logout: Logout
       mfa: MFA
-      proof: Proof
       sessions: Sessions
   layouts:
     application:
