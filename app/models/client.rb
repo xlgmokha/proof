@@ -27,7 +27,7 @@ class Client < ApplicationRecord
     uuid
   end
 
-  def redirect_uri_path(code: nil, access_token: nil, token_type: "Bearer", expires_in: nil, scope: "", state: nil)
+  def redirect_uri_path(code: nil, access_token: nil, token_type: "Bearer", expires_in: nil, scope: "", state: nil, error: nil)
     result = redirect_uri
     if code
       result += '?code=' + code
@@ -36,6 +36,8 @@ class Client < ApplicationRecord
       result += "&token_type=#{token_type}"
       result += "&expires_in=#{expires_in.seconds.to_i}" if expires_in.present?
       result += "&scope=#{scope}" if scope.present?
+    elsif error
+      result += '#error=' + error
     end
     result += "&state=#{state}" if state.present?
     result

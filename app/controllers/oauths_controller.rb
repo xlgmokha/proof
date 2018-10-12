@@ -1,10 +1,17 @@
 # frozen_string_literal: true
 
 class OauthsController < ApplicationController
-  def show
-    return render_error(:not_found) unless params[:response_type] == 'code' || params[:response_type] == 'token'
+  VALID_RESPONSE_TYPES = [ 'code', 'token' ]
 
+  def show
     @client = Client.find_by!(uuid: params[:client_id])
+
+    if !VALID_RESPONSE_TYPES.include?(params[:response_type])
+      redirect_to @client.redirect_uri_path(
+        error: 'unsupported_response_type',
+        state: params[:state]
+      )
+    end
     session[:oauth] = {
       client_id: params[:client_id],
       response_type: params[:response_type],

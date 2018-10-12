@@ -13,21 +13,21 @@ RSpec.describe '/oauth' do
         let(:client) { create(:client) }
 
         context "when requesting an authorization code" do
-          before { get "/oauth", params: { client_id: client.to_param, response_type: 'code', state: state } }
+          before { get "/oauth", params: { client_id: client.to_param, response_type: 'code', state: state, redirect_uri: client.redirect_uri } }
           specify { expect(response).to have_http_status(:ok) }
           specify { expect(response.body).to include(CGI.escapeHTML(client.name)) }
         end
 
         context "when requesting an access token" do
-          before { get "/oauth", params: { client_id: client.to_param, response_type: 'token', state: state } }
+          before { get "/oauth", params: { client_id: client.to_param, response_type: 'token', state: state, redirect_uri: client.redirect_uri } }
           specify { expect(response).to have_http_status(:ok) }
           specify { expect(response.body).to include(CGI.escapeHTML(client.name)) }
         end
 
         context "when an incorrect response_type is provided" do
-          before { get "/oauth", params: { client_id: client.to_param, response_type: 'invalid' } }
+          before { get "/oauth", params: { client_id: client.to_param, response_type: 'invalid', redirect_uri: client.redirect_uri } }
 
-          specify { expect(response).to have_http_status(:not_found) }
+          specify { expect(response).to redirect_to("#{client.redirect_uri}#error=unsupported_response_type") }
         end
       end
     end
