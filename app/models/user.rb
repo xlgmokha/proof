@@ -25,12 +25,18 @@ class User < ApplicationRecord
     request.trusted? ? trusted_attributes_for(request) : {}
   end
 
-  def issue_tokens_to(client)
+  def issue_tokens_to(client, token_type: :all)
     transaction do
-      [
-        Token.create!(subject: self, audience: client, token_type: :access),
+      if token_type == :all
+        [
+          Token.create!(subject: self, audience: client, token_type: :access),
+          Token.create!(subject: self, audience: client, token_type: :refresh)
+        ]
+      elsif token_type == :access
+        Token.create!(subject: self, audience: client, token_type: :access)
+      elsif token_type == :refresh
         Token.create!(subject: self, audience: client, token_type: :refresh)
-      ]
+        end
     end
   end
 

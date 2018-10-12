@@ -39,7 +39,7 @@ class OauthsController < ApplicationController
         state: session[:oauth][:state]
       )
     elsif 'token' == session[:oauth][:response_type]
-      @access_token, _ = authorization.issue_tokens_to(client)
+      @access_token = authorization.issue_tokens_to(client, token_type: :access)
 
       redirect_to client.redirect_uri_path(
         access_token: @access_token.to_jwt,
