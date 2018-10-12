@@ -10,10 +10,11 @@ class OauthsController < ApplicationController
       response_type: params[:response_type],
       state: params[:state],
     }
-
   end
 
   def create
+    return render_error(:not_found) if session[:oauth].nil?
+
     client = Client.find_by!(uuid: session[:oauth][:client_id])
     authorization = client.authorizations.create!(user: current_user)
 

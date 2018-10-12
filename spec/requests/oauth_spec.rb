@@ -67,10 +67,13 @@ RSpec.describe '/oauth' do
             post "/oauth"
           end
 
-          specify do
-            expected_url = "#{client.redirect_uri}#access_token=#{token}&token_type=Bearer&expires_in=300&scope=#{scope}&state=#{state}"
-            expect(response).to redirect_to(expected_url)
-          end
+          specify { expect(response).to redirect_to("#{client.redirect_uri}#access_token=#{token}&token_type=Bearer&expires_in=300&scope=#{scope}&state=#{state}") }
+        end
+
+        context "when the client did not make an appropriate request" do
+          before { post "/oauth" }
+
+          specify { expect(response).to have_http_status(:not_found) }
         end
       end
     end
