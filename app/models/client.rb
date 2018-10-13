@@ -6,6 +6,10 @@ class Client < ApplicationRecord
   has_secure_token :secret
   has_many :authorizations
 
+  validates :name, presence: true
+  validates :redirect_uri, presence: true, format: { with: /\A#{URI::regexp(['http', 'https'])}\z/ }
+  validates :uuid, presence: true, format: { with: ApplicationRecord::UUID }
+
   after_initialize do
     self.uuid = SecureRandom.uuid unless uuid
     self.secret = self.class.generate_unique_secure_token unless secret
