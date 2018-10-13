@@ -7,14 +7,14 @@ class OauthsController < ApplicationController
     @client = Client.find_by!(uuid: params[:client_id])
 
     if @client.redirect_uri != params[:redirect_uri]
-      return redirect_to @client.error_uri(
+      return redirect_to @client.redirect_uri_path(
         error: 'invalid_request',
         state: params[:state]
       )
     end
 
     unless VALID_RESPONSE_TYPES.include?(params[:response_type])
-      return redirect_to @client.error_uri(
+      return redirect_to @client.redirect_uri_path(
         error: 'unsupported_response_type',
         state: params[:state]
       )

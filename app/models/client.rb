@@ -29,34 +29,26 @@ class Client < ApplicationRecord
 
   def redirect_uri_for(authorization, response_type, state)
     if response_type == 'code'
-      redirect_uri_path(state: state) do |x|
-        "#{x}?code=#{authorization.code}"
-      end
+      redirect_uri_path(code: authorization.code, state: state)
     elsif response_type == 'token'
       access_token, = authorization.issue_tokens_to(
         self, token_types: [:access]
       )
-      redirect_uri_path(state: state) do |x|
-        x += "#access_token=#{access_token.to_jwt}"
-        x += "&token_type=Bearer"
-        x += "&expires_in=#{5.minutes.to_i}"
-        x + "&scope=admin"
-      end
+      redirect_uri_path(
+        access_token: access_token.to_jwt,
+        token_type: 'Bearer',
+        expires_in: 5.minutes.to_i,
+        scope: :admin,
+        state: state
+      )
     else
-      error_uri(error: 'unsupported_response_type', state: state)
+      redirect_uri_path(error: 'unsupported_response_type', state: state)
     end
   end
 
-  def error_uri(state: nil, error: nil)
-    redirect_uri_path(state: state) do |x|
-      "#{x}#error=#{error}"
-    end
-  end
-
-  private
-
-  def redirect_uri_path(state: nil)
-    x = yield redirect_uri
-    state.present? ? "#{x}&state=#{state}" : x
+  def redirect_uri_path(fragments = {})
+    "#{redirect_uri}#" + fragments.map do |(key, value)|
+      "#{key}=#{value}" if value.present?
+    end.compact.join("&")
   end
 end
