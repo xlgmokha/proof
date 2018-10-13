@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Client < ApplicationRecord
+  RESPONSE_TYPES = %w[code token].freeze
   audited
   has_secure_token :secret
   has_many :authorizations
@@ -25,6 +26,14 @@ class Client < ApplicationRecord
 
   def to_param
     uuid
+  end
+
+  def valid_redirect_uri?(redirect_uri)
+    self.redirect_uri == redirect_uri
+  end
+
+  def valid_response_type?(response_type)
+    RESPONSE_TYPES.include?(response_type)
   end
 
   def redirect_url_for(user, response_type, state)

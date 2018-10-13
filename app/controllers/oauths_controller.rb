@@ -6,19 +6,15 @@ class OauthsController < ApplicationController
   def show
     @client = Client.find_by!(uuid: params[:client_id])
 
-    if @client.redirect_uri != params[:redirect_uri]
-      return redirect_to @client.redirect_url(
-        error: :invalid_request,
-        state: params[:state]
-      )
-    end
+    return redirect_to @client.redirect_url(
+      error: :invalid_request,
+      state: params[:state]
+    ) unless @client.valid_redirect_uri?(params[:redirect_uri])
 
-    unless VALID_RESPONSE_TYPES.include?(params[:response_type])
-      return redirect_to @client.redirect_url(
-        error: :unsupported_response_type,
-        state: params[:state]
-      )
-    end
+    return redirect_to @client.redirect_url(
+      error: :unsupported_response_type,
+      state: params[:state]
+    ) unless @client.valid_response_type?(params[:response_type])
 
     session[:oauth] = {
       client_id: params[:client_id],
