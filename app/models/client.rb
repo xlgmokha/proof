@@ -27,18 +27,34 @@ class Client < ApplicationRecord
     uuid
   end
 
-  def redirect_uri_path(code: nil, access_token: nil, token_type: "Bearer", expires_in: nil, scope: "", state: nil, error: nil)
-    result = redirect_uri
-    if code
-      result += '?code=' + code
-    elsif access_token
-      result += '#access_token=' + access_token
-      result += "&token_type=#{token_type}"
-      result += "&expires_in=#{expires_in.seconds.to_i}" if expires_in.present?
-      result += "&scope=#{scope}" if scope.present?
-    elsif error
-      result += '#error=' + error
+  def redirect_uri_for(authorization, response_type, state)
+    if response_type == 'code'
+      redirect_uri_path(state: state) do |x|
+        "#{x}?code=#{authorization.code}"
+      end
+    elsif response_type == 'token'
+      access_token, = authorization.issue_tokens_to(
+        self, token_types: [:access]
+      )
+      redirect_uri_path(state: state) do |x|
+        x += '#access_token=' + access_token.to_jwt
+        x += "&token_type=Bearer"
+        x += "&expires_in=#{5.minutes.to_i}"
+        x + "&scope=admin"
+      end
     end
+  end
+
+  def error_uri(state: nil, error: nil)
+    redirect_uri_path(state: state) do |x|
+      "#{x}#error=#{error}"
+    end
+  end
+
+  def redirect_uri_path(code: nil, state: nil)
+    result = redirect_uri
+    result = yield result if block_given?
+    result += '?code=' + code if code
     result += "&state=#{state}" if state.present?
     result
   end
