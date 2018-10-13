@@ -57,8 +57,10 @@ class Client < ApplicationRecord
   end
 
   def redirect_url(fragments = {})
-    "#{redirect_uri}#" + fragments.map do |(key, value)|
-      "#{key}=#{value}" if value.present?
-    end.compact.join("&")
+    URI.parse(
+      "#{redirect_uri}#" + fragments.map do |(key, value)|
+        "#{key}=#{value}" if value.present?
+      end.compact.join("&")
+    ).to_s
   end
 end

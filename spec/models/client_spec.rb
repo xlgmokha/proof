@@ -10,4 +10,13 @@ RSpec.describe Client do
     specify { expect(build(:client, uuid: 'invalid')).to be_invalid }
     specify { expect(build(:client, name: nil)).to be_invalid }
   end
+
+  describe "#redirect_url" do
+    subject { build(:client) }
+    let(:code) { SecureRandom.uuid }
+    let(:redirect_uri) { subject.redirect_uri }
+
+    specify { expect(subject.redirect_url(code: code)).to eql("#{redirect_uri}#code=#{code}") }
+    specify { expect { subject.redirect_url(state: '<script>alert("hi");</script>') }.to raise_error(URI::InvalidURIError) }
+  end
 end
