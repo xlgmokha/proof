@@ -61,7 +61,7 @@ RSpec.describe '/oauth' do
             post "/oauth"
           end
 
-          specify { expect(response).to redirect_to(client.redirect_uri_path(code: Authorization.last.code, state: state)) }
+          specify { expect(response).to redirect_to(client.redirect_url(code: Authorization.last.code, state: state)) }
         end
 
         context "when the client requested a token" do

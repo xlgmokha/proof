@@ -27,14 +27,15 @@ class Client < ApplicationRecord
     uuid
   end
 
-  def redirect_uri_for(authorization, response_type, state)
+  def redirect_url_for(user, response_type, state)
+    authorization = authorizations.create!(user: user)
     if response_type == 'code'
-      redirect_uri_path(code: authorization.code, state: state)
+      redirect_url(code: authorization.code, state: state)
     elsif response_type == 'token'
       access_token, = authorization.issue_tokens_to(
         self, token_types: [:access]
       )
-      redirect_uri_path(
+      redirect_url(
         access_token: access_token.to_jwt,
         token_type: 'Bearer',
         expires_in: 5.minutes.to_i,
@@ -42,11 +43,11 @@ class Client < ApplicationRecord
         state: state
       )
     else
-      redirect_uri_path(error: 'unsupported_response_type', state: state)
+      redirect_url(error: 'unsupported_response_type', state: state)
     end
   end
 
-  def redirect_uri_path(fragments = {})
+  def redirect_url(fragments = {})
     "#{redirect_uri}#" + fragments.map do |(key, value)|
       "#{key}=#{value}" if value.present?
     end.compact.join("&")
