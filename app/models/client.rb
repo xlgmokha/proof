@@ -37,11 +37,13 @@ class Client < ApplicationRecord
         self, token_types: [:access]
       )
       redirect_uri_path(state: state) do |x|
-        x += '#access_token=' + access_token.to_jwt
+        x += "#access_token=#{access_token.to_jwt}"
         x += "&token_type=Bearer"
         x += "&expires_in=#{5.minutes.to_i}"
         x + "&scope=admin"
       end
+    else
+      error_uri(error: 'unsupported_response_type', state: state)
     end
   end
 
