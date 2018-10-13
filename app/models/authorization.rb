@@ -15,18 +15,11 @@ class Authorization < ApplicationRecord
     self.expired_at = 10.minutes.from_now unless expired_at.present?
   end
 
-  def issue_tokens_to(client, token_type: :all)
+  def issue_tokens_to(client, token_types: [:access, :refresh])
     transaction do
       revoke!
-      if token_type == :all
-        [
-          tokens.create!(subject: user, audience: client, token_type: :access),
-          tokens.create!(subject: user, audience: client, token_type: :refresh),
-        ]
-      elsif token_type == :access
-        tokens.create!(subject: user, audience: client, token_type: :access)
-      elsif token_type == :refresh
-        tokens.create!(subject: user, audience: client, token_type: :refresh)
+      token_types.map do |x|
+        tokens.create!(subject: user, audience: client, token_type: x)
       end
     end
   end

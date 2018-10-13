@@ -43,18 +43,11 @@ class Token < ApplicationRecord
     @to_jwt ||= BearerToken.new.encode(claims(custom_claims))
   end
 
-  def issue_tokens_to(client, token_type: :all)
+  def issue_tokens_to(client, token_types: [:access, :refresh])
     transaction do
       revoke!
-      if token_type == :all
-        [
-          Token.create!(subject: subject, audience: client, token_type: :access),
-          Token.create!(subject: subject, audience: client, token_type: :refresh),
-        ]
-      elsif token_type == :access
-        Token.create!(subject: subject, audience: client, token_type: :access)
-      elsif token_type == :refresh
-        Token.create!(subject: subject, audience: client, token_type: :refresh)
+      token_types.map do |x|
+        Token.create!(subject: subject, audience: client, token_type: x)
       end
     end
   end

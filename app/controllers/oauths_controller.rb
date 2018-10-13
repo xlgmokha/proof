@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class OauthsController < ApplicationController
-  VALID_RESPONSE_TYPES = [ 'code', 'token' ]
+  VALID_RESPONSE_TYPES = %w[code token].freeze
 
   def show
     @client = Client.find_by!(uuid: params[:client_id])
@@ -13,7 +13,7 @@ class OauthsController < ApplicationController
       )
     end
 
-    if !VALID_RESPONSE_TYPES.include?(params[:response_type])
+    unless VALID_RESPONSE_TYPES.include?(params[:response_type])
       return redirect_to @client.redirect_uri_path(
         error: 'unsupported_response_type',
         state: params[:state]
@@ -33,13 +33,15 @@ class OauthsController < ApplicationController
     client = Client.find_by!(uuid: session[:oauth][:client_id])
     authorization = client.authorizations.create!(user: current_user)
 
-    if 'code' == session[:oauth][:response_type]
+    if session[:oauth][:response_type] == 'code'
       redirect_to client.redirect_uri_path(
         code: authorization.code,
         state: session[:oauth][:state]
       )
-    elsif 'token' == session[:oauth][:response_type]
-      @access_token = authorization.issue_tokens_to(client, token_type: :access)
+    elsif session[:oauth][:response_type] == 'token'
+      @access_token, = authorization.issue_tokens_to(
+        client, token_types: [:access]
+      )
 
       redirect_to client.redirect_uri_path(
         access_token: @access_token.to_jwt,
