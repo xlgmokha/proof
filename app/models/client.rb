@@ -7,8 +7,8 @@ class Client < ApplicationRecord
   has_many :authorizations
 
   validates :name, presence: true
-  validates :redirect_uri, presence: true, format: { with: /\A#{URI.regexp(%w[http https])}\z/ }
-  validates :uuid, presence: true, format: { with: ApplicationRecord::UUID }
+  validates :redirect_uri, presence: true, format: { with: URI_REGEX }
+  validates :uuid, presence: true, format: { with: UUID }
 
   after_initialize do
     self.uuid = SecureRandom.uuid unless uuid
