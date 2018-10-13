@@ -79,7 +79,7 @@ RSpec.describe '/oauth' do
         context "when the client did not make an appropriate request" do
           before { post "/oauth" }
 
-          specify { expect(response).to have_http_status(:not_found) }
+          specify { expect(response).to have_http_status(:bad_request) }
         end
       end
     end

@@ -8,14 +8,14 @@ class OauthsController < ApplicationController
 
     if @client.redirect_uri != params[:redirect_uri]
       return redirect_to @client.redirect_uri_path(
-        error: 'invalid_request',
+        error: :invalid_request,
         state: params[:state]
       )
     end
 
     unless VALID_RESPONSE_TYPES.include?(params[:response_type])
       return redirect_to @client.redirect_uri_path(
-        error: 'unsupported_response_type',
+        error: :unsupported_response_type,
         state: params[:state]
       )
     end
@@ -28,12 +28,13 @@ class OauthsController < ApplicationController
   end
 
   def create
-    return render_error(:not_found) if session[:oauth].nil?
+    return render_error(:bad_request) if session[:oauth].nil?
 
     client = Client.find_by!(uuid: session[:oauth][:client_id])
-    authorization = client.authorizations.create!(user: current_user)
-    response_type = session[:oauth][:response_type]
-    state = session[:oauth][:state]
-    redirect_to client.redirect_uri_for(authorization, response_type, state)
+    redirect_to client.redirect_uri_for(
+      client.authorizations.create!(user: current_user),
+      session[:oauth][:response_type],
+      session[:oauth][:state]
+    )
   end
 end
