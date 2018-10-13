@@ -3,20 +3,16 @@
 class Client < ApplicationRecord
   RESPONSE_TYPES = %w[code token].freeze
   audited
-  has_secure_token :secret
+  has_secure_password
   has_many :authorizations
 
   validates :name, presence: true
-  validates :redirect_uri, presence: true, format: { with: /\A#{URI::regexp(['http', 'https'])}\z/ }
+  validates :redirect_uri, presence: true, format: { with: /\A#{URI.regexp(%w[http https])}\z/ }
   validates :uuid, presence: true, format: { with: ApplicationRecord::UUID }
 
   after_initialize do
     self.uuid = SecureRandom.uuid unless uuid
-    self.secret = self.class.generate_unique_secure_token unless secret
-  end
-
-  def authenticate(provided_secret)
-    return self if secret == provided_secret
+    self.password = SecureRandom.base58(24) unless password_digest
   end
 
   def access_token

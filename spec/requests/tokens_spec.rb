@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe '/tokens' do
   let(:client) { create(:client) }
-  let(:credentials) { ActionController::HttpAuthentication::Basic.encode_credentials(client.uuid, client.secret) }
+  let(:credentials) { ActionController::HttpAuthentication::Basic.encode_credentials(client.uuid, client.password) }
   let(:headers) { { 'Authorization' => credentials } }
 
   describe "POST /oauth/token" do

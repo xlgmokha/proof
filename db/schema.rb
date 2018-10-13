@@ -50,7 +50,7 @@ ActiveRecord::Schema.define(version: 2018_09_23_234502) do
   create_table "clients", force: :cascade do |t|
     t.string "uuid", null: false
     t.string "name", null: false
-    t.string "secret", null: false
+    t.string "password_digest", null: false
     t.string "redirect_uri", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

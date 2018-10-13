@@ -18,7 +18,7 @@ module My
     private
 
     def secure_params
-      params.require(:client).permit(:name, :secret, :redirect_uri)
+      params.require(:client).permit(:name, :password, :redirect_uri)
     end
   end
 end
