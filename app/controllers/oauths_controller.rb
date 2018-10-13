@@ -36,6 +36,8 @@ class OauthsController < ApplicationController
       oauth[:response_type],
       oauth[:state]
     )
+  rescue StandardError
+    redirect_to client.redirect_url(error: :invalid_request)
   end
 
   private

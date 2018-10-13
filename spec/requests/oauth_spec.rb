@@ -81,6 +81,17 @@ RSpec.describe '/oauth' do
 
           specify { expect(response).to have_http_status(:bad_request) }
         end
+
+        context "when the state parameter looks malicious" do
+          let(:state) { "<script>alert('hi');</script>" }
+
+          before :each do
+            get "/oauth", params: { client_id: client.to_param, response_type: 'token', state: state, redirect_uri: client.redirect_uri }
+            post "/oauth"
+          end
+
+          specify { expect(response).to redirect_to(client.redirect_url(error: 'invalid_request')) }
+        end
       end
     end
   end
