@@ -53,11 +53,10 @@ class Client < ApplicationRecord
     end
   end
 
-  def redirect_uri_path(code: nil, state: nil)
-    result = redirect_uri
-    result = yield result if block_given?
-    result += '?code=' + code if code
-    result += "&state=#{state}" if state.present?
-    result
+  private
+
+  def redirect_uri_path(state: nil)
+    x = yield redirect_uri
+    state.present? ? "#{x}&state=#{state}" : x
   end
 end
