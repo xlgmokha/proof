@@ -4,22 +4,26 @@ class OauthsController < ApplicationController
   VALID_RESPONSE_TYPES = %w[code token].freeze
 
   def show
-    @client = Client.find_by!(uuid: params[:client_id])
+    @client = Client.find_by!(uuid: secure_params[:client_id])
 
-    return redirect_to @client.redirect_url(
-      error: :invalid_request,
-      state: params[:state]
-    ) unless @client.valid_redirect_uri?(params[:redirect_uri])
+    unless @client.valid_redirect_uri?(secure_params[:redirect_uri])
+      return redirect_to @client.redirect_url(
+        error: :invalid_request,
+        state: secure_params[:state]
+      )
+    end
 
-    return redirect_to @client.redirect_url(
-      error: :unsupported_response_type,
-      state: params[:state]
-    ) unless @client.valid_response_type?(params[:response_type])
+    unless @client.valid_response_type?(secure_params[:response_type])
+      return redirect_to @client.redirect_url(
+        error: :unsupported_response_type,
+        state: secure_params[:state]
+      )
+    end
 
     session[:oauth] = {
-      client_id: params[:client_id],
-      response_type: params[:response_type],
-      state: params[:state],
+      client_id: secure_params[:client_id],
+      response_type: secure_params[:response_type],
+      state: secure_params[:state],
     }
   end
 
@@ -32,5 +36,11 @@ class OauthsController < ApplicationController
       oauth[:response_type],
       oauth[:state]
     )
+  end
+
+  private
+
+  def secure_params
+    params.permit(:client_id, :response_type, :redirect_uri, :state)
   end
 end
