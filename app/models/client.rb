@@ -36,8 +36,16 @@ class Client < ApplicationRecord
     RESPONSE_TYPES.include?(response_type)
   end
 
-  def redirect_url_for(user, response_type, state)
-    authorization = authorizations.create!(user: user)
+  def redirect_url_for(user, oauth)
+    response_type = oauth[:response_type]
+    state = oauth[:state]
+
+    authorization = authorizations.create!(
+      user: user,
+      challenge: oauth[:code_challenge],
+      challenge_method: oauth[:code_challenge_method] == 'S256' ? :sha256 : :plain
+    )
+
     if response_type == 'code'
       redirect_url(code: authorization.code, state: state)
     elsif response_type == 'token'

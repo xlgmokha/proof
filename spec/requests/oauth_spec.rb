@@ -79,20 +79,23 @@ RSpec.describe '/oauth' do
         context "when the client requested a token using a valid PKCE with S256" do
           let(:token) { Token.access.active.last&.to_jwt }
           let(:code_verifier) { SecureRandom.hex(128) }
+          let(:code_challenge) { Base64.urlsafe_encode64(Digest::SHA256.hexdigest(code_verifier)) }
 
           before :each do
             get "/oauth", params: {
               client_id: client.to_param,
               response_type: 'code',
-              code_challenge: Base64.urlsafe_encode64(Digest::SHA256.hexdigest(code_verifier)),
+              code_challenge: code_challenge,
               code_challenge_method: 'S256',
               state: state,
               redirect_uri: client.redirect_uri
             }
-            post "/oauth", params: { code_verifier: code_verifier }
+            post "/oauth"
           end
 
           specify { expect(response).to redirect_to(client.redirect_url(code: Authorization.last.code, state: state)) }
+          specify { expect(Authorization.last).to be_sha256 }
+          specify { expect(Authorization.last.challenge).to eql(code_challenge) }
         end
 
         context "when the client requested a token using a valid PKCE with plain" do
@@ -108,10 +111,12 @@ RSpec.describe '/oauth' do
               state: state,
               redirect_uri: client.redirect_uri
             }
-            post "/oauth", params: { code_verifier: code_verifier }
+            post "/oauth"
           end
 
           specify { expect(response).to redirect_to(client.redirect_url(code: Authorization.last.code, state: state)) }
+          specify { expect(Authorization.last).to be_plain }
+          specify { expect(Authorization.last.challenge).to eql(code_verifier) }
         end
 
         context "when the client requested a token using a valid PKCE with the default code_challenge_method" do
@@ -126,10 +131,12 @@ RSpec.describe '/oauth' do
               state: state,
               redirect_uri: client.redirect_uri
             }
-            post "/oauth", params: { code_verifier: code_verifier }
+            post "/oauth"
           end
 
           specify { expect(response).to redirect_to(client.redirect_url(code: Authorization.last.code, state: state)) }
+          specify { expect(Authorization.last).to be_plain }
+          specify { expect(Authorization.last.challenge).to eql(code_verifier) }
         end
 
         context "when the client did not make an appropriate request" do

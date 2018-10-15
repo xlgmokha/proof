@@ -38,6 +38,8 @@ ActiveRecord::Schema.define(version: 2018_09_23_234502) do
     t.integer "user_id"
     t.integer "client_id"
     t.string "code", null: false
+    t.string "challenge"
+    t.integer "challenge_method", default: 0
     t.datetime "expired_at", null: false
     t.datetime "revoked_at"
     t.datetime "created_at", null: false

@@ -20,29 +20,22 @@ class OauthsController < ApplicationController
       )
     end
 
-    session[:oauth] = {
-      client_id: secure_params[:client_id],
-      response_type: secure_params[:response_type],
-      state: secure_params[:state],
-    }
+    session[:oauth] = secure_params.to_h
   end
 
   def create(oauth = session[:oauth])
     return render_error(:bad_request) if oauth.nil?
 
     client = Client.find_by!(uuid: oauth[:client_id])
-    redirect_to client.redirect_url_for(
-      current_user,
-      oauth[:response_type],
-      oauth[:state]
-    )
-  rescue StandardError
+    redirect_to client.redirect_url_for(current_user, oauth)
+  rescue StandardError => error
+    logger.error(error)
     redirect_to client.redirect_url(error: :invalid_request)
   end
 
   private
 
   def secure_params
-    params.permit(:client_id, :response_type, :redirect_uri, :state)
+    params.permit(:client_id, :response_type, :redirect_uri, :state, :code_challenge, :code_challenge_method)
   end
 end
