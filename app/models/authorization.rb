@@ -19,11 +19,12 @@ class Authorization < ApplicationRecord
   def valid_verifier?(code_verifier)
     return true unless challenge.present?
 
-    if sha256?
-      challenge == Base64.urlsafe_encode64(Digest::SHA256.hexdigest(code_verifier))
-    else
-      challenge == code_verifier
-    end
+    challenge ==
+      if sha256?
+        Base64.urlsafe_encode64(Digest::SHA256.hexdigest(code_verifier))
+      else
+        code_verifier
+      end
   end
 
   def issue_tokens_to(client, token_types: [:access, :refresh])

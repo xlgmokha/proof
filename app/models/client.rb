@@ -37,18 +37,16 @@ class Client < ApplicationRecord
   end
 
   def redirect_url_for(user, oauth)
-    response_type = oauth[:response_type]
-    state = oauth[:state]
-
+    sha256 = oauth[:code_challenge_method] == 'S256'
     authorization = authorizations.create!(
       user: user,
       challenge: oauth[:code_challenge],
-      challenge_method: oauth[:code_challenge_method] == 'S256' ? :sha256 : :plain
+      challenge_method: sha256 ? :sha256 : :plain
     )
 
-    if response_type == 'code'
-      redirect_url(code: authorization.code, state: state)
-    elsif response_type == 'token'
+    if oauth[:response_type] == 'code'
+      redirect_url(code: authorization.code, state: oauth[:state])
+    elsif oauth[:response_type] == 'token'
       access_token, = authorization.issue_tokens_to(
         self, token_types: [:access]
       )
@@ -57,7 +55,7 @@ class Client < ApplicationRecord
         token_type: 'Bearer',
         expires_in: 5.minutes.to_i,
         scope: :admin,
-        state: state
+        state: oauth[:state]
       )
     else
       redirect_url(error: 'unsupported_response_type', state: state)

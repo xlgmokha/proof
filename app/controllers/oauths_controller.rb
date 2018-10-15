@@ -36,6 +36,9 @@ class OauthsController < ApplicationController
   private
 
   def secure_params
-    params.permit(:client_id, :response_type, :redirect_uri, :state, :code_challenge, :code_challenge_method)
+    params.permit(
+      :client_id, :response_type, :redirect_uri,
+      :state, :code_challenge, :code_challenge_method
+    )
   end
 end
