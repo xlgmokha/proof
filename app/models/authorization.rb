@@ -16,6 +16,16 @@ class Authorization < ApplicationRecord
     self.expired_at = 10.minutes.from_now unless expired_at.present?
   end
 
+  def valid_verifier?(code_verifier)
+    return true unless challenge.present?
+
+    if sha256?
+      challenge == Base64.urlsafe_encode64(Digest::SHA256.hexdigest(code_verifier))
+    else
+      challenge == code_verifier
+    end
+  end
+
   def issue_tokens_to(client, token_types: [:access, :refresh])
     transaction do
       revoke!

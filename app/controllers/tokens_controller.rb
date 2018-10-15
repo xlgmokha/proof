@@ -40,9 +40,9 @@ class TokensController < ApplicationController
     render "bad_request", formats: :json, status: :bad_request
   end
 
-  def authorization_code_grant(code = params[:code])
+  def authorization_code_grant(code = params[:code], verifier = params[:code_verifier])
     authorization = current_client.authorizations.active.find_by!(code: code)
-    authorization.issue_tokens_to(current_client)
+    authorization.issue_tokens_to(current_client) if authorization.valid_verifier?(verifier)
   end
 
   def refresh_grant(refresh_token = params[:refresh_token])

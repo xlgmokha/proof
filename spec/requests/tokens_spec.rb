@@ -50,6 +50,82 @@ RSpec.describe '/tokens' do
         let(:json) { JSON.parse(response.body, symbolize_names: true) }
         specify { expect(json[:error]).to eql('invalid_request') }
       end
+
+      context "when the authorization was created with the code_challenge_method of SHA256" do
+        let(:code_verifier) { SecureRandom.hex(128) }
+        before { post '/oauth/token', params: { grant_type: 'authorization_code', code: SecureRandom.hex(20) }, headers: headers }
+
+        let(:authorization) { create(:authorization, client: client, challenge: Base64.urlsafe_encode64(Digest::SHA256.hexdigest(code_verifier)) , challenge_method: :sha256) }
+
+        before { post '/oauth/token', params: { grant_type: 'authorization_code', code: authorization.code, code_verifier: code_verifier }, headers: headers }
+
+        specify { expect(response).to have_http_status(:ok) }
+        specify { expect(response.headers['Content-Type']).to include('application/json') }
+        specify { expect(response.headers['Cache-Control']).to include('no-store') }
+        specify { expect(response.headers['Pragma']).to eql('no-cache') }
+
+        let(:json) { JSON.parse(response.body, symbolize_names: true) }
+        specify { expect(json[:access_token]).to be_present }
+        specify { expect(json[:token_type]).to eql('Bearer') }
+        specify { expect(json[:expires_in]).to eql(1.hour.to_i) }
+        specify { expect(json[:refresh_token]).to be_present }
+        specify { expect(authorization.reload).to be_revoked }
+      end
+
+      context "when the authorization was created with the code_challenge_method of plain" do
+        let(:code_verifier) { SecureRandom.hex(128) }
+        before { post '/oauth/token', params: { grant_type: 'authorization_code', code: SecureRandom.hex(20) }, headers: headers }
+
+        let(:authorization) { create(:authorization, client: client, challenge: code_verifier , challenge_method: :plain) }
+
+        before { post '/oauth/token', params: { grant_type: 'authorization_code', code: authorization.code, code_verifier: code_verifier }, headers: headers }
+
+        specify { expect(response).to have_http_status(:ok) }
+        specify { expect(response.headers['Content-Type']).to include('application/json') }
+        specify { expect(response.headers['Cache-Control']).to include('no-store') }
+        specify { expect(response.headers['Pragma']).to eql('no-cache') }
+
+        let(:json) { JSON.parse(response.body, symbolize_names: true) }
+        specify { expect(json[:access_token]).to be_present }
+        specify { expect(json[:token_type]).to eql('Bearer') }
+        specify { expect(json[:expires_in]).to eql(1.hour.to_i) }
+        specify { expect(json[:refresh_token]).to be_present }
+        specify { expect(authorization.reload).to be_revoked }
+      end
+
+      context "when the SHA256 challenge is invalid" do
+        let(:code_verifier) { SecureRandom.hex(128) }
+        before { post '/oauth/token', params: { grant_type: 'authorization_code', code: SecureRandom.hex(20) }, headers: headers }
+
+        let(:authorization) { create(:authorization, client: client, challenge: Base64.urlsafe_encode64(Digest::SHA256.hexdigest(code_verifier)) , challenge_method: :sha256) }
+
+        before { post '/oauth/token', params: { grant_type: 'authorization_code', code: authorization.code, code_verifier: 'invalid' }, headers: headers }
+
+        specify { expect(response).to have_http_status(:bad_request) }
+        specify { expect(response.headers['Content-Type']).to include('application/json') }
+        specify { expect(response.headers['Cache-Control']).to include('no-store') }
+        specify { expect(response.headers['Pragma']).to eql('no-cache') }
+
+        let(:json) { JSON.parse(response.body, symbolize_names: true) }
+        specify { expect(json[:error]).to eql('invalid_request') }
+      end
+
+      context "when the plain challenge is invalid" do
+        let(:code_verifier) { SecureRandom.hex(128) }
+        before { post '/oauth/token', params: { grant_type: 'authorization_code', code: SecureRandom.hex(20) }, headers: headers }
+
+        let(:authorization) { create(:authorization, client: client, challenge: code_verifier, challenge_method: :plain) }
+
+        before { post '/oauth/token', params: { grant_type: 'authorization_code', code: authorization.code, code_verifier: 'invalid' }, headers: headers }
+
+        specify { expect(response).to have_http_status(:bad_request) }
+        specify { expect(response.headers['Content-Type']).to include('application/json') }
+        specify { expect(response.headers['Cache-Control']).to include('no-store') }
+        specify { expect(response.headers['Pragma']).to eql('no-cache') }
+
+        let(:json) { JSON.parse(response.body, symbolize_names: true) }
+        specify { expect(json[:error]).to eql('invalid_request') }
+      end
     end
 
     context "when requesting a token using the client_credentials grant" do
