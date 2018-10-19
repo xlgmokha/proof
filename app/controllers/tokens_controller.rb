@@ -23,6 +23,15 @@ class TokensController < ApplicationController
     end
   end
 
+  def revoke
+    claims = Token.claims_for(params[:token], token_type: :any)
+    Token.find_by(uuid: claims[:jti]).revoke! unless claims.empty?
+    render plain: "", status: :ok
+  rescue StandardError => error
+    logger.error(error)
+    render plain: "", status: :ok
+  end
+
   private
 
   attr_reader :current_client

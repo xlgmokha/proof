@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   resource :response, only: [:show]
   resource :tokens, only: [:create] do
     post :introspect
+    post :revoke
   end
 
   namespace :my do
