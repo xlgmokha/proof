@@ -15,7 +15,6 @@ describe '/scim/v1/.search' do
 
   describe "POST /scim/v2/.search" do
     let(:request_body) do
-      let(:json) { JSON.parse(response.body, symbolize_names: true) }
       {
         "schemas": [Scim::Shady::Messages::SEARCH_REQUEST],
         "attributes": %w[displayName userName],
@@ -24,6 +23,7 @@ describe '/scim/v1/.search' do
         "count": 10
       }
     end
+    let(:json) { JSON.parse(response.body, symbolize_names: true) }
 
     before { post "/scim/v2/.search", headers: headers, params: request_body.to_json }
 
