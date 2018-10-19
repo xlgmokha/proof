@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe '/oauth' do
@@ -7,19 +9,21 @@ RSpec.describe '/oauth' do
     before { http_login(current_user) }
 
     describe "GET /oauth" do
-      let(:state) { SecureRandom.uuid  }
+      let(:state) { SecureRandom.uuid }
 
       context "when the client id is known" do
         let(:client) { create(:client) }
 
         context "when requesting an authorization code" do
           before { get "/oauth", params: { client_id: client.to_param, response_type: 'code', state: state, redirect_uri: client.redirect_uri } }
+
           specify { expect(response).to have_http_status(:ok) }
           specify { expect(response.body).to include(CGI.escapeHTML(client.name)) }
         end
 
         context "when requesting an access token" do
           before { get "/oauth", params: { client_id: client.to_param, response_type: 'token', state: state, redirect_uri: client.redirect_uri } }
+
           specify { expect(response).to have_http_status(:ok) }
           specify { expect(response.body).to include(CGI.escapeHTML(client.name)) }
         end
@@ -39,10 +43,11 @@ RSpec.describe '/oauth' do
     end
 
     describe "GET /oauth/authorize" do
-      let(:state) { SecureRandom.uuid  }
+      let(:state) { SecureRandom.uuid }
 
       context "when the client id is known" do
         let(:client) { create(:client) }
+
         before { get "/oauth/authorize", params: { client_id: client.to_param, response_type: 'code', state: state, redirect_uri: client.redirect_uri } }
 
         specify { expect(response).to have_http_status(:ok) }
@@ -56,7 +61,7 @@ RSpec.describe '/oauth' do
         let(:state) { SecureRandom.uuid }
 
         context "when the client requested an authorization code" do
-          before :each do
+          before do
             get "/oauth", params: { client_id: client.to_param, response_type: 'code', state: state, redirect_uri: client.redirect_uri }
             post "/oauth"
           end
@@ -68,7 +73,7 @@ RSpec.describe '/oauth' do
           let(:token) { Token.access.active.last&.to_jwt }
           let(:scope) { "admin" }
 
-          before :each do
+          before do
             get "/oauth", params: { client_id: client.to_param, response_type: 'token', state: state, redirect_uri: client.redirect_uri }
             post "/oauth"
           end
@@ -81,7 +86,7 @@ RSpec.describe '/oauth' do
           let(:code_verifier) { SecureRandom.hex(128) }
           let(:code_challenge) { Base64.urlsafe_encode64(Digest::SHA256.hexdigest(code_verifier)) }
 
-          before :each do
+          before do
             get "/oauth", params: {
               client_id: client.to_param,
               response_type: 'code',
@@ -102,7 +107,7 @@ RSpec.describe '/oauth' do
           let(:token) { Token.access.active.last&.to_jwt }
           let(:code_verifier) { SecureRandom.hex(128) }
 
-          before :each do
+          before do
             get "/oauth", params: {
               client_id: client.to_param,
               response_type: 'code',
@@ -123,7 +128,7 @@ RSpec.describe '/oauth' do
           let(:token) { Token.access.active.last&.to_jwt }
           let(:code_verifier) { SecureRandom.hex(128) }
 
-          before :each do
+          before do
             get "/oauth", params: {
               client_id: client.to_param,
               response_type: 'code',
@@ -148,7 +153,7 @@ RSpec.describe '/oauth' do
         context "when the state parameter looks malicious" do
           let(:state) { "<script>alert('hi');</script>" }
 
-          before :each do
+          before do
             get "/oauth", params: { client_id: client.to_param, response_type: 'token', state: state, redirect_uri: client.redirect_uri }
             post "/oauth"
           end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Token, type: :model do
@@ -5,8 +7,10 @@ RSpec.describe Token, type: :model do
     subject { create(:access_token) }
 
     context "when the token has not been revoked yet" do
-      before { freeze_time }
-      before { subject.revoke! }
+      before do
+        freeze_time
+        subject.revoke!
+      end
 
       specify { expect(subject.reload.revoked_at.to_i).to eql(DateTime.now.to_i) }
     end
@@ -28,6 +32,7 @@ RSpec.describe Token, type: :model do
 
   describe ".claims_for" do
     subject { described_class }
+
     let(:access_token) { build_stubbed(:access_token).to_jwt }
     let(:refresh_token) { build_stubbed(:refresh_token).to_jwt }
 

@@ -34,19 +34,22 @@ group :development do
   gem 'brakeman', '~> 4.3'
   gem 'bundler-audit', '~> 0.6'
   gem 'listen', '>= 3.0.5', '< 3.2'
-  gem 'rubocop', '~> 0.58'
+  gem 'rubocop', '~> 0.59', require: false
   gem 'web-console', '>= 3.3.0'
 end
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+  gem 'i18n-tasks', '~> 0.9.24'
+  gem 'rspec-rails', '~> 3.8'
+  gem 'sqlite3'
+end
+group :test do
   gem 'capybara', '~> 3.6'
   gem 'capybara-screenshot', '~> 1.0'
   gem 'factory_bot_rails', '~> 4.11'
   gem 'ffaker', '~> 2.10'
-  gem 'i18n-tasks', '~> 0.9.24'
-  gem 'rspec-rails', '~> 3.7'
+  gem 'rubocop-rspec', '~> 1.30'
   gem 'selenium-webdriver', '~> 3.14'
-  gem 'sqlite3'
   gem 'webmock', '~> 3.4'
 end
 group :production do

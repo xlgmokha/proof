@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe "/mfa" do
@@ -15,6 +17,7 @@ RSpec.describe "/mfa" do
     describe "POST /mfa" do
       context "when the code is correct" do
         let(:correct_code) { current_user.mfa.current_totp }
+
         before { post '/mfa', params: { mfa: { code: correct_code } } }
 
         specify { expect(response).to redirect_to(response_path) }
@@ -23,6 +26,7 @@ RSpec.describe "/mfa" do
 
       context "when the code is incorrect" do
         let(:incorrect_code) { rand(1_000) }
+
         before { post '/mfa', params: { mfa: { code: incorrect_code } } }
 
         specify { expect(response).to redirect_to(new_mfa_path) }

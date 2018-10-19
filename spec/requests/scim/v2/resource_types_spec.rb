@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe "/scim/v2/ResourceTypes" do
@@ -13,10 +15,11 @@ RSpec.describe "/scim/v2/ResourceTypes" do
 
   describe "GET /scim/v2/ResourceTypes" do
     before { get "/scim/v2/ResourceTypes", headers: headers }
+
     let(:json) { JSON.parse(response.body, symbolize_names: true) }
 
     specify { expect(response).to have_http_status(:ok) }
-    specify { expect(json.count).to eql(2) }
+    specify { expect(json.count).to be(2) }
     specify { expect(json[0][:schemas]).to match_array(["urn:ietf:params:scim:schemas:core:2.0:ResourceType"]) }
     specify { expect(json[0][:id]).to eql('User') }
     specify { expect(json[0][:name]).to eql('User') }
@@ -36,6 +39,7 @@ RSpec.describe "/scim/v2/ResourceTypes" do
 
   describe "GET /scim/v2/ResourceTypes/User" do
     before { get "/scim/v2/ResourceTypes/User", headers: headers }
+
     let(:json) { JSON.parse(response.body, symbolize_names: true) }
 
     specify { expect(response).to have_http_status(:ok) }
@@ -49,6 +53,7 @@ RSpec.describe "/scim/v2/ResourceTypes" do
 
   describe "GET /scim/v2/ResourceTypes/Group" do
     before { get "/scim/v2/ResourceTypes/Group", headers: headers }
+
     let(:json) { JSON.parse(response.body, symbolize_names: true) }
 
     specify { expect(response).to have_http_status(:ok) }

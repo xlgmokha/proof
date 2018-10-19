@@ -1,3 +1,4 @@
+require: rubocop-rspec
 # For a list of available cops see:
 # https://github.com/bbatsov/rubocop/blob/master/config/default.yml
 AllCops:
@@ -11,19 +12,44 @@ AllCops:
     - 'db/seeds.rb'
     - 'node_modules/**/*'
     - 'pkg/**/*'
-    - 'spec/**/*'
-    - 'test/**/*'
     - 'tmp/**/*'
     - 'vendor/**/*'
 
 Metrics/AbcSize:
   Enabled: false
 
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+
+Metrics/LineLength:
+  Exclude:
+    - 'spec/**/*'
+
 Metrics/MethodLength:
   Enabled: false
 
 Metrics/PerceivedComplexity:
   Enabled: false
+
+RSpec/DescribeClass:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Exclude:
+    - 'spec/system/**/*'
+
+RSpec/LetSetup:
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Max: 2
+
+RSpec/NamedSubject:
+  Enabled: false
+
+RSpec/NestedGroups:
+  Max: 5
 
 Style/Documentation:
   Enabled: false

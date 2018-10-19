@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 describe '/scim/v1/.search' do
@@ -12,26 +14,26 @@ describe '/scim/v1/.search' do
   end
 
   describe "POST /scim/v2/.search" do
-    it 'returns an empty set of results' do
-      body = {
+    let(:request_body) do
+      let(:json) { JSON.parse(response.body, symbolize_names: true) }
+      {
         "schemas": [Scim::Shady::Messages::SEARCH_REQUEST],
-        "attributes": ["displayName", "userName"],
+        "attributes": %w[displayName userName],
         "filter": "displayName sw \"smith\"",
         "startIndex": 1,
         "count": 10
       }
-      post "/scim/v2/.search", headers: headers, params: body.to_json
-
-      expect(response).to have_http_status(:ok)
-      expect(response.headers['Content-Type']).to eql('application/scim+json')
-      expect(response.body).to be_present
-
-      json = JSON.parse(response.body, symbolize_names: true)
-      expect(json[:schemas]).to match_array([Scim::Shady::Messages::LIST_RESPONSE])
-      expect(json[:totalResults]).to be_zero
-      expect(json[:itemsPerPage]).to be_zero
-      expect(json[:startIndex]).to eql(1)
-      expect(json[:Resources]).to be_empty
     end
+
+    before { post "/scim/v2/.search", headers: headers, params: request_body.to_json }
+
+    specify { expect(response).to have_http_status(:ok) }
+    specify { expect(response.headers['Content-Type']).to eql('application/scim+json') }
+    specify { expect(response.body).to be_present }
+    specify { expect(json[:schemas]).to match_array([Scim::Shady::Messages::LIST_RESPONSE]) }
+    specify { expect(json[:totalResults]).to be_zero }
+    specify { expect(json[:itemsPerPage]).to be_zero }
+    specify { expect(json[:startIndex]).to be(1) }
+    specify { expect(json[:Resources]).to be_empty }
   end
 end

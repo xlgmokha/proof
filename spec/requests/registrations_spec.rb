@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe '/registrations' do
@@ -11,10 +13,11 @@ RSpec.describe '/registrations' do
   describe "POST /registrations" do
     context "when the new registration data is valid" do
       let(:email) { FFaker::Internet.email }
+
       before { post "/registrations", params: { user: { email: email, password: "password" } } }
 
       specify { expect(response).to redirect_to(new_session_url) }
-      specify { expect(User.count).to eql(1) }
+      specify { expect(User.count).to be(1) }
       specify { expect(User.last.email).to eql(email) }
     end
 

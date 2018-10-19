@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe "/response" do
@@ -25,7 +27,7 @@ RSpec.describe "/response" do
           end
         end
 
-        before :each do
+        before do
           Saml::Kit.configuration.registry = registry
           allow(registry).to receive(:metadata_for).with(issuer).and_return(sp_metadata)
           get redirect_binding.serialize(Saml::Kit::AuthenticationRequest.builder, relay_state: relay_state)[0]
@@ -42,8 +44,10 @@ RSpec.describe "/response" do
         end
 
         context "when the SAML request is no longer valid" do
-          before { allow_any_instance_of(Saml::Kit::AuthenticationRequest).to receive(:valid?).and_return(false) }
-          before { get '/response' }
+          before do
+            allow_any_instance_of(Saml::Kit::AuthenticationRequest).to receive(:valid?).and_return(false)
+            get '/response'
+          end
 
           specify { expect(response).to have_http_status(:forbidden) }
         end

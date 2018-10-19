@@ -1,8 +1,11 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe '/my/mfa' do
   context "when logged in" do
     let(:current_user) { create(:user) }
+
     before { http_login(current_user) }
 
     describe "GET /my/mfa" do
@@ -10,11 +13,13 @@ RSpec.describe '/my/mfa' do
         let(:current_user) { create(:user, :mfa_configured) }
 
         before { get '/my/mfa' }
+
         specify { expect(response).to redirect_to(edit_my_mfa_path) }
       end
 
       context "when MFA is not set up" do
         before { get '/my/mfa' }
+
         specify { expect(response).to redirect_to(new_my_mfa_path) }
       end
     end
@@ -29,6 +34,7 @@ RSpec.describe '/my/mfa' do
 
       context "when mfa has been set up" do
         let(:current_user) { create(:user, :mfa_configured) }
+
         before { get '/my/mfa/new' }
 
         specify { expect(response).to redirect_to(edit_my_mfa_path) }
@@ -38,6 +44,7 @@ RSpec.describe '/my/mfa' do
     describe "POST /my/mfa" do
       context "when the secret is valid" do
         let(:secret) { SecureRandom.hex(20) }
+
         before { post '/my/mfa', params: { user: { mfa_secret: secret } } }
 
         specify { expect(current_user.reload.mfa_secret).to eql(secret) }

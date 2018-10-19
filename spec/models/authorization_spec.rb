@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Authorization, type: :model do
@@ -23,6 +25,7 @@ RSpec.describe Authorization, type: :model do
 
   describe ".active, .revoked, .expired" do
     subject { described_class }
+
     let!(:active) { create(:authorization) }
     let!(:expired) { create(:authorization, expired_at: 1.second.ago) }
     let!(:revoked) { create(:authorization, revoked_at: 1.second.ago) }

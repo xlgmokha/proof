@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
-describe SessionsController do
+describe "/sessions" do
   let(:registry) { Saml::Kit::DefaultRegistry.new }
   let(:issuer) { Saml::Kit.configuration.entity_id }
   let(:sp_metadata) do
@@ -15,6 +17,7 @@ describe SessionsController do
   def session_id_from(response)
     cookies = response.headers['Set-Cookie']
     return if cookies.nil?
+
     cookies.split("\;")[0].split("=")[1]
   end
 
@@ -23,11 +26,12 @@ describe SessionsController do
 
     context "when the user is already logged in" do
       let(:user) { create(:user) }
+
       before { http_login(user) }
 
       context "when a registered SAML request is provided" do
-        before { allow(registry).to receive(:metadata_for).with(issuer).and_return(sp_metadata) }
-        before :each do
+        before do
+          allow(registry).to receive(:metadata_for).with(issuer).and_return(sp_metadata)
           url, saml_params = post_binding.serialize(Saml::Kit::AuthenticationRequest.builder)
           post url, params: saml_params
           follow_redirect!
@@ -38,7 +42,7 @@ describe SessionsController do
       end
 
       context "when an unregistered SAML request is provided" do
-        before :each do
+        before do
           url, saml_params = post_binding.serialize(Saml::Kit::AuthenticationRequest.builder)
           post url, params: saml_params
         end
@@ -55,8 +59,8 @@ describe SessionsController do
 
     context "when the user is not logged in" do
       context "when a registered SAML request is provided" do
-        before { allow(registry).to receive(:metadata_for).with(issuer).and_return(sp_metadata) }
-        before :each do
+        before do
+          allow(registry).to receive(:metadata_for).with(issuer).and_return(sp_metadata)
           url, saml_params = post_binding.serialize(Saml::Kit::AuthenticationRequest.builder)
           post url, params: saml_params
         end
@@ -68,7 +72,7 @@ describe SessionsController do
       end
 
       context "when an unregistered SAML request is provided" do
-        before :each do
+        before do
           url, saml_params = post_binding.serialize(Saml::Kit::AuthenticationRequest.builder)
           post url, params: saml_params
         end
@@ -92,9 +96,11 @@ describe SessionsController do
       before { http_login(create(:user)) }
 
       context "when a registered SAML request is provided" do
-        before { allow(registry).to receive(:metadata_for).with(issuer).and_return(sp_metadata) }
-        before { get redirect_binding.serialize(Saml::Kit::AuthenticationRequest.builder)[0] }
-        before { follow_redirect! }
+        before do
+          allow(registry).to receive(:metadata_for).with(issuer).and_return(sp_metadata)
+          get redirect_binding.serialize(Saml::Kit::AuthenticationRequest.builder)[0]
+          follow_redirect!
+        end
 
         specify { expect(response).to have_http_status(:ok) }
         specify { expect(response.body).to include("Sending Response to Service Provider") }
@@ -115,8 +121,10 @@ describe SessionsController do
 
     context "when the user is not logged in" do
       context "when a registered SAML request is provided" do
-        before { allow(registry).to receive(:metadata_for).with(issuer).and_return(sp_metadata) }
-        before { get redirect_binding.serialize(Saml::Kit::AuthenticationRequest.builder)[0] }
+        before do
+          allow(registry).to receive(:metadata_for).with(issuer).and_return(sp_metadata)
+          get redirect_binding.serialize(Saml::Kit::AuthenticationRequest.builder)[0]
+        end
 
         specify { expect(response).to have_http_status(:ok) }
         specify { expect(session[:saml]).to be_present }
@@ -146,6 +154,7 @@ describe SessionsController do
     context "when a SAMLRequest is not present" do
       context "when the credentials are correct" do
         before { post '/session', params: { user: { email: user.email, password: password } } }
+
         specify { expect(response).to redirect_to(response_path) }
       end
 
@@ -161,7 +170,7 @@ describe SessionsController do
       let(:redirect_binding) { Saml::Kit::Bindings::HttpRedirect.new(location: new_session_url) }
       let(:relay_state) { SecureRandom.uuid }
 
-      before :each do
+      before do
         allow(registry).to receive(:metadata_for).with(issuer).and_return(sp_metadata)
         get redirect_binding.serialize(Saml::Kit::AuthenticationRequest.builder, relay_state: relay_state)[0]
       end
@@ -188,9 +197,11 @@ describe SessionsController do
     let(:user) { create(:user) }
 
     context "when receiving a logout request" do
-      before :each do
+      let(:session_id) { session_id_from(response) }
+
+      before do
         http_login(user)
-        @session_id = session_id_from(response)
+        session_id
 
         allow(registry).to receive(:metadata_for).with(issuer).and_return(sp_metadata)
         builder = Saml::Kit::LogoutRequest.builder(user) do |x|
@@ -206,11 +217,11 @@ describe SessionsController do
       specify { expect(response.body).to include("SAMLResponse") }
       specify { expect(response.body).to include(sp_metadata.single_logout_service_for(binding: :http_post).location) }
       specify { expect(session_id_from(response)).to be_present }
-      specify { expect(session_id_from(response)).not_to eql(@session_id) }
+      specify { expect(session_id_from(response)).not_to eql(session_id) }
     end
 
     context "when receiving a logout response" do
-      before :each do
+      before do
         allow(registry).to receive(:metadata_for).with(issuer).and_return(sp_metadata)
         builder = Saml::Kit::LogoutResponse.builder(Saml::Kit::AuthenticationRequest.build) do |x|
           x.issuer = issuer
@@ -225,14 +236,15 @@ describe SessionsController do
 
     context "when logging out of the IDP only" do
       let(:user) { create(:user) }
+      let(:session_id) { session_id_from(response) }
 
-      before :each do
+      before do
         http_login(user)
-        @session_id = session_id_from(response)
+        session_id
         delete session_path
       end
 
-      specify { expect(session_id_from(response)).not_to eql(@session_id) }
+      specify { expect(session_id_from(response)).not_to eql(session_id) }
       specify { expect(session_id_from(response)).to be_present }
       specify { expect(response).to redirect_to(new_session_path) }
     end

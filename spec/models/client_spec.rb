@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Client do
@@ -13,6 +15,7 @@ RSpec.describe Client do
 
   describe "#redirect_url" do
     subject { build(:client) }
+
     let(:code) { SecureRandom.uuid }
     let(:redirect_uri) { subject.redirect_uri }
 

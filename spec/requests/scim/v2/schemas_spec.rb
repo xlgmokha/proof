@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe "/scim/v2/Schemas" do
@@ -12,22 +14,20 @@ RSpec.describe "/scim/v2/Schemas" do
   end
 
   describe "GET scim/v2/Schemas" do
-    before :each do
-      get "/scim/v2/schemas", headers: headers
-      @json = JSON.parse(response.body, symbolize_names: true)
-    end
+    let(:json) { JSON.parse(response.body, symbolize_names: true) }
+
+    before { get "/scim/v2/schemas", headers: headers }
 
     specify { expect(response).to have_http_status(:ok) }
-    specify { expect(@json.count).to eql(2) }
-    specify { expect(@json[0][:id]).to eql('urn:ietf:params:scim:schemas:core:2.0:User') }
-    specify { expect(@json[1][:id]).to eql('urn:ietf:params:scim:schemas:core:2.0:Group') }
+    specify { expect(json.count).to be(2) }
+    specify { expect(json[0][:id]).to eql('urn:ietf:params:scim:schemas:core:2.0:User') }
+    specify { expect(json[1][:id]).to eql('urn:ietf:params:scim:schemas:core:2.0:Group') }
   end
 
   describe "GET /Schemas/urn:ietf:params:scim:schemas:core:2.0:User" do
-    before :each do
-      get "/scim/v2/schemas/urn:ietf:params:scim:schemas:core:2.0:User", headers: headers
-    end
     let(:json) { JSON.parse(response.body, symbolize_names: true) }
+
+    before { get "/scim/v2/schemas/urn:ietf:params:scim:schemas:core:2.0:User", headers: headers }
 
     specify { expect(response).to have_http_status(:ok) }
     specify { expect(json[:id]).to eql('urn:ietf:params:scim:schemas:core:2.0:User') }
@@ -35,10 +35,9 @@ RSpec.describe "/scim/v2/Schemas" do
   end
 
   describe "GET /Schemas/urn:ietf:params:scim:schemas:core:2.0:Group" do
-    before :each do
-      get "/scim/v2/schemas/urn:ietf:params:scim:schemas:core:2.0:Group", headers: headers
-    end
     let(:json) { JSON.parse(response.body, symbolize_names: true) }
+
+    before { get "/scim/v2/schemas/urn:ietf:params:scim:schemas:core:2.0:Group", headers: headers }
 
     specify { expect(response).to have_http_status(:ok) }
     specify { expect(json[:id]).to eql('urn:ietf:params:scim:schemas:core:2.0:Group') }

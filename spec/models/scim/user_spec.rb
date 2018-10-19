@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe SCIM::User do
@@ -51,55 +53,58 @@ RSpec.describe SCIM::User do
   describe "#save!" do
     context "when the user is new" do
       let(:current_user) { create(:user) }
+
       before { allow(Current).to receive(:user).and_return(current_user) }
 
       context "when creating a user" do
         subject { build(:scim_user) }
 
-        before { @result = subject.save! }
-
-        specify { expect(@result).to be_persisted }
-        specify { expect(@result.uuid).to be_present }
-        specify { expect(@result.email).to eql(subject.userName) }
-        specify { expect(@result.locale).to eql(subject.locale) }
-        specify { expect(@result.timezone).to eql(subject.timezone) }
-        specify { expect(@result.password_digest).to be_present }
+        specify { expect(subject.save!).to be_persisted }
+        specify { expect(subject.save!.uuid).to be_present }
+        specify { expect(subject.save!.email).to eql(subject.userName) }
+        specify { expect(subject.save!.locale).to eql(subject.locale) }
+        specify { expect(subject.save!.timezone).to eql(subject.timezone) }
+        specify { expect(subject.save!.password_digest).to be_present }
       end
     end
 
     context "when one user is updating another user" do
       subject { build(:scim_user, id: other_user.to_param) }
+
       let(:current_user) { create(:user) }
       let(:other_user) { create(:user) }
 
       before { allow(Current).to receive(:user).and_return(current_user) }
-      before { @result = subject.save! }
 
-      specify { expect(@result.uuid).to eql(other_user.uuid) }
-      specify { expect(@result.email).to eql(subject.userName) }
-      specify { expect(@result.locale).to eql(subject.locale) }
-      specify { expect(@result.timezone).to eql(subject.timezone) }
+      specify { expect(subject.save!.uuid).to eql(other_user.uuid) }
+      specify { expect(subject.save!.email).to eql(subject.userName) }
+      specify { expect(subject.save!.locale).to eql(subject.locale) }
+      specify { expect(subject.save!.timezone).to eql(subject.timezone) }
     end
 
     context "when one user attempts to change the password of another user" do
       subject { build(:scim_user, id: other_user.to_param, password: generate(:password)) }
+
       let(:current_user) { create(:user) }
       let(:other_user) { create(:user) }
 
       before { allow(Current).to receive(:user).and_return(current_user) }
+
       specify { expect { subject.save! }.to raise_error(StandardError) }
     end
 
     context "when a user changes their own password" do
       subject { build(:scim_user, id: current_user.to_param, password: password) }
+
       let!(:current_user) { create(:user) }
       let(:password) { generate(:password) }
 
-      before { freeze_time }
-      before { allow(Current).to receive(:user).and_return(current_user) }
-      before { @result = subject.save! }
+      before do
+        freeze_time
+        allow(Current).to receive(:user).and_return(current_user)
+      end
 
-      specify { expect(@result.authenticate(password)).to be_truthy }
+      specify { expect(subject.save!.authenticate(password)).to be_truthy }
     end
   end
 

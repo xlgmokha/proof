@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 RSpec.configure do |config|
   config.include ActiveSupport::Testing::TimeHelpers
-  config.after :each do |example|
+  config.after do |_example|
     travel_back
   end
   config.include(Module.new do

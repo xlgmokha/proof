@@ -1,8 +1,11 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe '/my/clients' do
   context "when logged in" do
     let(:current_user) { create(:user) }
+
     before { http_login(current_user) }
 
     describe "GET /my/clients" do
@@ -27,7 +30,7 @@ RSpec.describe '/my/clients' do
 
         specify { expect(response).to redirect_to(my_clients_path) }
         specify { expect(flash[:notice]).to include('success') }
-        specify { expect(Client.count).to eql(1) }
+        specify { expect(Client.count).to be(1) }
       end
     end
   end

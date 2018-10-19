@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 describe '/scim/v2/users' do
@@ -17,6 +19,7 @@ describe '/scim/v2/users' do
       let(:locale) { 'en' }
       let(:timezone) { 'Etc/UTC' }
       let(:body) { { schemas: [Scim::Shady::Schemas::USER], userName: email, locale: locale, timezone: timezone } }
+      let(:json) { JSON.parse(response.body, symbolize_names: true) }
 
       before { post '/scim/v2/users', params: body.to_json, headers: headers }
 
@@ -24,7 +27,6 @@ describe '/scim/v2/users' do
       specify { expect(response.headers['Content-Type']).to eql('application/scim+json') }
       specify { expect(response.headers['Location']).to be_present }
       specify { expect(response.body).to be_present }
-      let(:json) { JSON.parse(response.body, symbolize_names: true) }
       specify { expect(json[:schemas]).to match_array([Scim::Shady::Schemas::USER]) }
       specify { expect(json[:id]).to be_present }
       specify { expect(json[:userName]).to eql(email) }
@@ -40,11 +42,11 @@ describe '/scim/v2/users' do
     context "when a duplicate email is specified" do
       let(:other_user) { create(:user) }
       let(:request_body) { attributes_for(:scim_user, userName: other_user.email) }
+      let(:json) { JSON.parse(response.body, symbolize_names: true) }
 
       before { post '/scim/v2/users', params: request_body.to_json, headers: headers }
 
       specify { expect(response).to have_http_status(:bad_request) }
-      let(:json) { JSON.parse(response.body, symbolize_names: true) }
       specify { expect(json[:schemas]).to match_array(['urn:ietf:params:scim:api:messages:2.0:Error']) }
       specify { expect(json[:scimType]).to eql('uniqueness') }
       specify { expect(json[:detail]).to be_instance_of(String) }
@@ -58,13 +60,14 @@ describe '/scim/v2/users' do
     context "when the resource is available" do
       before { get "/scim/v2/users/#{user.uuid}", headers: headers }
 
+      let(:json) { JSON.parse(response.body, symbolize_names: true) }
+
       specify { expect(response).to have_http_status(:ok) }
       specify { expect(response.headers['Content-Type']).to eql('application/scim+json') }
       specify { expect(response.headers['Location']).to eql(scim_v2_user_url(user)) }
       specify { expect(response.headers['ETag']).to be_present }
       specify { expect(response.body).to be_present }
 
-      let(:json) { JSON.parse(response.body, symbolize_names: true) }
       specify { expect(json[:schemas]).to match_array([Scim::Shady::Schemas::USER]) }
       specify { expect(json[:id]).to eql(user.uuid) }
       specify { expect(json[:userName]).to eql(user.email) }
@@ -79,10 +82,11 @@ describe '/scim/v2/users' do
     end
 
     context "when the resource does not exist" do
+      let(:json) { JSON.parse(response.body, symbolize_names: true) }
+
       before { get "/scim/v2/users/#{SecureRandom.uuid}", headers: headers }
 
       specify { expect(response).to have_http_status(:not_found) }
-      let(:json) { JSON.parse(response.body, symbolize_names: true) }
       specify { expect(json[:schemas]).to match_array(['urn:ietf:params:scim:api:messages:2.0:Error']) }
       specify { expect(json[:detail]).to be_present }
       specify { expect(json[:status]).to eql('404') }
@@ -104,12 +108,13 @@ describe '/scim/v2/users' do
   end
 
   describe "GET /scim/v2/users" do
+    let(:json) { JSON.parse(response.body, symbolize_names: true) }
+
     before { get "/scim/v2/users?attributes=userName", headers: headers }
 
     specify { expect(response).to have_http_status(:ok) }
     specify { expect(response.headers['Content-Type']).to eql('application/scim+json') }
     specify { expect(response.body).to be_present }
-    let(:json) { JSON.parse(response.body, symbolize_names: true) }
     specify { expect(json[:schemas]).to match_array([Scim::Shady::Messages::LIST_RESPONSE]) }
     specify { expect(json[:totalResults]).to be_zero }
     specify { expect(json[:Resources]).to be_empty }
@@ -121,6 +126,7 @@ describe '/scim/v2/users' do
     let(:locale) { 'ja' }
     let(:timezone) { 'America/Denver' }
     let(:body) { { schemas: [Scim::Shady::Schemas::USER], userName: new_email, locale: locale, timezone: timezone } }
+    let(:json) { JSON.parse(response.body, symbolize_names: true) }
 
     before { put "/scim/v2/users/#{user.uuid}", headers: headers, params: body.to_json }
 
@@ -128,7 +134,6 @@ describe '/scim/v2/users' do
     specify { expect(response.headers['Content-Type']).to eql('application/scim+json') }
     specify { expect(response.headers['Location']).to eql(scim_v2_user_url(user)) }
     specify { expect(response.body).to be_present }
-    let(:json) { JSON.parse(response.body, symbolize_names: true) }
     specify { expect(json[:schemas]).to match_array([Scim::Shady::Schemas::USER]) }
     specify { expect(json[:id]).to be_present }
     specify { expect(json[:userName]).to eql(new_email) }
@@ -145,17 +150,14 @@ describe '/scim/v2/users' do
   describe "DELETE /scim/v2/users/:id" do
     let(:other_user) { create(:user) }
 
-    it 'deletes the user' do
-      delete "/scim/v2/users/#{other_user.uuid}", headers: headers
-      expect(response).to have_http_status(:no_content)
+    context "when the user can be deleted" do
+      before { delete "/scim/v2/users/#{other_user.uuid}", headers: headers }
 
-      get "/scim/v2/users/#{other_user.uuid}", headers: headers
-      expect(response).to have_http_status(:not_found)
-      expect(response.body).to be_present
-      json = JSON.parse(response.body, symbolize_names: true)
-      expect(json[:schemas]).to match_array([Scim::Shady::Messages::ERROR])
-      expect(json[:detail]).to eql("Resource #{other_user.uuid} not found")
-      expect(json[:status]).to eql("404")
+      specify { expect(response).to have_http_status(:no_content) }
+      specify do
+        get "/scim/v2/users/#{other_user.uuid}", headers: headers
+        expect(response).to have_http_status(:not_found)
+      end
     end
   end
 end
