@@ -43,6 +43,10 @@ class ClientsController < ApplicationController
   end
 
   def error_type_for(errors)
-    errors[:redirect_uris] ? :invalid_redirect_uri : :invalid_client_metadata
+    if errors[:redirect_uris].present?
+      :invalid_redirect_uri
+    else
+      :invalid_client_metadata
+    end
   end
 end
