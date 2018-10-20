@@ -23,7 +23,6 @@ gem 'saml-kit', '~> 1.0'
 gem 'scim-shady', '~> 0.2'
 gem 'spank', '~> 1.0'
 gem 'turbolinks', '~> 5'
-gem 'uglifier', '>= 1.3.0'
 gem 'webpacker', '~> 3.5'
 # gem 'redis', '~> 4.0'
 group :doc do
