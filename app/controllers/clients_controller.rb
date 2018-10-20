@@ -7,7 +7,7 @@ class ClientsController < ApplicationController
     render status: :created, formats: :json
   rescue ActiveRecord::RecordInvalid => error
     json = {
-      error: :invalid_redirect_uri,
+      error: error.record.errors[:redirect_uris].present? ? :invalid_redirect_uri : :invalid_client_metadata,
       error_description: error.record.errors.full_messages.join(' ')
     }
     render json: json, status: :bad_request
