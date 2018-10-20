@@ -1,10 +1,15 @@
-FROM ruby:2.5
+FROM ruby:2.5.3-alpine
 ENV RAILS_ENV production
-RUN useradd rails
+ENV RAILS_LOG_TO_STDOUT true
+ENV RAILS_SERVE_STATIC_FILES true
+ENV PACKAGES build-base sqlite-dev libxml2-dev tzdata postgresql-dev
+RUN apk update && apk upgrade && apk add $PACKAGES && rm -fr /var/cache/apk/*
 ADD *.tar.gz .
-RUN ln -s /proof-* /app && chown -R rails:rails /app/
+RUN ln -s /proof-* /app
 WORKDIR /app
-RUN bundle install --without development test --jobs "$(nproc)" --quiet # --local
+RUN bundle install --deployment --jobs "$(nproc)" --local
+RUN apk del build-base
+RUN adduser -D -u 1000 rails && chown -R rails:rails /app/
 USER rails
 ENTRYPOINT ["bundle", "exec"]
 CMD ["foreman", "start"]
