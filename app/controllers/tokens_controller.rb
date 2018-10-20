@@ -94,8 +94,10 @@ class TokensController < ApplicationController
       [current_client.access_token, nil]
     when 'password'
       password_grant
-    when 'urn:ietf:params:oauth:grant-type:saml2-bearer'
+    when 'urn:ietf:params:oauth:grant-type:saml2-bearer' # RFC7522
       assertion_grant
+    when 'urn:ietf:params:oauth:grant-type:jwt-bearer' # RFC7523
+      raise NotImplementedError
     end
   end
 
