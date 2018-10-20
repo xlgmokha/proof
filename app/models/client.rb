@@ -5,7 +5,7 @@ class Client < ApplicationRecord
   audited
   has_secure_password
   has_many :authorizations
-
+  attribute :redirect_uris, :string, array: true
   validates :name, presence: true
   validates :redirect_uri, presence: true, format: { with: URI_REGEX }
   validates :uuid, presence: true, format: { with: UUID }
@@ -13,10 +13,6 @@ class Client < ApplicationRecord
   after_initialize do
     self.uuid = SecureRandom.uuid unless uuid
     self.password = SecureRandom.base58(24) unless password_digest
-  end
-
-  def redirect_uris
-    [redirect_uri]
   end
 
   def grant_types

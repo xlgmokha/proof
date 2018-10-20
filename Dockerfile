@@ -2,7 +2,7 @@ FROM ruby:2.5.3-alpine
 ENV RAILS_ENV production
 ENV RAILS_LOG_TO_STDOUT true
 ENV RAILS_SERVE_STATIC_FILES true
-ENV PACKAGES build-base sqlite-dev libxml2-dev tzdata postgresql-dev
+ENV PACKAGES build-base libxml2-dev tzdata postgresql-dev
 RUN apk update && apk upgrade && apk add $PACKAGES && rm -fr /var/cache/apk/*
 ADD *.tar.gz .
 RUN ln -s /proof-* /app

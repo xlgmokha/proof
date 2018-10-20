@@ -16,6 +16,7 @@ gem 'foreman', '~> 0.85'
 gem 'jbuilder', '~> 2.5'
 gem 'jwt', '~> 2.1'
 gem 'local_time', '~> 2.1'
+gem 'pg'
 gem 'puma', '~> 3.11'
 gem 'rails', '~> 5.2.0'
 gem 'rotp', '~> 3.3'
@@ -40,7 +41,6 @@ group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'i18n-tasks', '~> 0.9.24'
   gem 'rspec-rails', '~> 3.8'
-  gem 'sqlite3'
 end
 group :test do
   gem 'capybara', '~> 3.6'
@@ -52,6 +52,5 @@ group :test do
   gem 'webmock', '~> 3.4'
 end
 group :production do
-  gem 'pg'
   gem 'rails_12factor', '~> 0.0'
 end

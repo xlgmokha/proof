@@ -10,7 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_09_23_234502) do
+ActiveRecord::Schema.define(version: 2018_10_20_161349) do
+
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
 
   create_table "audits", force: :cascade do |t|
     t.integer "auditable_id"
@@ -35,8 +38,8 @@ ActiveRecord::Schema.define(version: 2018_09_23_234502) do
   end
 
   create_table "authorizations", force: :cascade do |t|
-    t.integer "user_id"
-    t.integer "client_id"
+    t.bigint "user_id"
+    t.bigint "client_id"
     t.string "code", null: false
     t.string "challenge"
     t.integer "challenge_method", default: 0
@@ -53,9 +56,12 @@ ActiveRecord::Schema.define(version: 2018_09_23_234502) do
     t.string "uuid", null: false
     t.string "name", null: false
     t.string "password_digest", null: false
-    t.string "redirect_uri", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "redirect_uris", default: [], null: false, array: true
+    t.integer "token_endpoint_auth_method", default: 0, null: false
+    t.string "logo_uri"
+    t.string "jwks_uri"
     t.index ["uuid"], name: "index_clients_on_uuid"
   end
 
@@ -75,7 +81,7 @@ ActiveRecord::Schema.define(version: 2018_09_23_234502) do
     t.index ["feature_key", "key", "value"], name: "index_flipper_gates_on_feature_key_and_key_and_value", unique: true
   end
 
-  create_table "sessions", force: :cascade do |t|
+  create_table "sessions", id: :serial, force: :cascade do |t|
     t.string "session_id", null: false
     t.text "data"
     t.datetime "created_at"
@@ -86,11 +92,11 @@ ActiveRecord::Schema.define(version: 2018_09_23_234502) do
 
   create_table "tokens", force: :cascade do |t|
     t.string "uuid"
-    t.integer "authorization_id"
+    t.bigint "authorization_id"
     t.string "subject_type"
-    t.integer "subject_id"
+    t.bigint "subject_id"
     t.string "audience_type"
-    t.integer "audience_id"
+    t.bigint "audience_id"
     t.integer "token_type", default: 0
     t.datetime "expired_at"
     t.datetime "revoked_at"
@@ -103,7 +109,7 @@ ActiveRecord::Schema.define(version: 2018_09_23_234502) do
   end
 
   create_table "user_sessions", force: :cascade do |t|
-    t.integer "user_id"
+    t.bigint "user_id"
     t.string "key"
     t.string "ip"
     t.text "user_agent"
@@ -122,11 +128,14 @@ ActiveRecord::Schema.define(version: 2018_09_23_234502) do
     t.string "password_digest"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "lock_version", default: 0, null: false
+    t.bigint "lock_version", default: 0, null: false
     t.string "mfa_secret", limit: 16
     t.string "locale", default: "en", null: false
     t.string "timezone", default: "Etc/UTC", null: false
     t.index ["uuid"], name: "index_users_on_uuid"
   end
 
+  add_foreign_key "authorizations", "clients"
+  add_foreign_key "authorizations", "users"
+  add_foreign_key "user_sessions", "users"
 end
