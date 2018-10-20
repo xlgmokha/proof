@@ -15,29 +15,29 @@ RSpec.describe '/oauth' do
         let(:client) { create(:client) }
 
         context "when requesting an authorization code" do
-          before { get "/oauth", params: { client_id: client.to_param, response_type: 'code', state: state, redirect_uri: client.redirect_uri } }
+          before { get "/oauth", params: { client_id: client.to_param, response_type: 'code', state: state, redirect_uri: client.redirect_uris[0] } }
 
           specify { expect(response).to have_http_status(:ok) }
           specify { expect(response.body).to include(CGI.escapeHTML(client.name)) }
         end
 
         context "when requesting an access token" do
-          before { get "/oauth", params: { client_id: client.to_param, response_type: 'token', state: state, redirect_uri: client.redirect_uri } }
+          before { get "/oauth", params: { client_id: client.to_param, response_type: 'token', state: state, redirect_uri: client.redirect_uris[0] } }
 
           specify { expect(response).to have_http_status(:ok) }
           specify { expect(response.body).to include(CGI.escapeHTML(client.name)) }
         end
 
         context "when an incorrect response_type is provided" do
-          before { get "/oauth", params: { client_id: client.to_param, response_type: 'invalid', redirect_uri: client.redirect_uri } }
+          before { get "/oauth", params: { client_id: client.to_param, response_type: 'invalid', redirect_uri: client.redirect_uris[0] } }
 
-          specify { expect(response).to redirect_to("#{client.redirect_uri}#error=unsupported_response_type") }
+          specify { expect(response).to redirect_to("#{client.redirect_uris[0]}#error=unsupported_response_type") }
         end
 
         context "when the redirect uri does not match" do
           before { get "/oauth", params: { client_id: client.to_param, response_type: 'invalid', redirect_uri: SecureRandom.uuid } }
 
-          specify { expect(response).to redirect_to("#{client.redirect_uri}#error=invalid_request") }
+          specify { expect(response).to redirect_to("#{client.redirect_uris[0]}#error=invalid_request") }
         end
       end
     end
@@ -48,7 +48,7 @@ RSpec.describe '/oauth' do
       context "when the client id is known" do
         let(:client) { create(:client) }
 
-        before { get "/oauth/authorize", params: { client_id: client.to_param, response_type: 'code', state: state, redirect_uri: client.redirect_uri } }
+        before { get "/oauth/authorize", params: { client_id: client.to_param, response_type: 'code', state: state, redirect_uri: client.redirect_uris[0] } }
 
         specify { expect(response).to have_http_status(:ok) }
         specify { expect(response.body).to include(CGI.escapeHTML(client.name)) }
@@ -62,7 +62,7 @@ RSpec.describe '/oauth' do
 
         context "when the client requested an authorization code" do
           before do
-            get "/oauth", params: { client_id: client.to_param, response_type: 'code', state: state, redirect_uri: client.redirect_uri }
+            get "/oauth", params: { client_id: client.to_param, response_type: 'code', state: state, redirect_uri: client.redirect_uris[0] }
             post "/oauth"
           end
 
@@ -74,11 +74,11 @@ RSpec.describe '/oauth' do
           let(:scope) { "admin" }
 
           before do
-            get "/oauth", params: { client_id: client.to_param, response_type: 'token', state: state, redirect_uri: client.redirect_uri }
+            get "/oauth", params: { client_id: client.to_param, response_type: 'token', state: state, redirect_uri: client.redirect_uris[0] }
             post "/oauth"
           end
 
-          specify { expect(response).to redirect_to("#{client.redirect_uri}#access_token=#{token}&token_type=Bearer&expires_in=300&scope=#{scope}&state=#{state}") }
+          specify { expect(response).to redirect_to("#{client.redirect_uris[0]}#access_token=#{token}&token_type=Bearer&expires_in=300&scope=#{scope}&state=#{state}") }
         end
 
         context "when the client requested a token using a valid PKCE with S256" do
@@ -93,7 +93,7 @@ RSpec.describe '/oauth' do
               code_challenge: code_challenge,
               code_challenge_method: 'S256',
               state: state,
-              redirect_uri: client.redirect_uri
+              redirect_uri: client.redirect_uris[0]
             }
             post "/oauth"
           end
@@ -114,7 +114,7 @@ RSpec.describe '/oauth' do
               code_challenge: code_verifier,
               code_challenge_method: 'plain',
               state: state,
-              redirect_uri: client.redirect_uri
+              redirect_uri: client.redirect_uris[0]
             }
             post "/oauth"
           end
@@ -134,7 +134,7 @@ RSpec.describe '/oauth' do
               response_type: 'code',
               code_challenge: code_verifier,
               state: state,
-              redirect_uri: client.redirect_uri
+              redirect_uri: client.redirect_uris[0]
             }
             post "/oauth"
           end
@@ -154,7 +154,7 @@ RSpec.describe '/oauth' do
           let(:state) { "<script>alert('hi');</script>" }
 
           before do
-            get "/oauth", params: { client_id: client.to_param, response_type: 'token', state: state, redirect_uri: client.redirect_uri }
+            get "/oauth", params: { client_id: client.to_param, response_type: 'token', state: state, redirect_uri: client.redirect_uris[0] }
             post "/oauth"
           end
 

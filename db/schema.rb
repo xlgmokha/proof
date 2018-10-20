@@ -129,7 +129,7 @@ ActiveRecord::Schema.define(version: 2018_10_20_161349) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "lock_version", default: 0, null: false
-    t.string "mfa_secret", limit: 16
+    t.string "mfa_secret"
     t.string "locale", default: "en", null: false
     t.string "timezone", default: "Etc/UTC", null: false
     t.index ["uuid"], name: "index_users_on_uuid"
