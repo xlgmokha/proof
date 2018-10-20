@@ -9,6 +9,7 @@ Rails.application.routes.draw do
     get :authorize, to: "oauths#show"
   end
   resource :session, only: [:new, :create, :destroy]
+  resources :clients, only: [:create]
   resources :registrations, only: [:new, :create]
   resource :response, only: [:show]
   resource :tokens, only: [:create] do

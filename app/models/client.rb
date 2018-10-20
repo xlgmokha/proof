@@ -15,6 +15,18 @@ class Client < ApplicationRecord
     self.password = SecureRandom.base58(24) unless password_digest
   end
 
+  def redirect_uris
+    [redirect_uri]
+  end
+
+  def grant_types
+    [:authorization_code, :refresh_token, :client_credentials, :password, 'urn:ietf:params:oauth:grant-type:saml2-bearer']
+  end
+
+  def token_endpoint_auth_method
+    :client_secret_basic
+  end
+
   def access_token
     transaction do
       Token
