@@ -45,7 +45,7 @@ RSpec.describe "/response" do
 
         context "when the SAML request is no longer valid" do
           before do
-            allow_any_instance_of(Saml::Kit::AuthenticationRequest).to receive(:valid?).and_return(false)
+            allow(registry).to receive(:metadata_for).with(issuer).and_return(nil)
             get '/response'
           end
 
