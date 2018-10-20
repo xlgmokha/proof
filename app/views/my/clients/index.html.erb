@@ -7,14 +7,14 @@
         <thead>
           <th>Client ID</th>
           <th>Name</th>
-          <th>Redirect URI</th>
+          <th>Redirect URIs</th>
         </thead>
         <tbody>
         <% @clients.each do |client| %>
           <tr>
             <td><%= client.to_param %></td>
             <td><%= client.name %></td>
-            <td><%= client.redirect_uri %></td>
+            <td><%= client.redirect_uris.join(',') %></td>
           </tr>
         <% end %>
         </tbody>
