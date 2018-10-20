@@ -16,7 +16,10 @@ class ClientsController < ApplicationController
   def transform(params)
     {
       name: params[:client_name],
-      redirect_uri: params[:redirect_uris][0],
+      redirect_uris: params[:redirect_uris],
+      token_endpoint_auth_method: params[:token_endpoint_auth_method],
+      logo_uri: params[:logo_uri],
+      jwks_uri: params[:jwks_uri],
     }
   end
 
