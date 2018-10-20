@@ -8,7 +8,7 @@ module SCIM
 
     def map_from(user)
       Scim::Shady::User.build do |x|
-        x.id = user.uuid
+        x.id = user.id
         x.username = user.email
         x.created_at = user.created_at
         x.updated_at = user.updated_at

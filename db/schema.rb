@@ -13,14 +13,16 @@
 ActiveRecord::Schema.define(version: 2018_10_20_161349) do
 
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pgcrypto"
   enable_extension "plpgsql"
+  enable_extension "uuid-ossp"
 
-  create_table "audits", force: :cascade do |t|
-    t.integer "auditable_id"
+  create_table "audits", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "auditable_id"
     t.string "auditable_type"
-    t.integer "associated_id"
+    t.string "associated_id"
     t.string "associated_type"
-    t.integer "user_id"
+    t.string "user_id"
     t.string "user_type"
     t.string "username"
     t.string "action"
@@ -37,9 +39,9 @@ ActiveRecord::Schema.define(version: 2018_10_20_161349) do
     t.index ["user_id", "user_type"], name: "index_audits_on_user_id_and_user_type"
   end
 
-  create_table "authorizations", force: :cascade do |t|
-    t.bigint "user_id"
-    t.bigint "client_id"
+  create_table "authorizations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id"
+    t.uuid "client_id"
     t.string "code", null: false
     t.string "challenge"
     t.integer "challenge_method", default: 0
@@ -52,8 +54,7 @@ ActiveRecord::Schema.define(version: 2018_10_20_161349) do
     t.index ["user_id"], name: "index_authorizations_on_user_id"
   end
 
-  create_table "clients", force: :cascade do |t|
-    t.string "uuid", null: false
+  create_table "clients", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name", null: false
     t.string "password_digest", null: false
     t.datetime "created_at", null: false
@@ -62,7 +63,6 @@ ActiveRecord::Schema.define(version: 2018_10_20_161349) do
     t.integer "token_endpoint_auth_method", default: 0, null: false
     t.string "logo_uri"
     t.string "jwks_uri"
-    t.index ["uuid"], name: "index_clients_on_uuid"
   end
 
   create_table "flipper_features", force: :cascade do |t|
@@ -90,13 +90,12 @@ ActiveRecord::Schema.define(version: 2018_10_20_161349) do
     t.index ["updated_at"], name: "index_sessions_on_updated_at"
   end
 
-  create_table "tokens", force: :cascade do |t|
-    t.string "uuid"
+  create_table "tokens", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.bigint "authorization_id"
     t.string "subject_type"
-    t.bigint "subject_id"
+    t.uuid "subject_id"
     t.string "audience_type"
-    t.bigint "audience_id"
+    t.uuid "audience_id"
     t.integer "token_type", default: 0
     t.datetime "expired_at"
     t.datetime "revoked_at"
@@ -105,11 +104,10 @@ ActiveRecord::Schema.define(version: 2018_10_20_161349) do
     t.index ["audience_type", "audience_id"], name: "index_tokens_on_audience_type_and_audience_id"
     t.index ["authorization_id"], name: "index_tokens_on_authorization_id"
     t.index ["subject_type", "subject_id"], name: "index_tokens_on_subject_type_and_subject_id"
-    t.index ["uuid"], name: "index_tokens_on_uuid", unique: true
   end
 
-  create_table "user_sessions", force: :cascade do |t|
-    t.bigint "user_id"
+  create_table "user_sessions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id"
     t.string "key"
     t.string "ip"
     t.text "user_agent"
@@ -122,9 +120,8 @@ ActiveRecord::Schema.define(version: 2018_10_20_161349) do
     t.index ["user_id"], name: "index_user_sessions_on_user_id"
   end
 
-  create_table "users", force: :cascade do |t|
+  create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "email"
-    t.string "uuid", null: false
     t.string "password_digest"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -132,7 +129,6 @@ ActiveRecord::Schema.define(version: 2018_10_20_161349) do
     t.string "mfa_secret"
     t.string "locale", default: "en", null: false
     t.string "timezone", default: "Etc/UTC", null: false
-    t.index ["uuid"], name: "index_users_on_uuid"
   end
 
   add_foreign_key "authorizations", "clients"

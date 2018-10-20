@@ -13,12 +13,8 @@ class User < ApplicationRecord
   validates :timezone, inclusion: VALID_TIMEZONES
   validates :locale, inclusion: VALID_LOCALES
 
-  after_initialize do
-    self.uuid = SecureRandom.uuid unless uuid
-  end
-
   def name_id_for(name_id_format)
-    Saml::Kit::Namespaces::PERSISTENT == name_id_format ? uuid : email
+    Saml::Kit::Namespaces::PERSISTENT == name_id_format ? id : email
   end
 
   def assertion_attributes_for(request)
@@ -37,10 +33,6 @@ class User < ApplicationRecord
     Mfa.new(self)
   end
 
-  def to_param
-    uuid
-  end
-
   class << self
     def login(email, password)
       return if email.blank? || password.blank?
@@ -55,6 +47,6 @@ class User < ApplicationRecord
   private
 
   def trusted_attributes_for(_request)
-    { id: uuid, email: email, created_at: created_at }
+    { id: id, email: email, created_at: created_at }
   end
 end

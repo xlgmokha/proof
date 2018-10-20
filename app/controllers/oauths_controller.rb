@@ -4,7 +4,7 @@ class OauthsController < ApplicationController
   VALID_RESPONSE_TYPES = %w[code token].freeze
 
   def show
-    @client = Client.find_by!(uuid: secure_params[:client_id])
+    @client = Client.find(secure_params[:client_id])
 
     unless @client.valid_redirect_uri?(secure_params[:redirect_uri])
       return redirect_to @client.redirect_url(
@@ -26,7 +26,7 @@ class OauthsController < ApplicationController
   def create(oauth = session[:oauth])
     return render_error(:bad_request) if oauth.nil?
 
-    client = Client.find_by!(uuid: oauth[:client_id])
+    client = Client.find(oauth[:client_id])
     redirect_to client.redirect_url_for(current_user, oauth)
   rescue StandardError => error
     logger.error(error)

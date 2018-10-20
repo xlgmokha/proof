@@ -9,7 +9,7 @@ module SCIM
     end
 
     def find!(id)
-      mapper.map_from(::User.find_by!(uuid: id))
+      mapper.map_from(::User.find(id))
     end
 
     def create!(params)
@@ -25,7 +25,7 @@ module SCIM
     end
 
     def update!(id, params)
-      user = ::User.find_by!(uuid: id)
+      user = ::User.find(id)
       user.update!(
         email: params[:userName],
         locale: params[:locale],
@@ -35,7 +35,7 @@ module SCIM
     end
 
     def destroy!(id)
-      ::User.find_by!(uuid: id).destroy!
+      ::User.find(id).destroy!
     end
   end
 end

@@ -2,8 +2,8 @@
 
 class CreateUserSessions < ActiveRecord::Migration[5.2]
   def change
-    create_table :user_sessions do |t|
-      t.references :user, foreign_key: true
+    create_table :user_sessions, id: :uuid do |t|
+      t.references :user, foreign_key: true, type: :uuid
       t.string :key
       t.string :ip
       t.text :user_agent

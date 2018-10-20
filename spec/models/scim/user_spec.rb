@@ -60,7 +60,6 @@ RSpec.describe SCIM::User do
         subject { build(:scim_user) }
 
         specify { expect(subject.save!).to be_persisted }
-        specify { expect(subject.save!.uuid).to be_present }
         specify { expect(subject.save!.email).to eql(subject.userName) }
         specify { expect(subject.save!.locale).to eql(subject.locale) }
         specify { expect(subject.save!.timezone).to eql(subject.timezone) }
@@ -76,7 +75,7 @@ RSpec.describe SCIM::User do
 
       before { allow(Current).to receive(:user).and_return(current_user) }
 
-      specify { expect(subject.save!.uuid).to eql(other_user.uuid) }
+      specify { expect(subject.save!.to_param).to eql(other_user.to_param) }
       specify { expect(subject.save!.email).to eql(subject.userName) }
       specify { expect(subject.save!.locale).to eql(subject.locale) }
       specify { expect(subject.save!.timezone).to eql(subject.timezone) }

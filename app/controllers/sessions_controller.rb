@@ -41,7 +41,7 @@ class SessionsController < ApplicationController
     if saml_params[:SAMLRequest].present?
       saml = binding.deserialize(saml_params)
       raise ActiveRecord::RecordInvalid.new(saml) if saml.invalid?
-      raise 'Unknown NameId' unless current_user.uuid == saml.name_id
+      raise 'Unknown NameId' unless current_user.to_param == saml.name_id
 
       session[:saml] = { params: saml_params.to_h, xml: saml.to_xml }
       redirect_to response_path

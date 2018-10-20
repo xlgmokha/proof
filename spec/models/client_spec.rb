@@ -10,8 +10,6 @@ RSpec.describe Client do
     specify { expect(build(:client, redirect_uris: ['<script>alert("hi")</script>'])).to be_invalid }
     specify { expect(build(:client, redirect_uris: ['invalid'])).to be_invalid }
     specify { expect(build(:client, redirect_uris: 'invalid')).to be_invalid }
-    specify { expect(build(:client, uuid: nil)).to be_invalid }
-    specify { expect(build(:client, uuid: 'invalid')).to be_invalid }
     specify { expect(build(:client, name: nil)).to be_invalid }
   end
 

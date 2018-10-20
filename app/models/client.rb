@@ -12,14 +12,12 @@ class Client < ApplicationRecord
   validates :jwks_uri, format: { with: URI_REGEX }, allow_blank: true
   validates :logo_uri, format: { with: URI_REGEX }, allow_blank: true
   validates :name, presence: true
-  validates :uuid, presence: true, format: { with: UUID }
   validates_each :redirect_uris do |record, attr, value|
     invalid_uri = Array(value).find { |x| !x.match?(URI_REGEX) }
     record.errors[:redirect_uris] << 'is invalid.' if invalid_uri
   end
 
   after_initialize do
-    self.uuid = SecureRandom.uuid unless uuid
     self.password = SecureRandom.base58(24) unless password_digest
   end
 
@@ -34,10 +32,6 @@ class Client < ApplicationRecord
         .update_all(revoked_at: Time.now)
       Token.create!(subject: self, audience: self, token_type: :access)
     end
-  end
-
-  def to_param
-    uuid
   end
 
   def valid_redirect_uri?(redirect_uri)

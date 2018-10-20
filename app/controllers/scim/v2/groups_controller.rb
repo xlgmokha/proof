@@ -14,7 +14,7 @@ module Scim
       private
 
       def resources
-        User.pluck(:uuid, :email).map do |x|
+        User.pluck(:id, :email).map do |x|
           { id: x[0], userName: x[1] }
         end
       end

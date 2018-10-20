@@ -25,7 +25,7 @@ class TokensController < ApplicationController
 
   def revoke
     claims = Token.claims_for(params[:token], token_type: :any)
-    Token.find_by(uuid: claims[:jti]).revoke! unless claims.empty?
+    Token.find(claims[:jti]).revoke! unless claims.empty?
     render plain: "", status: :ok
   rescue StandardError => error
     logger.error(error)
@@ -38,7 +38,7 @@ class TokensController < ApplicationController
 
   def authenticate!
     @current_client = authenticate_with_http_basic do |client_id, client_secret|
-      Client.find_by(uuid: client_id)&.authenticate(client_secret)
+      Client.find(client_id)&.authenticate(client_secret)
     end
     return if current_client
 
@@ -61,7 +61,7 @@ class TokensController < ApplicationController
 
   def refresh_grant(refresh_token = params[:refresh_token])
     jti = Token.claims_for(refresh_token, token_type: :refresh)[:jti]
-    token = Token.find_by!(uuid: jti)
+    token = Token.find(jti)
     token.issue_tokens_to(current_client)
   end
 
@@ -77,7 +77,7 @@ class TokensController < ApplicationController
     return if assertion.invalid?
 
     user = if assertion.name_id_format == Saml::Kit::Namespaces::PERSISTENT
-             User.find_by!(uuid: assertion.name_id)
+             User.find(assertion.name_id)
            else
              User.find_by!(email: assertion.name_id)
            end
@@ -103,7 +103,7 @@ class TokensController < ApplicationController
 
   def revoked_tokens
     Rails.cache.fetch("revoked-tokens", expires_in: 10.minutes) do
-      Hash[Token.revoked.pluck(:uuid).map { |x| [x, true] }]
+      Hash[Token.revoked.pluck(:id).map { |x| [x, true] }]
     end
   end
 end

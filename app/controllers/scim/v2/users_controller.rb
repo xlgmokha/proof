@@ -17,7 +17,7 @@ module Scim
       end
 
       def show
-        @user = User.find_by!(uuid: params[:id])
+        @user = User.find(params[:id])
         response.headers['Location'] = scim_v2_user_url(@user)
         fresh_when(@user)
         render formats: :scim, status: :ok

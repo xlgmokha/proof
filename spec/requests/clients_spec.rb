@@ -24,7 +24,7 @@ RSpec.describe "/clients" do
       specify { expect(response.headers['Content-Type']).to include("application/json") }
       specify { expect(response.headers['Cache-Control']).to include("no-store") }
       specify { expect(response.headers['Pragma']).to eql("no-cache") }
-      specify { expect(json[:client_id]).to eql(last_client.uuid) }
+      specify { expect(json[:client_id]).to eql(last_client.to_param) }
       specify { expect(json[:client_secret]).to be_present }
       specify { expect(json[:client_id_issued_at]).to eql(last_client.created_at.to_i) }
       specify { expect(json[:client_secret_expires_at]).to be_zero }

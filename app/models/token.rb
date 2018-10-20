@@ -12,7 +12,6 @@ class Token < ApplicationRecord
   scope :revoked, -> { where('revoked_at < ?', Time.now) }
 
   after_initialize do |x|
-    x.uuid = SecureRandom.uuid if x.uuid.nil?
     if x.expired_at.nil?
       x.expired_at = access? ? 1.hour.from_now : 1.day.from_now
     end
@@ -32,7 +31,7 @@ class Token < ApplicationRecord
       exp: expired_at.to_i,
       iat: created_at.to_i,
       iss: Saml::Kit.configuration.entity_id,
-      jti: uuid,
+      jti: id,
       nbf: created_at.to_i,
       sub: subject.to_param,
       token_type: token_type,
@@ -66,7 +65,7 @@ class Token < ApplicationRecord
       claims = claims_for(jwt, token_type: :access)
       return if claims.empty?
 
-      token = Token.find_by!(uuid: claims[:jti])
+      token = Token.find(claims[:jti])
       return if token.refresh? || token.revoked?
 
       token

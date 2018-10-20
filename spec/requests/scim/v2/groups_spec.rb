@@ -25,7 +25,7 @@ describe "/scim/v2/groups" do
 
       specify { expect(json[:schemas]).to match_array([Scim::Shady::Messages::LIST_RESPONSE]) }
       specify { expect(json[:totalResults]).to be_kind_of(Numeric) }
-      specify { expect(json[:Resources]).to match_array([id: user.uuid, userName: user.email]) }
+      specify { expect(json[:Resources]).to match_array([id: user.to_param, userName: user.email]) }
     end
   end
 

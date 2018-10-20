@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 json.schemas ["urn:ietf:params:scim:schemas:core:2.0:User"]
-json.id @user.uuid
+json.id @user.to_param
 json.meta do
   json.resourceType 'User'
   json.created @user.created_at.iso8601

@@ -58,7 +58,7 @@ describe '/scim/v2/users' do
     let(:user) { create(:user) }
 
     context "when the resource is available" do
-      before { get "/scim/v2/users/#{user.uuid}", headers: headers }
+      before { get "/scim/v2/users/#{user.to_param}", headers: headers }
 
       let(:json) { JSON.parse(response.body, symbolize_names: true) }
 
@@ -69,7 +69,7 @@ describe '/scim/v2/users' do
       specify { expect(response.body).to be_present }
 
       specify { expect(json[:schemas]).to match_array([Scim::Shady::Schemas::USER]) }
-      specify { expect(json[:id]).to eql(user.uuid) }
+      specify { expect(json[:id]).to eql(user.to_param) }
       specify { expect(json[:userName]).to eql(user.email) }
       specify { expect(json[:meta][:resourceType]).to eql('User') }
       specify { expect(json[:meta][:created]).to eql(user.created_at.iso8601) }
@@ -128,7 +128,7 @@ describe '/scim/v2/users' do
     let(:body) { { schemas: [Scim::Shady::Schemas::USER], userName: new_email, locale: locale, timezone: timezone } }
     let(:json) { JSON.parse(response.body, symbolize_names: true) }
 
-    before { put "/scim/v2/users/#{user.uuid}", headers: headers, params: body.to_json }
+    before { put "/scim/v2/users/#{user.to_param}", headers: headers, params: body.to_json }
 
     specify { expect(response).to have_http_status(:ok) }
     specify { expect(response.headers['Content-Type']).to eql('application/scim+json') }
@@ -151,11 +151,11 @@ describe '/scim/v2/users' do
     let(:other_user) { create(:user) }
 
     context "when the user can be deleted" do
-      before { delete "/scim/v2/users/#{other_user.uuid}", headers: headers }
+      before { delete "/scim/v2/users/#{other_user.to_param}", headers: headers }
 
       specify { expect(response).to have_http_status(:no_content) }
       specify do
-        get "/scim/v2/users/#{other_user.uuid}", headers: headers
+        get "/scim/v2/users/#{other_user.to_param}", headers: headers
         expect(response).to have_http_status(:not_found)
       end
     end
