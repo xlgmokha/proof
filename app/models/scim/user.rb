@@ -6,7 +6,7 @@ module SCIM
     attr_accessor :id, :schemas, :userName, :name, :locale, :timezone, :password
 
     validate :must_be_user_schema
-    validates :id, format: { with: ApplicationRecord::UUID }, if: proc { |x| x.id.present? }
+    validates :id, format: { with: ApplicationRecord::UUID }, allow_blank: true
     validates :locale, presence: true, inclusion: ::User::VALID_LOCALES
     validates :timezone, presence: true, inclusion: ::User::VALID_TIMEZONES
     validates :userName, presence: true, email: true

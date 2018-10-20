@@ -9,7 +9,7 @@ class ClientsController < ApplicationController
     render status: :created, formats: :json
   rescue ActiveRecord::RecordInvalid => error
     json = {
-      error: error.record.errors[:redirect_uris].present? ? :invalid_redirect_uri : :invalid_client_metadata,
+      error: error_type_for(error.record.errors),
       error_description: error.record.errors.full_messages.join(' ')
     }
     render json: json, status: :bad_request
@@ -18,7 +18,13 @@ class ClientsController < ApplicationController
   private
 
   def secure_params
-    params.permit(:client_name, :token_endpoint_auth_method, :logo_uri, :jwks_uri, redirect_uris: [])
+    params.permit(
+      :client_name,
+      :token_endpoint_auth_method,
+      :logo_uri,
+      :jwks_uri,
+      redirect_uris: []
+    )
   end
 
   def transform(params)
@@ -34,5 +40,9 @@ class ClientsController < ApplicationController
   def apply_cache_headers
     response.headers["Cache-Control"] = "no-cache, no-store"
     response.headers["Pragma"] = "no-cache"
+  end
+
+  def error_type_for(errors)
+    errors[:redirect_uris] ? :invalid_redirect_uri : :invalid_client_metadata
   end
 end

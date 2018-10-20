@@ -6,7 +6,11 @@ class Client < ApplicationRecord
   has_secure_password
   has_many :authorizations
   attribute :redirect_uris, :string, array: true
-  enum token_endpoint_auth_method: { client_secret_none: 0, client_secret_post: 1, client_secret_basic: 2 }
+  enum token_endpoint_auth_method: {
+    client_secret_none: 0,
+    client_secret_post: 1,
+    client_secret_basic: 2
+  }
 
   validates :redirect_uris, presence: true
   validates :jwks_uri, format: { with: URI_REGEX }, allow_blank: true
@@ -22,7 +26,13 @@ class Client < ApplicationRecord
   end
 
   def grant_types
-    [:authorization_code, :refresh_token, :client_credentials, :password, 'urn:ietf:params:oauth:grant-type:saml2-bearer']
+    [
+      :authorization_code,
+      :refresh_token,
+      :client_credentials,
+      :password,
+      'urn:ietf:params:oauth:grant-type:saml2-bearer'
+    ]
   end
 
   def access_token
