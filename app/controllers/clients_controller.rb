@@ -5,6 +5,12 @@ class ClientsController < ApplicationController
   def create
     @client = Client.create!(transform(secure_params))
     render status: :created, formats: :json
+  rescue ActiveRecord::RecordInvalid => error
+    json = {
+      error: :invalid_redirect_uri,
+      error_description: error.record.errors.full_messages.join(' ')
+    }
+    render json: json, status: :bad_request
   end
 
   private

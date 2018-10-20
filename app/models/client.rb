@@ -8,6 +8,7 @@ class Client < ApplicationRecord
   attribute :redirect_uris, :string, array: true
   enum token_endpoint_auth_method: { client_secret_none: 0, client_secret_post: 1, client_secret_basic: 2 }
 
+  validates :redirect_uris, presence: true, format: { with: URI_REGEX }
   validates :jwks_uri, format: { with: URI_REGEX }
   validates :logo_uri, format: { with: URI_REGEX }
   validates :name, presence: true
