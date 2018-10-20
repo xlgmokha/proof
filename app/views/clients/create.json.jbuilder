@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 json.client_id @client.to_param
 json.client_secret @client.password
 json.client_id_issued_at @client.created_at.to_i

@@ -8,11 +8,11 @@ class Client < ApplicationRecord
   attribute :redirect_uris, :string, array: true
   enum token_endpoint_auth_method: { client_secret_none: 0, client_secret_post: 1, client_secret_basic: 2 }
 
-  validates :redirect_uris, presence: true#, format: { with: URI_REGEX }
+  validates :redirect_uris, presence: true
   validates :jwks_uri, format: { with: URI_REGEX }, allow_blank: true
   validates :logo_uri, format: { with: URI_REGEX }, allow_blank: true
   validates :name, presence: true
-  validates_each :redirect_uris do |record, attr, value|
+  validates_each :redirect_uris do |record, _attr, value|
     invalid_uri = Array(value).find { |x| !x.match?(URI_REGEX) }
     record.errors[:redirect_uris] << 'is invalid.' if invalid_uri
   end
@@ -35,7 +35,7 @@ class Client < ApplicationRecord
   end
 
   def valid_redirect_uri?(redirect_uri)
-    self.redirect_uris.include? redirect_uri
+    redirect_uris.include? redirect_uri
   end
 
   def valid_response_type?(response_type)

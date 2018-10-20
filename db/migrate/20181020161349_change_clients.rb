@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ChangeClients < ActiveRecord::Migration[5.2]
   def change
     add_column :clients, :redirect_uris, :text, array: true, default: [], null: false

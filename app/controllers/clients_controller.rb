@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ClientsController < ApplicationController
   skip_before_action :authenticate!
   before_action :apply_cache_headers
