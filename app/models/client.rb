@@ -61,7 +61,9 @@ class Client < ApplicationRecord
     )
 
     if oauth[:response_type] == 'code'
-      redirect_url(code: authorization.code, state: oauth[:state])
+      redirect_url(code: authorization.code, state: oauth[:state]) do
+        oauth[:redirect_uri]
+      end
     elsif oauth[:response_type] == 'token'
       access_token, = authorization.issue_tokens_to(
         self, token_types: [:access]
@@ -72,15 +74,20 @@ class Client < ApplicationRecord
         expires_in: 5.minutes.to_i,
         scope: :admin,
         state: oauth[:state]
-      )
+      ) do
+        oauth[:redirect_uri]
+      end
     else
       redirect_url(error: 'unsupported_response_type', state: state)
     end
   end
 
   def redirect_url(fragments = {})
+    redirect_uri = block_given? ? yield : redirect_uris[0]
+    return unless valid_redirect_uri?(redirect_uri)
+
     URI.parse(
-      "#{redirect_uris[0]}#" + fragments.map do |(key, value)|
+      "#{redirect_uri}#" + fragments.map do |(key, value)|
         "#{key}=#{value}" if value.present?
       end.compact.join("&")
     ).to_s
