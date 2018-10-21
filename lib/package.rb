@@ -19,6 +19,7 @@ class Package
   ].freeze
 
   EXCLUDED_FILES = [
+    "bin/*",
     "config/database.yml",
     "db/*.sqlite3",
     /public\/packs-test/,
