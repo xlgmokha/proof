@@ -38,8 +38,8 @@ module Oauth
     attr_reader :current_client
 
     def authenticate!
-      @current_client = authenticate_with_http_basic do |client_id, client_secret|
-        Client.find(client_id)&.authenticate(client_secret)
+      @current_client = authenticate_with_http_basic do |id, client_secret|
+        Client.find(id)&.authenticate(client_secret)
       end
       return if current_client
 
@@ -50,28 +50,25 @@ module Oauth
       render "bad_request", formats: :json, status: :bad_request
     end
 
-    def authorization_code_grant(
-      code = params[:code],
-      verifier = params[:code_verifier]
-    )
+    def authorization_code_grant(code, verifier)
       authorization = current_client.authorizations.active.find_by!(code: code)
       return unless authorization.valid_verifier?(verifier)
 
       authorization.issue_tokens_to(current_client)
     end
 
-    def refresh_grant(refresh_token = params[:refresh_token])
+    def refresh_grant(refresh_token)
       jti = Token.claims_for(refresh_token, token_type: :refresh)[:jti]
       token = Token.find(jti)
       token.issue_tokens_to(current_client)
     end
 
-    def password_grant(username = params[:username], password = params[:password])
+    def password_grant(username, password)
       user = User.login(username, password)
       user.issue_tokens_to(current_client)
     end
 
-    def assertion_grant(raw = params[:assertion])
+    def assertion_grant(raw)
       assertion = Saml::Kit::Assertion.new(
         Base64.urlsafe_decode64(raw)
       )
@@ -88,15 +85,15 @@ module Oauth
     def tokens_for(grant_type = params[:grant_type])
       case grant_type
       when 'authorization_code'
-        authorization_code_grant
+        authorization_code_grant(params[:code], params[:code_verifier])
       when 'refresh_token'
-        refresh_grant
+        refresh_grant(params[:refresh_token])
       when 'client_credentials'
         [current_client.access_token, nil]
       when 'password'
-        password_grant
+        password_grant(params[:username], params[:password])
       when 'urn:ietf:params:oauth:grant-type:saml2-bearer' # RFC7522
-        assertion_grant
+        assertion_grant(params[:assertion])
         # when 'urn:ietf:params:oauth:grant-type:jwt-bearer' # RFC7523
         # raise NotImplementedError
       end
