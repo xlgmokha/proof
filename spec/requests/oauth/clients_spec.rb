@@ -2,8 +2,8 @@
 
 require 'rails_helper'
 
-RSpec.describe "/clients" do
-  describe "POST /clients" do
+RSpec.describe "/oauth/clients" do
+  describe "POST /oauth/clients" do
     let(:redirect_uris) { [generate(:uri), generate(:uri)] }
     let(:client_name) { FFaker::Name.name }
     let(:logo_uri) { generate(:uri) }
@@ -13,7 +13,7 @@ RSpec.describe "/clients" do
 
     context "when the registration request is valid" do
       before do
-        post "/clients", params: {
+        post "/oauth/clients", params: {
           redirect_uris: redirect_uris,
           client_name: client_name,
           token_endpoint_auth_method: :client_secret_basic,
@@ -40,7 +40,7 @@ RSpec.describe "/clients" do
 
     context "when the registrations is missing valid redirect_uris" do
       before do
-        post "/clients", params: {
+        post "/oauth/clients", params: {
           redirect_uris: [],
           client_name: client_name,
           token_endpoint_auth_method: :client_secret_basic,
@@ -56,7 +56,7 @@ RSpec.describe "/clients" do
 
     context "when the registration request is missing a client name" do
       before do
-        post "/clients", params: {
+        post "/oauth/clients", params: {
           redirect_uris: redirect_uris,
           client_name: "",
           token_endpoint_auth_method: :client_secret_basic,

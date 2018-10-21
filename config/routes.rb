@@ -5,18 +5,9 @@ Rails.application.routes.draw do
   post '/oauth/token', to: 'tokens#create'
   resource :mfa, only: [:new, :create]
   resource :metadata, only: [:show]
-  resource :oauth, only: [:show, :create] do
-    get :authorize, to: "oauths#show"
-  end
   resource :session, only: [:new, :create, :destroy]
-  resources :clients, only: [:create]
   resources :registrations, only: [:new, :create]
   resource :response, only: [:show]
-  resource :tokens, only: [:create] do
-    post :introspect
-    post :revoke
-  end
-
   namespace :my do
     resource :dashboard, only: [:show]
     resource :mfa, only: [:show, :new, :edit, :create, :destroy]
@@ -24,7 +15,14 @@ Rails.application.routes.draw do
     resources :clients, only: [:index, :new, :create]
     resources :sessions, only: [:index]
   end
-
+  namespace :oauth do
+    resource :authorizations, only: [:show, :create]
+    resources :clients, only: [:create]
+    resource :tokens, only: [:create] do
+      post :introspect
+      post :revoke
+    end
+  end
   namespace :scim do
     namespace :v2, defaults: { format: :scim } do
       post ".search", to: "search#index"
