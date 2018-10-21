@@ -10,7 +10,7 @@ RUN apk update && \
     apk upgrade && \
     apk add $PACKAGES && \
     rm -fr /var/cache/apk/* && \
-    bundle install --deployment --without development test --jobs "$(nproc)" --local && \
+    bundle install --deployment --without development doc test --jobs "$(nproc)" --local && \
     apk del build-base && \
     rm -fr vendor/cache
 RUN adduser -D -u 1000 rails && chown -R rails:rails /app/
