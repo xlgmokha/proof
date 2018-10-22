@@ -2,8 +2,13 @@
 
 module Oauth
   class ClientsController < ApplicationController
-    skip_before_action :authenticate!
-    before_action :apply_cache_headers
+    skip_before_action :authenticate!, only: [:create]
+    before_action :apply_cache_headers, only: [:create]
+
+    def show
+      @client = current_client
+      render formats: :json
+    end
 
     def create
       @client = Client.create!(transform(secure_params))
@@ -49,6 +54,17 @@ module Oauth
       else
         :invalid_client_metadata
       end
+    end
+
+    attr_reader :current_client
+
+    def authenticate!
+      @current_client = authenticate_with_http_basic do |id, client_secret|
+        Client.find(id)&.authenticate(client_secret)
+      end
+      return if current_client
+
+      render status: :unauthorized
     end
   end
 end

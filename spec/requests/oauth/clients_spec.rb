@@ -3,6 +3,31 @@
 require 'rails_helper'
 
 RSpec.describe "/oauth/clients" do
+  describe "GET /oauth/clients/:id" do
+    context "when using the correct HTTP Basic Auth credentials" do
+      let(:client) { create(:client) }
+      let(:credentials) { ActionController::HttpAuthentication::Basic.encode_credentials(client.to_param, client.password) }
+      let(:headers) { { 'Authorization' => credentials } }
+      let(:json) { JSON.parse(response.body, symbolize_names: true) }
+
+      before do
+        get "/oauth/clients/#{client.to_param}", headers: headers
+      end
+
+      specify { expect(response).to have_http_status(:ok) }
+      specify { expect(json[:client_id]).to eql(client.to_param) }
+      specify { expect(json[:client_secret]).to be_present }
+      specify { expect(json[:client_id_issued_at]).to eql(client.created_at.to_i) }
+      specify { expect(json[:client_secret_expires_at]).to be_zero }
+      specify { expect(json[:redirect_uris]).to match_array(client.redirect_uris) }
+      specify { expect(json[:grant_types]).to match_array(client.grant_types.map(&:to_s)) }
+      specify { expect(json[:client_name]).to eql(client.name) }
+      specify { expect(json[:token_endpoint_auth_method]).to eql('client_secret_basic') }
+      specify { expect(json[:logo_uri]).to eql(client.logo_uri) }
+      specify { expect(json[:jwks_uri]).to eql(client.jwks_uri) }
+    end
+  end
+
   describe "POST /oauth/clients" do
     let(:redirect_uris) { [generate(:uri), generate(:uri)] }
     let(:client_name) { FFaker::Name.name }
