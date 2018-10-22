@@ -8,17 +8,11 @@ module Oauth
       @client = Client.find(secure_params[:client_id])
 
       unless @client.valid_redirect_uri?(secure_params[:redirect_uri])
-        return redirect_to @client.redirect_url(
-          error: :invalid_request,
-          state: secure_params[:state]
-        )
+        return redirect_to error_url_for(@client, :invalid_request)
       end
 
       unless @client.valid_response_type?(secure_params[:response_type])
-        return redirect_to @client.redirect_url(
-          error: :unsupported_response_type,
-          state: secure_params[:state]
-        )
+        return redirect_to error_url_for(@client, :unsupported_response_type)
       end
 
       session[:oauth] = secure_params.to_h
@@ -40,6 +34,13 @@ module Oauth
       params.permit(
         :client_id, :response_type, :redirect_uri,
         :state, :code_challenge, :code_challenge_method
+      )
+    end
+
+    def error_url_for(client, type)
+      client.redirect_url(
+        error: type,
+        state: secure_params[:state]
       )
     end
   end
