@@ -15,6 +15,7 @@ RSpec.describe "/oauth/clients" do
       end
 
       specify { expect(response).to have_http_status(:ok) }
+      specify { expect(response.headers['Content-Type']).to include("application/json") }
       specify { expect(json[:client_id]).to eql(client.to_param) }
       specify { expect(json[:client_secret]).to be_present }
       specify { expect(json[:client_id_issued_at]).to eql(client.created_at.to_i) }
