@@ -8,11 +8,15 @@ module Oauth
       @client = Client.find(secure_params[:client_id])
 
       unless @client.valid_redirect_uri?(secure_params[:redirect_uri])
-        return redirect_to error_url_for(@client, :invalid_request)
+        state = secure_params[:state]
+        type = :invalid_request
+        return redirect_to error_url_for(@client, type, state)
       end
 
       unless @client.valid_response_type?(secure_params[:response_type])
-        return redirect_to error_url_for(@client, :unsupported_response_type)
+        state = secure_params[:state]
+        type = :unsupported_response_type
+        return redirect_to error_url_for(@client, type, state)
       end
 
       session[:oauth] = secure_params.to_h
@@ -22,10 +26,11 @@ module Oauth
       return render_error(:bad_request) if oauth.nil?
 
       client = Client.find(oauth[:client_id])
-      redirect_to client.redirect_url_for(current_user, oauth)
+      redirect_to redirect_url_for(client, oauth)
     rescue StandardError => error
       logger.error(error)
-      redirect_to client.redirect_url(error: :invalid_request)
+      url = error_url_for(client, :invalid_request)
+      redirect_to url if url
     end
 
     private
@@ -37,11 +42,12 @@ module Oauth
       )
     end
 
-    def error_url_for(client, type)
-      client.redirect_url(
-        error: type,
-        state: secure_params[:state]
-      )
+    def redirect_url_for(client, oauth)
+      client.redirect_url_for(current_user, oauth)
+    end
+
+    def error_url_for(client, type, state = nil)
+      client&.redirect_url(error: type, state: state)
     end
   end
 end
