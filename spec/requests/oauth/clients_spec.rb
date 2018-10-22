@@ -27,6 +27,20 @@ RSpec.describe "/oauth/clients" do
       specify { expect(json[:logo_uri]).to eql(client.logo_uri) }
       specify { expect(json[:jwks_uri]).to eql(client.jwks_uri) }
     end
+
+    context "when one client attempts to read another" do
+      let(:client) { create(:client) }
+      let(:other_client) { create(:client) }
+      let(:credentials) { ActionController::HttpAuthentication::Basic.encode_credentials(client.to_param, client.password) }
+      let(:headers) { { 'Authorization' => credentials } }
+      let(:json) { JSON.parse(response.body, symbolize_names: true) }
+
+      before do
+        get "/oauth/clients/#{other_client.to_param}", headers: headers
+      end
+
+      specify { expect(response).to have_http_status(:forbidden) }
+    end
   end
 
   describe "POST /oauth/clients" do

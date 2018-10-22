@@ -6,6 +6,10 @@ module Oauth
     before_action :apply_cache_headers, only: [:create]
 
     def show
+      unless current_client.to_param == params[:id]
+        return render json: nil, status: :forbidden
+      end
+
       @client = current_client
       render formats: :json
     end
