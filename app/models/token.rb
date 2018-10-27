@@ -23,6 +23,7 @@ class Token < ApplicationRecord
 
   def revoke!
     update!(revoked_at: Time.now)
+    authorization&.revoke!
   end
 
   def revoked?

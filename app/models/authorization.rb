@@ -39,7 +39,9 @@ class Authorization < ApplicationRecord
   def revoke!
     raise 'already revoked' if revoked?
 
-    update!(revoked_at: Time.now)
+    now = Time.now
+    update!(revoked_at: now)
+    tokens.update_all(revoked_at: now)
   end
 
   def revoked?

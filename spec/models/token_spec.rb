@@ -14,6 +14,18 @@ RSpec.describe Token, type: :model do
 
       specify { expect(subject.reload.revoked_at.to_i).to eql(DateTime.now.to_i) }
     end
+
+    context "when a token associated with an authorization grant is revoked" do
+      subject { create(:access_token, authorization: authorization) }
+
+      let(:authorization) { create(:authorization) }
+      let!(:other_token) { create(:access_token, authorization: authorization) }
+
+      before { subject.revoke! }
+
+      specify { expect(authorization.reload).to be_revoked }
+      specify { expect(other_token.reload).to be_revoked }
+    end
   end
 
   describe ".expired" do
