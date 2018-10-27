@@ -17,6 +17,10 @@ class Token < ApplicationRecord
     end
   end
 
+  def issued_to?(audience)
+    self.audience == audience
+  end
+
   def revoke!
     update!(revoked_at: Time.now)
   end

@@ -26,7 +26,7 @@ module Oauth
 
     def revoke
       claims = Token.claims_for(params[:token], token_type: :any)
-      Token.find(claims[:jti]).revoke! unless claims.empty?
+      current_client.revoke(Token.find(claims[:jti])) unless claims.empty?
       render plain: "", status: :ok
     rescue StandardError => error
       logger.error(error)

@@ -44,6 +44,10 @@ class Client < ApplicationRecord
     end
   end
 
+  def revoke(token)
+    token.revoke! if token.issued_to?(self)
+  end
+
   def valid_redirect_uri?(redirect_uri)
     redirect_uris.include? redirect_uri
   end
