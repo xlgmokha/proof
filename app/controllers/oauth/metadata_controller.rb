@@ -5,6 +5,7 @@ module Oauth
     skip_before_action :authenticate!
 
     def show
+      request.session_options[:skip] = true
       render formats: :json
     end
   end

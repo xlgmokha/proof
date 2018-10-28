@@ -10,6 +10,7 @@ RSpec.describe "/.well-known/oauth-authorization-server" do
 
     specify { expect(response).to have_http_status(:ok) }
     specify { expect(response.content_type).to eql("application/json") }
+    specify { expect(response.headers['Set-Cookie']).to be_nil }
     specify { expect(json[:issuer]).to eql(root_url) }
     specify { expect(json[:authorization_endpoint]).to eql(oauth_authorizations_url) }
     specify { expect(json[:token_endpoint]).to eql(oauth_tokens_url) }
