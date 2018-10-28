@@ -103,4 +103,15 @@ RSpec.describe "documentation" do
       expect(response.code).to eql('201')
     end
   end
+
+  specify do
+    code_verifier = SecureRandom.hex(128)
+    authorization = create(:authorization, client: client, challenge: Base64.urlsafe_encode64(Digest::SHA256.hexdigest(code_verifier)), challenge_method: :sha256)
+    headers = { 'Authorization' => ActionController::HttpAuthentication::Basic.encode_credentials(client.to_param, client.password) }
+    body = { grant_type: 'authorization_code', code: authorization.code, code_verifier: code_verifier }
+    VCR.use_cassette("oauth-tokens-pkce") do
+      response = hippie.post("#{scheme}://#{host}/oauth/tokens", body: body, headers: headers)
+      expect(response.code).to eql('200')
+    end
+  end
 end

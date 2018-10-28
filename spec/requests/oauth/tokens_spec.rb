@@ -58,7 +58,6 @@ RSpec.describe '/oauth/tokens' do
         let(:json) { JSON.parse(response.body, symbolize_names: true) }
 
         before do
-          post '/oauth/tokens', params: { grant_type: 'authorization_code', code: SecureRandom.hex(20) }, headers: headers
           post '/oauth/tokens', params: { grant_type: 'authorization_code', code: authorization.code, code_verifier: code_verifier }, headers: headers
         end
 

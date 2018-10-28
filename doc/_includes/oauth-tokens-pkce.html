@@ -1,0 +1,65 @@
+
+#### POST http://localhost:5000/oauth/tokens
+
+Example curl request:
+
+```bash
+$ curl http://localhost:5000/oauth/tokens \
+  -X POST \
+  -d '{"grant_type":"authorization_code","code":"sFkwD8Ca3FGcwyiMAZrJkAa3","code_verifier":"70bd488699bf3dea8dd22a59e929cbabf24aff07876e9ce45cdbef094c71c23bf7bf69031785d548255d69e312fdf396a7f272b50e06b05720ca482cb427cb43c9a3eded21b4c41994f368d74bdd910d94bb42f9ade19a0c18a312e88ab2240aef885015b4c5464712030ac18aa91106a42ea08ee89d150a0168a7cc41510322"}' \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "User-Agent: net/hippie 0.1.9" \
+  -H "Authorization: Basic ZDdiNTQzNDgtMzAwMC00ZjQ2LWFjOGUtZGYyODU2YWQ4ZTYzOjdVTTNnUTYyQ1NmODQ5Q00xbTlYb0czRQ==" \
+  -H "Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3"
+```
+Request Headers:
+
+```text
+Accept: application/json
+Content-Type: application/json
+User-Agent: net/hippie 0.1.9
+Authorization: Basic ZDdiNTQzNDgtMzAwMC00ZjQ2LWFjOGUtZGYyODU2YWQ4ZTYzOjdVTTNnUTYyQ1NmODQ5Q00xbTlYb0czRQ==
+Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+```
+
+
+Request Body:
+```json
+{
+  "grant_type": "authorization_code",
+  "code": "sFkwD8Ca3FGcwyiMAZrJkAa3",
+  "code_verifier": "70bd488699bf3dea8dd22a59e929cbabf24aff07876e9ce45cdbef094c71c23bf7bf69031785d548255d69e312fdf396a7f272b50e06b05720ca482cb427cb43c9a3eded21b4c41994f368d74bdd910d94bb42f9ade19a0c18a312e88ab2240aef885015b4c5464712030ac18aa91106a42ea08ee89d150a0168a7cc41510322"
+}
+```
+
+Response Headers:
+
+```text
+X-Frame-Options: SAMEORIGIN
+X-Xss-Protection: 1; mode=block
+X-Content-Type-Options: nosniff
+X-Download-Options: noopen
+X-Permitted-Cross-Domain-Policies: none
+Referrer-Policy: strict-origin-when-cross-origin
+Cache-Control: private, no-store
+Pragma: no-cache
+Content-Type: application/json; charset=utf-8
+Etag: W/"6f657fc8b7cfd8594899a910156579de"
+Set-Cookie: _proof=7a303e5613a90e32dd16f75a6750dd01; path=/; HttpOnly
+X-Request-Id: 16dbc62a-7a5f-422f-b1d1-11e1e3190b0e
+Transfer-Encoding: chunked
+```
+
+
+Response Body:
+```json
+{
+  "access_token": "eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE1NDA3NjgxMjcsImlhdCI6MTU0MDc2NDUyNywiaXNzIjoiaHR0cDovL3Byb29mLnRlc3QvbWV0YWRhdGEiLCJuYmYiOjE1NDA3NjQ1MjcsImF1ZCI6ImQ3YjU0MzQ4LTMwMDAtNGY0Ni1hYzhlLWRmMjg1NmFkOGU2MyIsImp0aSI6ImRhMjljYTI1LWJhMDItNGQzMy05ODUwLTcxN2U2MmM2YzhhYiIsInN1YiI6IjBmMDkzZmM1LWU0ZDUtNDU3My04YzU1LTBhMzg3Y2Y5YTdkNiIsInRva2VuX3R5cGUiOiJhY2Nlc3MifQ.LTEgilCVyP_X7IvxUrRttetoUTWo5qHEbmv-dtXtwBdWHcz6gT1unHgy5WZL_2fabg9qakWo8nxVkYErW0LU_FktjK3Y_NRy3wp7AgZ8GG2oiwSpp8o-Ohjnwq60qvtXQHbUmiQ-7MGV-t-ZtOcftLc8mEs0MadA-Rss4NtFc-amp9Y_eYAxWeb_DQK_jEJc3NcZjIcCZH0EtwmqE9xPVIG8VowVyrBvqJ8Q9SQpM1r6dGvWoB5icOT-hBu0aLF3BCuv7jVH2uHVD9SkETfjvu-S2gtlndQnUl1fZ-4R29QkBaOpvydt9pqWjEf7VaJgtSSmiWm2B7RBqxxq1B_YVg",
+  "token_type": "Bearer",
+  "expires_in": 3600,
+  "refresh_token": "eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE1NDA4NTA5MjcsImlhdCI6MTU0MDc2NDUyNywiaXNzIjoiaHR0cDovL3Byb29mLnRlc3QvbWV0YWRhdGEiLCJuYmYiOjE1NDA3NjQ1MjcsImF1ZCI6ImQ3YjU0MzQ4LTMwMDAtNGY0Ni1hYzhlLWRmMjg1NmFkOGU2MyIsImp0aSI6ImM4N2Y4MzYwLWM0YWEtNDI1ZC1hZTljLTJmNzIyN2E4N2RiNSIsInN1YiI6IjBmMDkzZmM1LWU0ZDUtNDU3My04YzU1LTBhMzg3Y2Y5YTdkNiIsInRva2VuX3R5cGUiOiJyZWZyZXNoIn0.keyn8te4hncqpqQI43vTshO4_vd4NDX8GJ0pDviNmFnSMyDfFsQ_kQ_mjTFns_T6K63YfW-x_3W02fH6V8ucRWQezj0xItUC7UYuFi9K6BozgQKy92RfyDdjvU0MWTXpK7_r-NnuaRTe0Ud7FXCdMfrDCDgbNMNIyA9FsYUR7UeDgKKQHHatI2WEiN2YRVUjWeaD4a2w_EDyqu_gkElCua3drI282E2PfmMDqPs5znRCTyOTD8JFg1xyJ28--5dMhHRjmb-PD8fnzFReq-74VzL9WVvzDeGUhsZAYgXT0TRAMpT5yPXdscwwesvAfgZnBfdgQPtoQ66QVgEBxVl4iA"
+}
+```
+
+
