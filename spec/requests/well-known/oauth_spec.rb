@@ -1,8 +1,11 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe "/.well-known/oauth-authorization-server" do
   describe "GET /.well-known/oauth-authorization-server" do
     let(:json) { JSON.parse(response.body, symbolize_names: true) }
+
     before { get "/.well-known/oauth-authorization-server" }
 
     specify { expect(response).to have_http_status(:ok) }

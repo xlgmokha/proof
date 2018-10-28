@@ -58,13 +58,10 @@ class Token < ApplicationRecord
 
   class << self
     def revoked?(jti)
-      revoked_token_identifiers[jti]
-    end
-
-    def revoked_token_identifiers
-      Rails.cache.fetch("revoked-tokens", expires_in: 10.minutes) do
+      revoked = Rails.cache.fetch("revoked-tokens", expires_in: 10.minutes) do
         Hash[Token.revoked.pluck(:id).map { |x| [x, true] }]
       end
+      revoked[jti]
     end
 
     def claims_for(token, token_type: :access)

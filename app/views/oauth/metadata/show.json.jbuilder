@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 json.issuer root_url
 json.authorization_endpoint oauth_authorizations_url
 json.token_endpoint oauth_tokens_url
