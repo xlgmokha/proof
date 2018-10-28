@@ -6,4 +6,6 @@ permalink: /oauth/metadata.html
 categories: oauth
 ---
 
+The Authorization Server Metadata adheres to [RFC-8414](https://tools.ietf.org/html/rfc8414).
+
 {% include get-well-known-oauth-authorization-server.html %}
