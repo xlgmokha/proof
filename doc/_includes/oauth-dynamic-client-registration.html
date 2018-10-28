@@ -1,0 +1,82 @@
+
+#### POST http://localhost:5000/oauth/clients
+
+Example curl request:
+
+```bash
+$ curl http://localhost:5000/oauth/clients \
+  -X POST \
+  -d '{"redirect_uris":["https://rosenbaum.info","https://harberritchie.co.uk"],"client_name":"Gayle Lindgren","token_endpoint_auth_method":"client_secret_basic","logo_uri":"https://zulaufmurray.name","jwks_uri":"https://gulgowskischowalter.biz"}' \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "User-Agent: net/hippie 0.1.9" \
+  -H "Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3"
+```
+Request Headers:
+
+```text
+Accept: application/json
+Content-Type: application/json
+User-Agent: net/hippie 0.1.9
+Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+```
+
+
+Request Body:
+```json
+{
+  "redirect_uris": [
+    "https://rosenbaum.info",
+    "https://harberritchie.co.uk"
+  ],
+  "client_name": "Gayle Lindgren",
+  "token_endpoint_auth_method": "client_secret_basic",
+  "logo_uri": "https://zulaufmurray.name",
+  "jwks_uri": "https://gulgowskischowalter.biz"
+}
+```
+
+Response Headers:
+
+```text
+X-Frame-Options: SAMEORIGIN
+X-Xss-Protection: 1; mode=block
+X-Content-Type-Options: nosniff
+X-Download-Options: noopen
+X-Permitted-Cross-Domain-Policies: none
+Referrer-Policy: strict-origin-when-cross-origin
+Cache-Control: no-cache, no-store
+Pragma: no-cache
+Content-Type: application/json; charset=utf-8
+Set-Cookie: _proof=a8764373d180a5ecccce3cce31a4f64d; path=/; HttpOnly
+X-Request-Id: e165ef5e-14d7-41f2-b4e4-cbc48c489daf
+Transfer-Encoding: chunked
+```
+
+
+Response Body:
+```json
+{
+  "client_id": "cdb39a8b-71bc-4687-8849-d438c039aece",
+  "client_secret": "J6q9bdMuhWuGjuY4w7VFhDgs",
+  "client_id_issued_at": 1540763754,
+  "client_secret_expires_at": 0,
+  "redirect_uris": [
+    "https://rosenbaum.info",
+    "https://harberritchie.co.uk"
+  ],
+  "grant_types": [
+    "authorization_code",
+    "refresh_token",
+    "client_credentials",
+    "password",
+    "urn:ietf:params:oauth:grant-type:saml2-bearer"
+  ],
+  "client_name": "Gayle Lindgren",
+  "token_endpoint_auth_method": "client_secret_basic",
+  "logo_uri": "https://zulaufmurray.name",
+  "jwks_uri": "https://gulgowskischowalter.biz"
+}
+```
+
+

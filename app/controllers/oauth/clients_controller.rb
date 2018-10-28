@@ -2,6 +2,7 @@
 
 module Oauth
   class ClientsController < ApplicationController
+    skip_before_action :verify_authenticity_token
     skip_before_action :authenticate!
     before_action :apply_cache_headers
 

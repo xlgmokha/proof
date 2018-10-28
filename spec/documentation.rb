@@ -89,4 +89,18 @@ RSpec.describe "documentation" do
       expect(response.code).to eql('200')
     end
   end
+
+  specify do
+    body = {
+      redirect_uris: [generate(:uri), generate(:uri)],
+      client_name: FFaker::Name.name,
+      token_endpoint_auth_method: :client_secret_basic,
+      logo_uri: generate(:uri),
+      jwks_uri: generate(:uri),
+    }
+    VCR.use_cassette("oauth-dynamic-client-registration") do
+      response = hippie.post("#{scheme}://#{host}/oauth/clients", body: body)
+      expect(response.code).to eql('201')
+    end
+  end
 end
