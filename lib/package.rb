@@ -15,6 +15,7 @@ class Package
     "db/**/*",
     "lib/**/*",
     "public/**/*",
+    "public/.well-known/*",
     "vendor/cache/**/*"
   ].freeze
 
