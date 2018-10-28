@@ -6,11 +6,11 @@ Example curl request:
 ```bash
 $ curl http://localhost:5000/oauth/tokens/introspect \
   -X POST \
-  -d '{"token":"eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE1NDA3NzA3NjYsImlhdCI6MTU0MDc2NzE2NywiaXNzIjoiaHR0cDovL3Byb29mLnRlc3Q6NTAwMC9tZXRhZGF0YSIsIm5iZiI6MTU0MDc2NzE2NywiYXVkIjoiY2EzMmNhOGMtZTg4Zi00Y2MwLWJhMzYtY2E4MTlkYmNjMGEzIiwianRpIjoiZTVjMjNmZDMtZmViNi00MGRhLWE2OGItNWRiODU4ZDEwY2E0Iiwic3ViIjoiZjY1M2QxOGUtYjliNi00M2ZjLWE4OTEtNWI5OGFiN2EzNWM2IiwidG9rZW5fdHlwZSI6ImFjY2VzcyJ9.knD4_DnanganmdG7SZLUNtXv2N4ayjXlLf0VDqn8E8KcV69YcAvkoFzoALo-nUbXDHaQdzffs7ywkycb6Fcy81KzyvhOe1pRpXUYC1k_764iKP0PujSuo9F3vvbRFL0QnQryhNAjFpkQ7EcnTWGRWz5HU5WDNACVJXTe6-NmvYhoqyIi-wiGSKvjpJpxSRPCUde0n_E76zes-Loyy7XlANBTum8YnOtgJHgC9pufyaCzZ9XiM76AL6UStMg5oJq45gzynjy8LWeTk_OSWZwHnqRODAUuuA53MVheZC01RLg04gk6kTdIJoMBBIKZNpJK6YqzmLXEaDpnEzicNU6t2g"}' \
+  -d '{"token":"eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE1NDA3NzE5MDIsImlhdCI6MTU0MDc2ODMwMiwiaXNzIjoiaHR0cDovL3Byb29mLnRlc3Q6NTAwMC9tZXRhZGF0YSIsIm5iZiI6MTU0MDc2ODMwMiwiYXVkIjoiNjUyZGI5ODctNzgyOS00ZDJkLTk5NWUtYWVhNWIwYTVjYjkwIiwianRpIjoiNDQ2ZmVmZTEtYjI2Zi00YWYyLWE1NDgtOTJhNmE1MTNiMzgzIiwic3ViIjoiZTRiNjU4Y2YtZjliMi00YTc5LTkwMGEtMjgzN2JkZDQxODFlIiwidG9rZW5fdHlwZSI6ImFjY2VzcyJ9.ao_ifLg0pLZP_a6B0QZYKZrarfXLThkgFCKnfIYCt1bzhT9gavwt_711YF9Rnk8qXeNs8m-jhkuRvgO1QatA7JVSReCP1u0QyCKiGNVbCHiAJCppr76FS4LH2WchQa-w3oAC4om_pP44UZHLnI9qeQ0-KHOirFzZhuO962HT_S4yUF1pi-ILJ0bfuX0LheBHa9izziiIgQygwtLXAT9HWMIftH81R7fHJwfoE0L74SWDuWP7gi3xb1zGNDVbnU9pIxlZGuGL_4c7CZ8_ILDMsDPC9TVx3ciKe0dprazkXcfKqR8_r1-4s_0zlQhWviX9BIsp1cxi8Ynu1S6ikXU7hw"}' \
   -H "Accept: application/json" \
   -H "Content-Type: application/json" \
   -H "User-Agent: net/hippie 0.1.9" \
-  -H "Authorization: Basic ZjQ3MzFhN2YtZDc5ZC00YjYyLTlkMTMtNGRmNGJjMGIyMjY1OkVCZVk5TFoyRlVCcUZOQzJoR290cE53SA==" \
+  -H "Authorization: Basic OWFiZmIyZDMtYWUxNC00YjRiLThiMzgtYTI3Mjk1Zjk0Y2RhOnVoV05aeDdneDlaZ21Eb2ZmNWVITm5uMg==" \
   -H "Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3"
 ```
 Request Headers:
@@ -19,7 +19,7 @@ Request Headers:
 Accept: application/json
 Content-Type: application/json
 User-Agent: net/hippie 0.1.9
-Authorization: Basic ZjQ3MzFhN2YtZDc5ZC00YjYyLTlkMTMtNGRmNGJjMGIyMjY1OkVCZVk5TFoyRlVCcUZOQzJoR290cE53SA==
+Authorization: Basic OWFiZmIyZDMtYWUxNC00YjRiLThiMzgtYTI3Mjk1Zjk0Y2RhOnVoV05aeDdneDlaZ21Eb2ZmNWVITm5uMg==
 Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3
 ```
 
@@ -27,7 +27,7 @@ Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3
 Request Body:
 ```json
 {
-  "token": "eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE1NDA3NzA3NjYsImlhdCI6MTU0MDc2NzE2NywiaXNzIjoiaHR0cDovL3Byb29mLnRlc3Q6NTAwMC9tZXRhZGF0YSIsIm5iZiI6MTU0MDc2NzE2NywiYXVkIjoiY2EzMmNhOGMtZTg4Zi00Y2MwLWJhMzYtY2E4MTlkYmNjMGEzIiwianRpIjoiZTVjMjNmZDMtZmViNi00MGRhLWE2OGItNWRiODU4ZDEwY2E0Iiwic3ViIjoiZjY1M2QxOGUtYjliNi00M2ZjLWE4OTEtNWI5OGFiN2EzNWM2IiwidG9rZW5fdHlwZSI6ImFjY2VzcyJ9.knD4_DnanganmdG7SZLUNtXv2N4ayjXlLf0VDqn8E8KcV69YcAvkoFzoALo-nUbXDHaQdzffs7ywkycb6Fcy81KzyvhOe1pRpXUYC1k_764iKP0PujSuo9F3vvbRFL0QnQryhNAjFpkQ7EcnTWGRWz5HU5WDNACVJXTe6-NmvYhoqyIi-wiGSKvjpJpxSRPCUde0n_E76zes-Loyy7XlANBTum8YnOtgJHgC9pufyaCzZ9XiM76AL6UStMg5oJq45gzynjy8LWeTk_OSWZwHnqRODAUuuA53MVheZC01RLg04gk6kTdIJoMBBIKZNpJK6YqzmLXEaDpnEzicNU6t2g"
+  "token": "eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE1NDA3NzE5MDIsImlhdCI6MTU0MDc2ODMwMiwiaXNzIjoiaHR0cDovL3Byb29mLnRlc3Q6NTAwMC9tZXRhZGF0YSIsIm5iZiI6MTU0MDc2ODMwMiwiYXVkIjoiNjUyZGI5ODctNzgyOS00ZDJkLTk5NWUtYWVhNWIwYTVjYjkwIiwianRpIjoiNDQ2ZmVmZTEtYjI2Zi00YWYyLWE1NDgtOTJhNmE1MTNiMzgzIiwic3ViIjoiZTRiNjU4Y2YtZjliMi00YTc5LTkwMGEtMjgzN2JkZDQxODFlIiwidG9rZW5fdHlwZSI6ImFjY2VzcyJ9.ao_ifLg0pLZP_a6B0QZYKZrarfXLThkgFCKnfIYCt1bzhT9gavwt_711YF9Rnk8qXeNs8m-jhkuRvgO1QatA7JVSReCP1u0QyCKiGNVbCHiAJCppr76FS4LH2WchQa-w3oAC4om_pP44UZHLnI9qeQ0-KHOirFzZhuO962HT_S4yUF1pi-ILJ0bfuX0LheBHa9izziiIgQygwtLXAT9HWMIftH81R7fHJwfoE0L74SWDuWP7gi3xb1zGNDVbnU9pIxlZGuGL_4c7CZ8_ILDMsDPC9TVx3ciKe0dprazkXcfKqR8_r1-4s_0zlQhWviX9BIsp1cxi8Ynu1S6ikXU7hw"
 }
 ```
 
@@ -43,8 +43,8 @@ Referrer-Policy: strict-origin-when-cross-origin
 Content-Type: application/json; charset=utf-8
 Etag: W/"78b558bd2357fbe7ad52804fb3af1b86"
 Cache-Control: max-age=0, private, must-revalidate
-Set-Cookie: _proof=8ea7bb679d2de763c50085f001ef990f; path=/; HttpOnly
-X-Request-Id: c11a58e6-15fc-4f72-b214-4b57525d5c06
+Set-Cookie: _proof=fc8ca5893c6374293b9ae355143bcad8; path=/; HttpOnly
+X-Request-Id: 42549cad-67a3-4165-98d6-88a0de62dda3
 Transfer-Encoding: chunked
 ```
 

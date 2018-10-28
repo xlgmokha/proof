@@ -6,11 +6,11 @@ Example curl request:
 ```bash
 $ curl http://localhost:5000/oauth/tokens \
   -X POST \
-  -d '{"grant_type":"refresh_token","refresh_token":"eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE1NDA3NzA3NjYsImlhdCI6MTU0MDc2NzE2NiwiaXNzIjoiaHR0cDovL3Byb29mLnRlc3Q6NTAwMC9tZXRhZGF0YSIsIm5iZiI6MTU0MDc2NzE2NiwiYXVkIjoiOGViODlkMzEtNWVkOC00ZTcxLTlmYTItOWFjZWQ4NTFjYWZmIiwianRpIjoiYmI3ZDE5NjktOTkyNi00YmU0LWE3ZjctMTBmZmJiYTljYTA1Iiwic3ViIjoiMTJkZWU5ZDQtNDc3Ny00ZTFmLWI3MTYtN2NjMjFjMTQ4MTkxIiwidG9rZW5fdHlwZSI6InJlZnJlc2gifQ.cNPI-a6gSRu4laQrjgoyDvEtRKe9x-A5cWLPMfnT0aupBeuVn3Gb0w7JvGX54UQpdHhkTMhV0CmgOOZ57solqPx1xvO5yAQzhQCiauZ9HlTP21P6esVlO-GZmASkjusBOl9wsJnFhYl2sQ4miawvOkhwpT037vaF4_h4Pv_bHDmy7FyTHDkb9cOYOQgxtV_7lLxdv-jWfKmu8zMwNegopSzXfIFdYq_9BQbNkMaFhGSQcvMp6tfMzX8fPldPYLwVgzYtmTEYwBg38IZaPwC8lcEnMMZND2sXdGX20zPa0M5ENU35djVTztN9NrgRge8cGNsYQghfdbRFnjdESiL8pQ"}' \
+  -d '{"grant_type":"refresh_token","refresh_token":"eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE1NDA3NzE5MDEsImlhdCI6MTU0MDc2ODMwMiwiaXNzIjoiaHR0cDovL3Byb29mLnRlc3Q6NTAwMC9tZXRhZGF0YSIsIm5iZiI6MTU0MDc2ODMwMiwiYXVkIjoiYzhmYWY5MzgtMWQ4ZS00NjcyLWIyZWQtMDA1ZGIzYmYxYTkzIiwianRpIjoiZmJjMDdiNTctYmUwMC00YzJmLWI3MTYtOTYxMTNhNzUxZGFhIiwic3ViIjoiZmQ4NzRhMmMtOTc1Zi00NDczLTlhNjktYmJmYWFiMDk0N2ZmIiwidG9rZW5fdHlwZSI6InJlZnJlc2gifQ.gxiXz5Pm1lWH7zTf1jvCAILiOn8PUURWlkrKvewbOtG8TdSwO1S_i4NXSZePZe5etGOhhxUipb9vz8gLSp3yZzmh5hDdo9naHYmQoZQc4Vy8ae2reZ-OLCyG170butwjIvu0sTW3uQC4Do-zDGmpXk_fvd7hRvbOzup_RJa48stIcuW_l6n0ec6xQgzxlIfK5lZ6MTl9BXmyc5I-i1bAYv9m5TJPqVaxfUMdaTt_RZ290NAcx75TR-0N2lgNXDYlgbW7m6MQBxUrGp2MjHf5CPQUQjKEFXYy_OX6uMGAGBaBSr1WaPLwFaoeE3YWdURLjdiGua1Iu_GLWi8emMf0ZQ"}' \
   -H "Accept: application/json" \
   -H "Content-Type: application/json" \
   -H "User-Agent: net/hippie 0.1.9" \
-  -H "Authorization: Basic OGViODlkMzEtNWVkOC00ZTcxLTlmYTItOWFjZWQ4NTFjYWZmOm5CVFhEY1RTajJ1R2V0dG84VkxLaDRBVg==" \
+  -H "Authorization: Basic YzhmYWY5MzgtMWQ4ZS00NjcyLWIyZWQtMDA1ZGIzYmYxYTkzOlJmWjNubW5jV0RZdmFDRkxjOTdpcjhWSw==" \
   -H "Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3"
 ```
 Request Headers:
@@ -19,7 +19,7 @@ Request Headers:
 Accept: application/json
 Content-Type: application/json
 User-Agent: net/hippie 0.1.9
-Authorization: Basic OGViODlkMzEtNWVkOC00ZTcxLTlmYTItOWFjZWQ4NTFjYWZmOm5CVFhEY1RTajJ1R2V0dG84VkxLaDRBVg==
+Authorization: Basic YzhmYWY5MzgtMWQ4ZS00NjcyLWIyZWQtMDA1ZGIzYmYxYTkzOlJmWjNubW5jV0RZdmFDRkxjOTdpcjhWSw==
 Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3
 ```
 
@@ -28,7 +28,7 @@ Request Body:
 ```json
 {
   "grant_type": "refresh_token",
-  "refresh_token": "eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE1NDA3NzA3NjYsImlhdCI6MTU0MDc2NzE2NiwiaXNzIjoiaHR0cDovL3Byb29mLnRlc3Q6NTAwMC9tZXRhZGF0YSIsIm5iZiI6MTU0MDc2NzE2NiwiYXVkIjoiOGViODlkMzEtNWVkOC00ZTcxLTlmYTItOWFjZWQ4NTFjYWZmIiwianRpIjoiYmI3ZDE5NjktOTkyNi00YmU0LWE3ZjctMTBmZmJiYTljYTA1Iiwic3ViIjoiMTJkZWU5ZDQtNDc3Ny00ZTFmLWI3MTYtN2NjMjFjMTQ4MTkxIiwidG9rZW5fdHlwZSI6InJlZnJlc2gifQ.cNPI-a6gSRu4laQrjgoyDvEtRKe9x-A5cWLPMfnT0aupBeuVn3Gb0w7JvGX54UQpdHhkTMhV0CmgOOZ57solqPx1xvO5yAQzhQCiauZ9HlTP21P6esVlO-GZmASkjusBOl9wsJnFhYl2sQ4miawvOkhwpT037vaF4_h4Pv_bHDmy7FyTHDkb9cOYOQgxtV_7lLxdv-jWfKmu8zMwNegopSzXfIFdYq_9BQbNkMaFhGSQcvMp6tfMzX8fPldPYLwVgzYtmTEYwBg38IZaPwC8lcEnMMZND2sXdGX20zPa0M5ENU35djVTztN9NrgRge8cGNsYQghfdbRFnjdESiL8pQ"
+  "refresh_token": "eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE1NDA3NzE5MDEsImlhdCI6MTU0MDc2ODMwMiwiaXNzIjoiaHR0cDovL3Byb29mLnRlc3Q6NTAwMC9tZXRhZGF0YSIsIm5iZiI6MTU0MDc2ODMwMiwiYXVkIjoiYzhmYWY5MzgtMWQ4ZS00NjcyLWIyZWQtMDA1ZGIzYmYxYTkzIiwianRpIjoiZmJjMDdiNTctYmUwMC00YzJmLWI3MTYtOTYxMTNhNzUxZGFhIiwic3ViIjoiZmQ4NzRhMmMtOTc1Zi00NDczLTlhNjktYmJmYWFiMDk0N2ZmIiwidG9rZW5fdHlwZSI6InJlZnJlc2gifQ.gxiXz5Pm1lWH7zTf1jvCAILiOn8PUURWlkrKvewbOtG8TdSwO1S_i4NXSZePZe5etGOhhxUipb9vz8gLSp3yZzmh5hDdo9naHYmQoZQc4Vy8ae2reZ-OLCyG170butwjIvu0sTW3uQC4Do-zDGmpXk_fvd7hRvbOzup_RJa48stIcuW_l6n0ec6xQgzxlIfK5lZ6MTl9BXmyc5I-i1bAYv9m5TJPqVaxfUMdaTt_RZ290NAcx75TR-0N2lgNXDYlgbW7m6MQBxUrGp2MjHf5CPQUQjKEFXYy_OX6uMGAGBaBSr1WaPLwFaoeE3YWdURLjdiGua1Iu_GLWi8emMf0ZQ"
 }
 ```
 
@@ -44,8 +44,8 @@ Referrer-Policy: strict-origin-when-cross-origin
 Cache-Control: private, no-store
 Pragma: no-cache
 Content-Type: application/json; charset=utf-8
-Set-Cookie: _proof=aa33b998cafb348513aafa4129537877; path=/; HttpOnly
-X-Request-Id: 3d02095c-3344-4e56-bfd6-9525016b3b78
+Set-Cookie: _proof=732cb946d3430a4209a4dd670d7c4581; path=/; HttpOnly
+X-Request-Id: 3ad01af9-ffcd-439b-bffc-0baf7125e0bd
 Transfer-Encoding: chunked
 ```
 

@@ -3,6 +3,8 @@
 module Scim
   module V2
     class ServiceProvidersController < ::Scim::Controller
+      skip_before_action :authenticate!
+
       def show
         render json: configuration.to_json, status: :ok
       end
@@ -11,6 +13,7 @@ module Scim
 
       def configuration
         Scim::Shady::ServiceProviderConfig.build do |x|
+          x.documentation_uri = root_url + "doc"
           x.patch = false
           x.bulk do |y|
             y.supported = false

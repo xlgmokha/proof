@@ -124,4 +124,11 @@ RSpec.describe "documentation" do
       expect(response.code).to eql('200')
     end
   end
+
+  specify do
+    VCR.use_cassette("scim-service-provider-config") do
+      response = hippie.get("#{scheme}://#{host}/scim/v2/ServiceProviderConfig")
+      expect(response.code).to eql('200')
+    end
+  end
 end
