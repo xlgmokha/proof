@@ -1,0 +1,77 @@
+
+#### GET http://localhost:5000/.well-known/oauth-authorization-server
+
+Example curl request:
+
+```bash
+$ curl http://localhost:5000/.well-known/oauth-authorization-server \
+  -X GET \
+  -d '' \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "User-Agent: net/hippie 0.1.9" \
+  -H "Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3"
+```
+Request Headers:
+
+```text
+Accept: application/json
+Content-Type: application/json
+User-Agent: net/hippie 0.1.9
+Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+```
+
+
+Response Headers:
+
+```text
+X-Frame-Options: SAMEORIGIN
+X-Xss-Protection: 1; mode=block
+X-Content-Type-Options: nosniff
+X-Download-Options: noopen
+X-Permitted-Cross-Domain-Policies: none
+Referrer-Policy: strict-origin-when-cross-origin
+Content-Type: application/json; charset=utf-8
+Etag: W/"7f1eee6ebfc3008c58d630548ed1707c"
+Cache-Control: max-age=0, private, must-revalidate
+Set-Cookie: _proof=e343785abce2b45b8b8e967aff136bea; path=/; HttpOnly
+X-Request-Id: 99feec7e-ced0-465f-aadc-3968a2f42ebb
+X-Runtime: 0.241107
+Transfer-Encoding: chunked
+```
+
+
+Response Body:
+```json
+{
+  "issuer": "http://localhost:5000/",
+  "authorization_endpoint": "http://localhost:5000/oauth/authorizations",
+  "token_endpoint": "http://localhost:5000/oauth/tokens",
+  "token_endpoint_auth_methods_supported": [
+    "client_secret_basic"
+  ],
+  "token_endpoint_auth_signing_alg_values_supported": [
+    "RS256"
+  ],
+  "userinfo_endpoint": "http://localhost:5000/oauth/me",
+  "jwks_uri": "",
+  "registration_endpoint": "http://localhost:5000/oauth/clients",
+  "scopes_supported": [
+
+  ],
+  "response_types_supported": [
+    "code",
+    "token"
+  ],
+  "service_documentation": "http://localhost:5000/doc",
+  "ui_locales_supported": [
+    "en",
+    "es",
+    "fr",
+    "ja",
+    "ko"
+  ]
+}
+```
+
+

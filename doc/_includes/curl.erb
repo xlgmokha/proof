@@ -2,7 +2,6 @@
 #### <%= interaction['request']['method'].upcase %> <%= interaction['request']['uri'].gsub(/\h{8}-\h{4}-\h{4}-\h{4}-\h{12}/, ':id') %>
 
 Example curl request:
-
 <% headers = interaction['request']['headers'].map { |(key, value)| "-H \"#{key}: #{value[0]}\"" } %>
 ```bash
 $ curl <%= interaction['request']['uri'] %> \
@@ -11,7 +10,6 @@ $ curl <%= interaction['request']['uri'] %> \
   <%= headers.join(" \\\n  ") %>
 ```
 Request Headers:
-
 <% headers = interaction['request']['headers'].map { |(key, value)| "#{key}: #{value[0]}" } %>
 ```text
 <%= headers.join("\n") %>
@@ -23,9 +21,7 @@ Request Body:
 <%= JSON.pretty_generate(json) %>
 ```
 <% end %>
-
 Response Headers:
-
 <% headers = interaction['response']['headers'].map { |(key, value)| "#{key}: #{value[0]}" } %>
 ```text
 <%= headers.join("\n") %>
@@ -33,7 +29,6 @@ Response Headers:
 <% json = JSON.parse(interaction['response']['body']['string']) rescue {} %>
 <% if json.present? %>
 Response Body:
-
 ```json
 <%= JSON.pretty_generate(json) %>
 ```

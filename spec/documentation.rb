@@ -9,6 +9,7 @@ RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
   config.before :suite do
     FileUtils.rm_rf(Rails.root.join('doc/_cassettes/'))
+    Net::Hippie.logger = Logger.new('/dev/null')
     VCR.configure do |x|
       x.cassette_library_dir = "doc/_cassettes"
       x.hook_into :webmock
