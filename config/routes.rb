@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   end
   namespace :oauth do
     resource :authorizations, only: [:show, :create]
+    resource :me, only: [:show]
     resources :clients, only: [:create]
     resource :tokens, only: [:create] do
       post :introspect

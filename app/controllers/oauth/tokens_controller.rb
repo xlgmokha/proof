@@ -100,9 +100,7 @@ module Oauth
     end
 
     def revoked_tokens
-      Rails.cache.fetch("revoked-tokens", expires_in: 10.minutes) do
-        Hash[Token.revoked.pluck(:id).map { |x| [x, true] }]
-      end
+      Token.revoked_token_identifiers
     end
   end
 end
