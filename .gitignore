@@ -41,3 +41,4 @@ pkg
 BUILD
 .sass-cache
 public/doc
+doc/_cassettes/
