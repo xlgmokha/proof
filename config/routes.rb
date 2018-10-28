@@ -51,5 +51,6 @@ Rails.application.routes.draw do
       match 'Bulk', to: lambda { |env| [501, {}, ['']] }, via: [:post]
     end
   end
+  get "/.well-known/oauth-authorization-server", to: "oauth/metadata#show"
   root to: "sessions#new"
 end
