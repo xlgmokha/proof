@@ -8,7 +8,7 @@ categories: oauth
 
 The Tokens endpoint adheres to [RFC-6749](https://tools.ietf.org/html/rfc6749).
 
-## Authorization Code Grant Flow
+## Authorization Code Grant
 
 ```text
     +----------+
@@ -40,3 +40,28 @@ The Tokens endpoint adheres to [RFC-6749](https://tools.ietf.org/html/rfc6749).
 [RFC-6749 Section 4.1](https://tools.ietf.org/html/rfc6749#section-4.1)
 
 {% include oauth-tokens-authorization-code.html %}
+
+## Resource Owner Password Credentials Grant
+
+```text
+    +----------+
+    | Resource |
+    |  Owner   |
+    |          |
+    +----------+
+        v
+        |    Resource Owner
+       (A) Password Credentials
+        |
+        v
+    +---------+                                  +---------------+
+    |         |>--(B)---- Resource Owner ------->|               |
+    |         |         Password Credentials     | Authorization |
+    | Client  |                                  |     Server    |
+    |         |<--(C)---- Access Token ---------<|               |
+    |         |    (w/ Optional Refresh Token)   |               |
+    +---------+                                  +---------------+
+```
+[Section 4.3](https://tools.ietf.org/html/rfc6749#section-4.3)
+
+{% include oauth-tokens-password.html %}

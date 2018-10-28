@@ -31,6 +31,8 @@ RSpec.describe "documentation" do
   let(:hippie) { Net::Hippie::Client.new(verify_mode: OpenSSL::SSL::VERIFY_NONE) }
   let(:host) { ENV.fetch('HOST', 'proof.test') }
   let(:scheme) { ENV.fetch('SCHEME', 'https') }
+  let(:client) { create(:client) }
+  let(:user) { create(:user) }
 
   specify do
     VCR.use_cassette("get-well-known-oauth-authorization-server") do
@@ -40,11 +42,19 @@ RSpec.describe "documentation" do
   end
 
   specify do
-    client = create(:client)
     authorization = create(:authorization, client: client)
     headers = { 'Authorization' => ActionController::HttpAuthentication::Basic.encode_credentials(client.to_param, client.password) }
     body = { grant_type: 'authorization_code', code: authorization.code }
     VCR.use_cassette("oauth-tokens-authorization-code") do
+      response = hippie.post("#{scheme}://#{host}/oauth/tokens", body: body, headers: headers)
+      expect(response.code).to eql('200')
+    end
+  end
+
+  specify do
+    headers = { 'Authorization' => ActionController::HttpAuthentication::Basic.encode_credentials(client.to_param, client.password) }
+    body = { grant_type: 'password', username: user.email, password: user.password }
+    VCR.use_cassette("oauth-tokens-password") do
       response = hippie.post("#{scheme}://#{host}/oauth/tokens", body: body, headers: headers)
       expect(response.code).to eql('200')
     end
