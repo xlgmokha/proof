@@ -1,0 +1,59 @@
+
+#### POST http://localhost:5000/oauth/tokens/introspect
+
+Example curl request:
+
+```bash
+$ curl http://localhost:5000/oauth/tokens/introspect \
+  -X POST \
+  -d '{"token":"eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE1NDA3NzA3NjYsImlhdCI6MTU0MDc2NzE2NywiaXNzIjoiaHR0cDovL3Byb29mLnRlc3Q6NTAwMC9tZXRhZGF0YSIsIm5iZiI6MTU0MDc2NzE2NywiYXVkIjoiY2EzMmNhOGMtZTg4Zi00Y2MwLWJhMzYtY2E4MTlkYmNjMGEzIiwianRpIjoiZTVjMjNmZDMtZmViNi00MGRhLWE2OGItNWRiODU4ZDEwY2E0Iiwic3ViIjoiZjY1M2QxOGUtYjliNi00M2ZjLWE4OTEtNWI5OGFiN2EzNWM2IiwidG9rZW5fdHlwZSI6ImFjY2VzcyJ9.knD4_DnanganmdG7SZLUNtXv2N4ayjXlLf0VDqn8E8KcV69YcAvkoFzoALo-nUbXDHaQdzffs7ywkycb6Fcy81KzyvhOe1pRpXUYC1k_764iKP0PujSuo9F3vvbRFL0QnQryhNAjFpkQ7EcnTWGRWz5HU5WDNACVJXTe6-NmvYhoqyIi-wiGSKvjpJpxSRPCUde0n_E76zes-Loyy7XlANBTum8YnOtgJHgC9pufyaCzZ9XiM76AL6UStMg5oJq45gzynjy8LWeTk_OSWZwHnqRODAUuuA53MVheZC01RLg04gk6kTdIJoMBBIKZNpJK6YqzmLXEaDpnEzicNU6t2g"}' \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "User-Agent: net/hippie 0.1.9" \
+  -H "Authorization: Basic ZjQ3MzFhN2YtZDc5ZC00YjYyLTlkMTMtNGRmNGJjMGIyMjY1OkVCZVk5TFoyRlVCcUZOQzJoR290cE53SA==" \
+  -H "Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3"
+```
+Request Headers:
+
+```text
+Accept: application/json
+Content-Type: application/json
+User-Agent: net/hippie 0.1.9
+Authorization: Basic ZjQ3MzFhN2YtZDc5ZC00YjYyLTlkMTMtNGRmNGJjMGIyMjY1OkVCZVk5TFoyRlVCcUZOQzJoR290cE53SA==
+Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+```
+
+
+Request Body:
+```json
+{
+  "token": "eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE1NDA3NzA3NjYsImlhdCI6MTU0MDc2NzE2NywiaXNzIjoiaHR0cDovL3Byb29mLnRlc3Q6NTAwMC9tZXRhZGF0YSIsIm5iZiI6MTU0MDc2NzE2NywiYXVkIjoiY2EzMmNhOGMtZTg4Zi00Y2MwLWJhMzYtY2E4MTlkYmNjMGEzIiwianRpIjoiZTVjMjNmZDMtZmViNi00MGRhLWE2OGItNWRiODU4ZDEwY2E0Iiwic3ViIjoiZjY1M2QxOGUtYjliNi00M2ZjLWE4OTEtNWI5OGFiN2EzNWM2IiwidG9rZW5fdHlwZSI6ImFjY2VzcyJ9.knD4_DnanganmdG7SZLUNtXv2N4ayjXlLf0VDqn8E8KcV69YcAvkoFzoALo-nUbXDHaQdzffs7ywkycb6Fcy81KzyvhOe1pRpXUYC1k_764iKP0PujSuo9F3vvbRFL0QnQryhNAjFpkQ7EcnTWGRWz5HU5WDNACVJXTe6-NmvYhoqyIi-wiGSKvjpJpxSRPCUde0n_E76zes-Loyy7XlANBTum8YnOtgJHgC9pufyaCzZ9XiM76AL6UStMg5oJq45gzynjy8LWeTk_OSWZwHnqRODAUuuA53MVheZC01RLg04gk6kTdIJoMBBIKZNpJK6YqzmLXEaDpnEzicNU6t2g"
+}
+```
+
+Response Headers:
+
+```text
+X-Frame-Options: SAMEORIGIN
+X-Xss-Protection: 1; mode=block
+X-Content-Type-Options: nosniff
+X-Download-Options: noopen
+X-Permitted-Cross-Domain-Policies: none
+Referrer-Policy: strict-origin-when-cross-origin
+Content-Type: application/json; charset=utf-8
+Etag: W/"78b558bd2357fbe7ad52804fb3af1b86"
+Cache-Control: max-age=0, private, must-revalidate
+Set-Cookie: _proof=8ea7bb679d2de763c50085f001ef990f; path=/; HttpOnly
+X-Request-Id: c11a58e6-15fc-4f72-b214-4b57525d5c06
+Transfer-Encoding: chunked
+```
+
+
+Response Body:
+```json
+{
+  "active": false
+}
+```
+
+

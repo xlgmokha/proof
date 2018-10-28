@@ -114,4 +114,14 @@ RSpec.describe "documentation" do
       expect(response.code).to eql('200')
     end
   end
+
+  specify do
+    token = create(:access_token)
+    headers = { 'Authorization' => ActionController::HttpAuthentication::Basic.encode_credentials(client.to_param, client.password) }
+    body = { token: token.to_jwt }
+    VCR.use_cassette("oauth-token-introspection") do
+      response = hippie.post("#{scheme}://#{host}/oauth/tokens/introspect", body: body, headers: headers)
+      expect(response.code).to eql('200')
+    end
+  end
 end
