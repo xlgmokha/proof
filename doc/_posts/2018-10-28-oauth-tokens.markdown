@@ -65,3 +65,18 @@ The Tokens endpoint adheres to [RFC-6749](https://tools.ietf.org/html/rfc6749).
 [Section 4.3](https://tools.ietf.org/html/rfc6749#section-4.3)
 
 {% include oauth-tokens-password.html %}
+
+## Client Credentials Grant
+
+```text
+    +---------+                                  +---------------+
+    |         |                                  |               |
+    |         |>--(A)- Client Authentication --->| Authorization |
+    | Client  |                                  |     Server    |
+    |         |<--(B)---- Access Token ---------<|               |
+    |         |                                  |               |
+    +---------+                                  +---------------+
+```
+[Section 4.4](https://tools.ietf.org/html/rfc6749#section-4.4)
+
+{% include oauth-tokens-client-credentials.html %}

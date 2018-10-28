@@ -59,4 +59,13 @@ RSpec.describe "documentation" do
       expect(response.code).to eql('200')
     end
   end
+
+  specify do
+    headers = { 'Authorization' => ActionController::HttpAuthentication::Basic.encode_credentials(client.to_param, client.password) }
+    body = { grant_type: 'client_credentials' }
+    VCR.use_cassette("oauth-tokens-client-credentials") do
+      response = hippie.post("#{scheme}://#{host}/oauth/tokens", body: body, headers: headers)
+      expect(response.code).to eql('200')
+    end
+  end
 end
