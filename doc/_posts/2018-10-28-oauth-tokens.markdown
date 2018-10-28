@@ -80,3 +80,9 @@ The Tokens endpoint adheres to [RFC-6749](https://tools.ietf.org/html/rfc6749).
 [Section 4.4](https://tools.ietf.org/html/rfc6749#section-4.4)
 
 {% include oauth-tokens-client-credentials.html %}
+
+## Refreshing an Access Token
+
+[Section 6](https://tools.ietf.org/html/rfc6749#section-6)
+
+{% include oauth-tokens-refresh-token.html %}

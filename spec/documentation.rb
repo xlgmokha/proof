@@ -68,4 +68,14 @@ RSpec.describe "documentation" do
       expect(response.code).to eql('200')
     end
   end
+
+  specify do
+    headers = { 'Authorization' => ActionController::HttpAuthentication::Basic.encode_credentials(client.to_param, client.password) }
+    refresh_token = create(:refresh_token, audience: client)
+    body = { grant_type: 'refresh_token', refresh_token: refresh_token.to_jwt }
+    VCR.use_cassette("oauth-tokens-refresh-token") do
+      response = hippie.post("#{scheme}://#{host}/oauth/tokens", body: body, headers: headers)
+      expect(response.code).to eql('200')
+    end
+  end
 end
