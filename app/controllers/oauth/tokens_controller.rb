@@ -2,6 +2,8 @@
 
 module Oauth
   class TokensController < ApplicationController
+    protect_from_forgery with: :null_session
+
     def create
       response.headers['Cache-Control'] = 'no-store'
       response.headers['Pragma'] = 'no-cache'

@@ -17,7 +17,7 @@ title: Proof - API Documentation
 email: mokha@example.com
 description: >- # this means to ignore newlines until "baseurl:"
   API documentation for Proof.
-baseurl: "doc" # the subpath of your site, e.g. /blog
+baseurl: "/doc" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  mokhan
 source: 'doc'

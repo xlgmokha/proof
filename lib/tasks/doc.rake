@@ -22,7 +22,7 @@ namespace :doc do
   end
 
   desc "Watch and rebuild static pages"
-  task watch: [:environment] do
+  task watch: [:clean, :environment] do
     custom_options = default_options.merge(watch: true)
     Jekyll::Commands::Build.process(custom_options)
   end
