@@ -81,6 +81,12 @@ The Tokens endpoint adheres to [RFC-6749](https://tools.ietf.org/html/rfc6749).
 
 {% include oauth-tokens-client-credentials.html %}
 
+## SAML Assertion Grant
+
+[RFC-7522](https://tools.ietf.org/html/rfc7522)
+
+{% include oauth-tokens-saml-assertion.html %}
+
 ## Refreshing an Access Token
 
 [Section 6](https://tools.ietf.org/html/rfc6749#section-6)
