@@ -7,7 +7,6 @@ module Oauth
     before_action :authenticate!, except: [:create]
 
     def show
-      @client = @token.subject
       render status: :ok, formats: :json
     end
 
@@ -22,21 +21,27 @@ module Oauth
       render json: json, status: :bad_request
     end
 
+    def update
+      @client = Client.find(params[:id])
+      render status: :ok, formats: :json
+    end
+
     private
 
     def authenticate!
-      @token = authenticate_with_http_token do |token, _options|
-        claims = Token.claims_for(token)
+      token = authenticate_with_http_token do |jwt, _options|
+        claims = Token.claims_for(jwt)
         return if Token.revoked?(claims[:jti]) || claims.empty?
         Token.find(claims[:jti])
       end
-      return request_http_token_authentication unless @token.present?
+      return request_http_token_authentication unless token.present?
 
       unless Client.where(id: params[:id]).exists?
-        @token.revoke!
+        token.revoke!
         return render json: {}, status: :unauthorized
       end
-      return render json: {}, status: :forbidden unless @token.subject.to_param == params[:id]
+      return render json: {}, status: :forbidden unless token.subject.to_param == params[:id]
+      @client = token.subject
     end
 
     def secure_params

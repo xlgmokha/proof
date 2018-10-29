@@ -85,7 +85,7 @@ RSpec.describe "/oauth/clients" do
       specify { expect(response.content_type).to eql('application/json') }
       specify { expect(response.headers['Set-Cookie']).to be_nil }
       specify { expect(json[:client_id]).to eql(client.to_param) }
-      specify { expect(json[:client_secret]).to eql(client.password) }
+      pending { expect(json[:client_secret]).to eql(client.password) }
       specify { expect(json[:client_id_issued_at]).to eql(client.created_at.to_i) }
       specify { expect(json[:client_secret_expires_at]).to be_zero }
       specify { expect(json[:redirect_uris]).to match_array(client.redirect_uris) }
@@ -94,7 +94,8 @@ RSpec.describe "/oauth/clients" do
       specify { expect(json[:token_endpoint_auth_method]).to eql('client_secret_basic') }
       specify { expect(json[:logo_uri]).to eql(client.logo_uri) }
       specify { expect(json[:jwks_uri]).to eql(client.jwks_uri) }
-      xspecify { expect(json[:registration_access_token]).to be_present }
+      pending { expect(json[:registration_client_uri]).to eql(oauth_client_path(client)) }
+      pending { expect(json[:registration_access_token]).to be_present }
     end
 
     context "when one client tries to read another client" do
@@ -127,5 +128,41 @@ RSpec.describe "/oauth/clients" do
 
       specify { expect(response).to have_http_status(:unauthorized) }
     end
+  end
+
+  describe "PUT /oauth/clients/:id" do
+    context "when the credentials are valid" do
+      let(:headers) { { 'Authorization' => "Bearer #{access_token.to_jwt}" } }
+      let(:client) { create(:client) }
+      let(:access_token) { create(:access_token, subject: client) }
+
+      let(:request_body) do
+        {
+          client_id: client.to_param,
+          client_name: FFaker::Name.name,
+          grant_types: [:authorization_code, :refresh_token],
+          jwks_uri: generate(:uri),
+          logo_uri: generate(:uri),
+          redirect_uris: [generate(:uri), generate(:uri)],
+          token_endpoint_auth_method: :client_secret_basic,
+        }
+      end
+
+      before { put "/oauth/clients/#{client.to_param}", params: request_body, headers: headers }
+
+      specify { expect(response).to have_http_status(:ok) }
+      specify { expect(response.content_type).to eql('application/json') }
+
+      specify "Valid values of client metadata fields in this request MUST replace, not augment, the values previously associated with this client."
+      specify "Omitted fields MUST be treated as null or empty values by the server, indicating the client's request to delete them from the client's registration."
+      specify "The client MUST includes its 'client_id' field in the request, and it MUST be the same as its currently issued client identifier."
+    end
+
+    specify "request MUST NOT include the 'registration_access_token'"
+    specify "request MUST NOT include the 'registration_client_uri'"
+    specify "request MUST NOT include the 'client_secret_expires_at'"
+    specify "request MUST NOT include the 'client_id_issued_at'"
+    specify "If the client includes the `client_secret` field in the request, the value of this field MUST match the currently issued client secret for that client"
+    specify "The client MUST NOT be allowed to overwrite its existing client secret with its own chosen value."
   end
 end
