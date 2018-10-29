@@ -119,5 +119,13 @@ RSpec.describe "/oauth/clients" do
       specify { expect(response).to have_http_status(:unauthorized) }
       specify { expect(access_token.reload).to be_revoked }
     end
+
+    context "when an authorization header is not provided" do
+      let(:client) { create(:client) }
+
+      before { get "/oauth/clients/#{client.to_param}", headers: {} }
+
+      specify { expect(response).to have_http_status(:unauthorized) }
+    end
   end
 end
