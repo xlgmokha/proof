@@ -31,6 +31,12 @@ module Oauth
         Token.find(claims[:jti])
       end
       request_http_token_authentication unless @token.present?
+
+      unless Client.where(id: params[:id]).exists?
+        @token.revoke!
+        return render json: {}, status: :unauthorized
+      end
+      return render json: {}, status: :forbidden unless @token.subject.to_param == params[:id]
     end
 
     def secure_params

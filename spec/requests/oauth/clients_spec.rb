@@ -79,7 +79,7 @@ RSpec.describe "/oauth/clients" do
       let(:headers) { { 'Authorization' => "Bearer #{access_token.to_jwt}" } }
       let(:json) { JSON.parse(response.body, symbolize_names: true) }
 
-      before { get "/oauth/clients/#{client.id}", headers: headers }
+      before { get "/oauth/clients/#{client.to_param}", headers: headers }
 
       specify { expect(response).to have_http_status(:ok) }
       specify { expect(response.content_type).to eql('application/json') }
@@ -94,6 +94,30 @@ RSpec.describe "/oauth/clients" do
       specify { expect(json[:token_endpoint_auth_method]).to eql('client_secret_basic') }
       specify { expect(json[:logo_uri]).to eql(client.logo_uri) }
       specify { expect(json[:jwks_uri]).to eql(client.jwks_uri) }
+      xspecify { expect(json[:registration_access_token]).to be_present }
+    end
+
+    context "when one client tries to read another client" do
+      let(:client) { create(:client) }
+      let(:other_client) { create(:client) }
+      let(:access_token) { create(:access_token, subject: client) }
+      let(:headers) { { 'Authorization' => "Bearer #{access_token.to_jwt}" } }
+      let(:json) { JSON.parse(response.body, symbolize_names: true) }
+
+      before { get "/oauth/clients/#{other_client.id}", headers: headers }
+
+      specify { expect(response).to have_http_status(:forbidden) }
+    end
+
+    context "when the client id does not exist" do
+      let(:client) { create(:client) }
+      let(:access_token) { create(:access_token, subject: client) }
+      let(:headers) { { 'Authorization' => "Bearer #{access_token.to_jwt}" } }
+
+      before { get "/oauth/clients/#{SecureRandom.uuid}", headers: headers }
+
+      specify { expect(response).to have_http_status(:unauthorized) }
+      specify { expect(access_token.reload).to be_revoked }
     end
   end
 end
