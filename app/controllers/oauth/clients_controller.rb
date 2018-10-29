@@ -2,7 +2,14 @@
 
 module Oauth
   class ClientsController < ActionController::API
+    include ActionController::HttpAuthentication::Token::ControllerMethods
     before_action :apply_cache_headers
+    before_action :authenticate!, except: [:create]
+
+    def show
+      @client = @token.subject
+      render status: :ok, formats: :json
+    end
 
     def create
       @client = Client.create!(transform(secure_params))
@@ -16,6 +23,15 @@ module Oauth
     end
 
     private
+
+    def authenticate!
+      @token = authenticate_with_http_token do |token, _options|
+        claims = Token.claims_for(token)
+        return if Token.revoked?(claims[:jti]) || claims.empty?
+        Token.find(claims[:jti])
+      end
+      request_http_token_authentication unless @token.present?
+    end
 
     def secure_params
       params.permit(

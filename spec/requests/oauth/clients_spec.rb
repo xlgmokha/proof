@@ -24,7 +24,7 @@ RSpec.describe "/oauth/clients" do
 
       specify { expect(response).to have_http_status(:created) }
       specify { expect(response.headers['Set-Cookie']).to be_nil }
-      specify { expect(response.headers['Content-Type']).to include("application/json") }
+      specify { expect(response.content_type).to eql("application/json") }
       specify { expect(response.headers['Cache-Control']).to include("no-store") }
       specify { expect(response.headers['Pragma']).to eql("no-cache") }
       specify { expect(json[:client_id]).to eql(last_client.to_param) }
@@ -69,6 +69,31 @@ RSpec.describe "/oauth/clients" do
       specify { expect(response).to have_http_status(:bad_request) }
       specify { expect(json[:error]).to eql("invalid_client_metadata") }
       specify { expect(json[:error_description]).to be_present }
+    end
+  end
+
+  describe "GET /oauth/clients/:id" do
+    context "when the credentials are valid" do
+      let(:client) { create(:client) }
+      let(:access_token) { create(:access_token, subject: client) }
+      let(:headers) { { 'Authorization' => "Bearer #{access_token.to_jwt}" } }
+      let(:json) { JSON.parse(response.body, symbolize_names: true) }
+
+      before { get "/oauth/clients/#{client.id}", headers: headers }
+
+      specify { expect(response).to have_http_status(:ok) }
+      specify { expect(response.content_type).to eql('application/json') }
+      specify { expect(response.headers['Set-Cookie']).to be_nil }
+      specify { expect(json[:client_id]).to eql(client.to_param) }
+      specify { expect(json[:client_secret]).to eql(client.password) }
+      specify { expect(json[:client_id_issued_at]).to eql(client.created_at.to_i) }
+      specify { expect(json[:client_secret_expires_at]).to be_zero }
+      specify { expect(json[:redirect_uris]).to match_array(client.redirect_uris) }
+      specify { expect(json[:grant_types]).to match_array(client.grant_types.map(&:to_s)) }
+      specify { expect(json[:client_name]).to eql(client.name) }
+      specify { expect(json[:token_endpoint_auth_method]).to eql('client_secret_basic') }
+      specify { expect(json[:logo_uri]).to eql(client.logo_uri) }
+      specify { expect(json[:jwks_uri]).to eql(client.jwks_uri) }
     end
   end
 end

@@ -7,9 +7,9 @@ class Client < ApplicationRecord
   has_many :authorizations
   attribute :redirect_uris, :string, array: true
   enum token_endpoint_auth_method: {
-    client_secret_none: 0,
+    client_secret_basic: 0,
     client_secret_post: 1,
-    client_secret_basic: 2
+    client_secret_none: 2,
   }
 
   validates :redirect_uris, presence: true
