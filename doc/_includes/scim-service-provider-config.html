@@ -12,34 +12,26 @@ $ curl http://localhost:5000/scim/v2/ServiceProviderConfig \
   -H "User-Agent: net/hippie 0.1.9" \
   -H "Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3"
 ```
-Request Headers:
-
+Request:
 ```text
 Accept: application/json
 Content-Type: application/json
 User-Agent: net/hippie 0.1.9
 Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3
 ```
+```json
 
-
-Response Headers:
-
+```
+Response:
 ```text
-X-Frame-Options: SAMEORIGIN
-X-Xss-Protection: 1; mode=block
-X-Content-Type-Options: nosniff
-X-Download-Options: noopen
-X-Permitted-Cross-Domain-Policies: none
-Referrer-Policy: strict-origin-when-cross-origin
+200 OK
+
 Content-Type: application/scim+json
-Etag: W/"61bf20baa70ec24e9a207c4db0b71ef7"
+Etag: W/"b7f6a6a546573bdafbdb92f4b120c61f"
 Cache-Control: max-age=0, private, must-revalidate
-X-Request-Id: 6e8006e7-3b28-4d73-905e-5ccdb6e49ec6
+X-Request-Id: e2a4e899-3d10-4fab-8f7e-bdef8d030691
 Transfer-Encoding: chunked
 ```
-
-
-Response Body:
 ```json
 {
   "schemas": [
@@ -79,12 +71,11 @@ Response Body:
   ],
   "meta": {
     "resourceType": "ServiceProviderConfig",
-    "created": "2018-10-29T00:10:34Z",
-    "lastModified": "2018-10-29T00:10:34Z",
+    "created": "2018-10-29T01:12:13Z",
+    "lastModified": "2018-10-29T01:12:13Z",
     "location": "http://localhost:5000/scim/v2/ServiceProviderConfig",
     "version": 1
   }
 }
 ```
-
 

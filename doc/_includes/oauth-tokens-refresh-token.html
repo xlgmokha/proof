@@ -6,54 +6,40 @@ Example curl request:
 ```bash
 $ curl http://localhost:5000/oauth/tokens \
   -X POST \
-  -d '{"grant_type":"refresh_token","refresh_token":"eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE1NDA3NzU0MzMsImlhdCI6MTU0MDc3MTgzMywiaXNzIjoiaHR0cDovL3Byb29mLnRlc3Q6NTAwMC9tZXRhZGF0YSIsIm5iZiI6MTU0MDc3MTgzMywiYXVkIjoiZTkyZGU4NWMtNTRmNS00ZjZlLThlMDctNTk3Yjk2NzIxZTcxIiwianRpIjoiNThkNGMyNDYtY2E2OS00NGI4LWFlZGItYWQ1OTllMGFlZThmIiwic3ViIjoiNjdhNTdkYmUtZDBiNi00NTRmLWJkNDItM2RkZGRhZjI0NGU0IiwidG9rZW5fdHlwZSI6InJlZnJlc2gifQ.fumbi37MVl7eBJynebuYc0M-y1ebboS_iRDmmOiM17QQlAfZwBwpGGEHgrs5S_8r3bEaJBhnOC37dQLDE0d0Wtr52vW848E1JuyOgi7_8zowuPck5R8CMqxo318xLlfWD7fZ5Tq8BQsOMoCbGVnBoCm-Au4PPeHonhBa7dwFQM-GobzRYGP5FqiKfqh9ofb6cRhp7WVRyc-aqbq_HgQAB9LVA5JeVLMvPvW0TN2ViUKhzbPGreiypbauhKGM5m_8AIZ57b6Afr05e0y4XDeW61xi_d3sr-K5pVYjObv3Rqf9G_xCb-zXV1G7N3PyWqaV4M7RslutJkinM2NKlUXENA"}' \
+  -d '{"grant_type":"refresh_token","refresh_token":"eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE1NDA3NzkxMzIsImlhdCI6MTU0MDc3NTUzMiwiaXNzIjoiaHR0cDovL3Byb29mLnRlc3Q6NTAwMC9tZXRhZGF0YSIsIm5iZiI6MTU0MDc3NTUzMiwiYXVkIjoiNmE3Yzc3M2YtZGI3Yi00YjJhLWI1NDMtYWNiYmEyMDA5ZjkxIiwianRpIjoiNzA0YzgwNTYtNDhmZi00ZDBhLThkZTctNGFkNzJlYTFjZmNkIiwic3ViIjoiM2RkMGJmMDQtMDcxNS00MjY3LThmNmYtOGYwNjMzNGUwYjJmIiwidG9rZW5fdHlwZSI6InJlZnJlc2gifQ.ARkrFIb0-ZO6wpnzUTJeCQWqm2-6IRI2VoWith-W9iqbAW1U0Vd--QMHCZ2uAuDV_ktsV21AK3FAWFvNwDoAG8boKYoTl5CukoMaKwrWaOqDIIOuPkChS8ZQ8TXwg_nRztC2aY0WX72yOToWYu5F9BthOouljAsF40TDdk8wEwbil7b8hAc7scts7CJPTWVsC6vTtisLfrrj9eoI0Y4ZJt2WJPhdlqf7qxCMRihfe0ml1p4Jf-DTrHPRVTmg62La54zCb3o7nNf4LgoLvtI0p_sCEe9PNx6uTqonFzDcUIlbbjb8ixGW_uFzIknd_9GXeo7SKhDFnuOv03UPKCDqyw"}' \
   -H "Accept: application/json" \
   -H "Content-Type: application/json" \
   -H "User-Agent: net/hippie 0.1.9" \
-  -H "Authorization: Basic ZTkyZGU4NWMtNTRmNS00ZjZlLThlMDctNTk3Yjk2NzIxZTcxOlZUNktnWDV0azlkVW1yVllhOHdLOVhnWA==" \
+  -H "Authorization: Basic NmE3Yzc3M2YtZGI3Yi00YjJhLWI1NDMtYWNiYmEyMDA5ZjkxOjRuM3FIamRLdHFEcFg4bXhDVVFZaDZxMg==" \
   -H "Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3"
 ```
-Request Headers:
-
+Request:
 ```text
 Accept: application/json
 Content-Type: application/json
 User-Agent: net/hippie 0.1.9
-Authorization: Basic ZTkyZGU4NWMtNTRmNS00ZjZlLThlMDctNTk3Yjk2NzIxZTcxOlZUNktnWDV0azlkVW1yVllhOHdLOVhnWA==
+Authorization: Basic NmE3Yzc3M2YtZGI3Yi00YjJhLWI1NDMtYWNiYmEyMDA5ZjkxOjRuM3FIamRLdHFEcFg4bXhDVVFZaDZxMg==
 Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3
 ```
-
-
-Request Body:
 ```json
 {
   "grant_type": "refresh_token",
-  "refresh_token": "eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE1NDA3NzU0MzMsImlhdCI6MTU0MDc3MTgzMywiaXNzIjoiaHR0cDovL3Byb29mLnRlc3Q6NTAwMC9tZXRhZGF0YSIsIm5iZiI6MTU0MDc3MTgzMywiYXVkIjoiZTkyZGU4NWMtNTRmNS00ZjZlLThlMDctNTk3Yjk2NzIxZTcxIiwianRpIjoiNThkNGMyNDYtY2E2OS00NGI4LWFlZGItYWQ1OTllMGFlZThmIiwic3ViIjoiNjdhNTdkYmUtZDBiNi00NTRmLWJkNDItM2RkZGRhZjI0NGU0IiwidG9rZW5fdHlwZSI6InJlZnJlc2gifQ.fumbi37MVl7eBJynebuYc0M-y1ebboS_iRDmmOiM17QQlAfZwBwpGGEHgrs5S_8r3bEaJBhnOC37dQLDE0d0Wtr52vW848E1JuyOgi7_8zowuPck5R8CMqxo318xLlfWD7fZ5Tq8BQsOMoCbGVnBoCm-Au4PPeHonhBa7dwFQM-GobzRYGP5FqiKfqh9ofb6cRhp7WVRyc-aqbq_HgQAB9LVA5JeVLMvPvW0TN2ViUKhzbPGreiypbauhKGM5m_8AIZ57b6Afr05e0y4XDeW61xi_d3sr-K5pVYjObv3Rqf9G_xCb-zXV1G7N3PyWqaV4M7RslutJkinM2NKlUXENA"
+  "refresh_token": "eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE1NDA3NzkxMzIsImlhdCI6MTU0MDc3NTUzMiwiaXNzIjoiaHR0cDovL3Byb29mLnRlc3Q6NTAwMC9tZXRhZGF0YSIsIm5iZiI6MTU0MDc3NTUzMiwiYXVkIjoiNmE3Yzc3M2YtZGI3Yi00YjJhLWI1NDMtYWNiYmEyMDA5ZjkxIiwianRpIjoiNzA0YzgwNTYtNDhmZi00ZDBhLThkZTctNGFkNzJlYTFjZmNkIiwic3ViIjoiM2RkMGJmMDQtMDcxNS00MjY3LThmNmYtOGYwNjMzNGUwYjJmIiwidG9rZW5fdHlwZSI6InJlZnJlc2gifQ.ARkrFIb0-ZO6wpnzUTJeCQWqm2-6IRI2VoWith-W9iqbAW1U0Vd--QMHCZ2uAuDV_ktsV21AK3FAWFvNwDoAG8boKYoTl5CukoMaKwrWaOqDIIOuPkChS8ZQ8TXwg_nRztC2aY0WX72yOToWYu5F9BthOouljAsF40TDdk8wEwbil7b8hAc7scts7CJPTWVsC6vTtisLfrrj9eoI0Y4ZJt2WJPhdlqf7qxCMRihfe0ml1p4Jf-DTrHPRVTmg62La54zCb3o7nNf4LgoLvtI0p_sCEe9PNx6uTqonFzDcUIlbbjb8ixGW_uFzIknd_9GXeo7SKhDFnuOv03UPKCDqyw"
 }
 ```
-
-Response Headers:
-
+Response:
 ```text
-X-Frame-Options: SAMEORIGIN
-X-Xss-Protection: 1; mode=block
-X-Content-Type-Options: nosniff
-X-Download-Options: noopen
-X-Permitted-Cross-Domain-Policies: none
-Referrer-Policy: strict-origin-when-cross-origin
+400 Bad Request
+
 Cache-Control: private, no-store
 Pragma: no-cache
 Content-Type: application/json; charset=utf-8
-X-Request-Id: ef3f64a7-4477-4fa7-b98f-ddb8973b321a
+X-Request-Id: ec9d156e-1290-49a5-9d96-343e0fb65b0f
 Transfer-Encoding: chunked
 ```
-
-
-Response Body:
 ```json
 {
   "error": "invalid_request"
 }
 ```
-
 

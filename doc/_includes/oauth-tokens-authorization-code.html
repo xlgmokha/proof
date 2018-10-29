@@ -6,58 +6,44 @@ Example curl request:
 ```bash
 $ curl http://localhost:5000/oauth/tokens \
   -X POST \
-  -d '{"grant_type":"authorization_code","code":"bJZDp8pdR98JjsZLvx2Qmqre"}' \
+  -d '{"grant_type":"authorization_code","code":"BAcU4UuTVCZnQZP93PsVw24s"}' \
   -H "Accept: application/json" \
   -H "Content-Type: application/json" \
   -H "User-Agent: net/hippie 0.1.9" \
-  -H "Authorization: Basic MzFkYmIzNzAtZWI0Mi00ZjhhLTg1ZTItYzFjMTdkZjUxMTFjOkJid2tmR2NteXRSQzdNNHNBdnhRSnA4eQ==" \
+  -H "Authorization: Basic Y2UyODYzNTMtZWUwZC00NmM3LTgzYjMtYmQyOTU0OWQ0NmM3OnFrTHVEWURBWGIyZktlbXNMaWU3OFZvUQ==" \
   -H "Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3"
 ```
-Request Headers:
-
+Request:
 ```text
 Accept: application/json
 Content-Type: application/json
 User-Agent: net/hippie 0.1.9
-Authorization: Basic MzFkYmIzNzAtZWI0Mi00ZjhhLTg1ZTItYzFjMTdkZjUxMTFjOkJid2tmR2NteXRSQzdNNHNBdnhRSnA4eQ==
+Authorization: Basic Y2UyODYzNTMtZWUwZC00NmM3LTgzYjMtYmQyOTU0OWQ0NmM3OnFrTHVEWURBWGIyZktlbXNMaWU3OFZvUQ==
 Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3
 ```
-
-
-Request Body:
 ```json
 {
   "grant_type": "authorization_code",
-  "code": "bJZDp8pdR98JjsZLvx2Qmqre"
+  "code": "BAcU4UuTVCZnQZP93PsVw24s"
 }
 ```
-
-Response Headers:
-
+Response:
 ```text
-X-Frame-Options: SAMEORIGIN
-X-Xss-Protection: 1; mode=block
-X-Content-Type-Options: nosniff
-X-Download-Options: noopen
-X-Permitted-Cross-Domain-Policies: none
-Referrer-Policy: strict-origin-when-cross-origin
+200 OK
+
 Cache-Control: private, no-store
 Pragma: no-cache
 Content-Type: application/json; charset=utf-8
-Etag: W/"72d9b08e26785d20f3735783e4fdfabd"
-X-Request-Id: d80da500-e65c-402e-992e-f128e39343c6
+Etag: W/"9d6d6cb1837e6b365bc08343f13a25f0"
+X-Request-Id: f1536432-60d5-45ad-8a92-21db3ae5938c
 Transfer-Encoding: chunked
 ```
-
-
-Response Body:
 ```json
 {
-  "access_token": "eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE1NDA3NzU0MzIsImlhdCI6MTU0MDc3MTgzMiwiaXNzIjoiaHR0cDovL3Byb29mLnRlc3QvbWV0YWRhdGEiLCJuYmYiOjE1NDA3NzE4MzIsImF1ZCI6IjMxZGJiMzcwLWViNDItNGY4YS04NWUyLWMxYzE3ZGY1MTExYyIsImp0aSI6ImIxOTFjYzBkLWM3MmItNDFkNS04ZGE5LWYxY2JiNDQyNzc2ZiIsInN1YiI6IjViM2ZmMDZjLTQxYTAtNDdiYS1hYjE5LWFkYzA5NmRlZmY1ZiIsInRva2VuX3R5cGUiOiJhY2Nlc3MifQ.IMMalCiU_FgXQNFZ6FqB9ySzgm54r-ZjL5DxLrF_uTmZSOH3DRWWN4IwcPhu3SCY4HqT04mTjo0aGffpp7iFAB1eNa2uRR1cTjiPbI0fTDomzL-KfPl8MlRkvM79n9ZMF_JHEomq3s-9dkZDKHFXjeTqaBXfOr3FV9BOVLHxdx0HIHQ_YpsugSlri6ymrXs0IcMlv83hbBb6u_7ouvHVNfSnjy3seiTlmTkysTEDYgArCpRjVieMZwdiXGAD2cpH1ZlT2iAMvi-QYeNcaRjvm4xhfb15ZfcUa9_DgHPeZfxeF9ZIVhdfCQuYok6lo6xeqYCVCMcLEq6CaGf8PonNqw",
+  "access_token": "eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE1NDA3NzkxMzEsImlhdCI6MTU0MDc3NTUzMSwiaXNzIjoiaHR0cDovL3Byb29mLnRlc3QvbWV0YWRhdGEiLCJuYmYiOjE1NDA3NzU1MzEsImF1ZCI6ImNlMjg2MzUzLWVlMGQtNDZjNy04M2IzLWJkMjk1NDlkNDZjNyIsImp0aSI6IjQ1NDE0NDg0LWFlZDYtNGMxNy04NmZkLTU1OWZhYWNhOWRjYiIsInN1YiI6IjIzNmVlOTc5LTJiMzMtNGQyYS1hOTJlLWFmMDljYjIzYjgwYSIsInRva2VuX3R5cGUiOiJhY2Nlc3MifQ.Zon-WW4sZDOj0whgMEBshm72r2hYffhAUY2UPmj-gz72RAhr1xZ_tlAQzKuXEVMXy1P4A-o3B6_FGoj2uyhacJnRfzWG0PH5JRicZBT8pYJ2lQwrSAwFcwYtvaeyOrpmfn3gvkv5NLeMYOm8NlxgazLtOX4UyELdUOFHKb8grk3Ij2Tv4CrylW2DCq9YxaLI0gOH2A3gJKN6jPvFbW9qOzyQmnY1bfRWzWBFl1AOs_NKhoFMuK9kupXdNaiqbrk3sVF12YWVzxhM7MQoiYw01huhpKQU4NzpruTcr5SRvrJ9428fQ9NR57sgrKxND3wDA8NV-YGdbq0jLIeIL0l8fQ",
   "token_type": "Bearer",
   "expires_in": 3600,
-  "refresh_token": "eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE1NDA4NTgyMzIsImlhdCI6MTU0MDc3MTgzMiwiaXNzIjoiaHR0cDovL3Byb29mLnRlc3QvbWV0YWRhdGEiLCJuYmYiOjE1NDA3NzE4MzIsImF1ZCI6IjMxZGJiMzcwLWViNDItNGY4YS04NWUyLWMxYzE3ZGY1MTExYyIsImp0aSI6IjE4NTIxMTIxLTJiMTItNGUyNS04N2VkLTI3NWI3MTcyNWUyMCIsInN1YiI6IjViM2ZmMDZjLTQxYTAtNDdiYS1hYjE5LWFkYzA5NmRlZmY1ZiIsInRva2VuX3R5cGUiOiJyZWZyZXNoIn0.gFqWpPH4XgpI4cBCbNWyaBNGhxrE2zhQUn7mir9SwrzNSl5rnq9ep5j48SwDNMdY1oh5zNCdJCsPAeGwHpvvjdQCAJYWfbz8AAvpAivxDgv7FeIjamS5ucwh6Wc6uOlbdYUT6JOhiKBCMsmceIxfnr12QcxrZqe0GkHaOlpA1C-LiEuEa4zIKlnkq-FD2f5Xsd8bCZp0lPtI8QoACPNMvbftHdpfP-tV7v14r29jCT-5baTpEy6V_JwaRwI-EQymPpQTG4BgKnTPxZuIGCqxh7IuUc3bih7LTLO4vVoa5S6P9kBNunXFDw_uyBOoRAf2JcBdRbms9qhSbsEmNjuPZQ"
+  "refresh_token": "eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE1NDA4NjE5MzEsImlhdCI6MTU0MDc3NTUzMSwiaXNzIjoiaHR0cDovL3Byb29mLnRlc3QvbWV0YWRhdGEiLCJuYmYiOjE1NDA3NzU1MzEsImF1ZCI6ImNlMjg2MzUzLWVlMGQtNDZjNy04M2IzLWJkMjk1NDlkNDZjNyIsImp0aSI6ImE0OTBkNjg1LWJiYTktNDU4ZS1hNmQ1LTFmOTY1YTUwZWY1OSIsInN1YiI6IjIzNmVlOTc5LTJiMzMtNGQyYS1hOTJlLWFmMDljYjIzYjgwYSIsInRva2VuX3R5cGUiOiJyZWZyZXNoIn0.v2lpPb7R8ASu7ttXBFPQo-x7f2kvbZwKkn32QeSQsKD_jGeZpHnRKOCbU4KJmeN6XlcB7snmeYwIrjnqLCemABUq9vc_28le2bE7oCrqZG-C2R2vUkHesoEeh6sCJkijUOFe-hsiABSRuXQUKHYL8e4GiAjQFI1_jgcNJS4WdgSYPrzlBIEhcf1GIE7TW8Bw8cprV0LlHKqJ7VHYakPGepaAS57UrHNZw8M6S48bVS_SJXSySnjzF11CyDG_gZ7E9_KOmfI3dUq62SXaiY7w4sEw_7yh9llU7130t_sffeC3D_lZjQnwhqDEcmG29Jedbx7Ao1KQSDRDu0vWVp-Vkg"
 }
 ```
-
 

@@ -9,28 +9,20 @@ $ curl <%= interaction['request']['uri'] %> \
   -d '<%= interaction['request']['body']['string'] %>' \
   <%= headers.join(" \\\n  ") %>
 ```
-Request Headers:
-<% headers = interaction['request']['headers'].map { |(key, value)| "#{key}: #{value[0]}" } %>
+Request:
 ```text
-<%= headers.join("\n") %>
+<%= interaction['request']['headers'].map { |(key, value)| "#{key}: #{value[0]}" }.join("\n") %>
 ```
-<% json = JSON.parse(interaction['request']['body']['string']) rescue {} %>
-<% if json.present? %>
-Request Body:
 ```json
-<%= JSON.pretty_generate(json) %>
+<%= JSON.pretty_generate(JSON.parse(interaction['request']['body']['string'])) rescue nil %>
 ```
-<% end %>
-Response Headers:
-<% headers = interaction['response']['headers'].map { |(key, value)| "#{key}: #{value[0]}" } %>
+Response:
 ```text
-<%= headers.join("\n") %>
+<%= interaction['response']['status']['code'] %> <%= interaction['response']['status']['message'] %>
+
+<%= interaction['response']['headers'].map { |(key, value)| "#{key}: #{value[0]}" }.join("\n") %>
 ```
-<% json = JSON.parse(interaction['response']['body']['string']) rescue {} %>
-<% if json.present? %>
-Response Body:
 ```json
-<%= JSON.pretty_generate(json) %>
+<%= JSON.pretty_generate(JSON.parse(interaction['response']['body']['string'])) rescue nil %>
 ```
-<% end %>
 <% end %>

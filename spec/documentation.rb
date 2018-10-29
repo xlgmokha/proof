@@ -132,4 +132,25 @@ RSpec.describe "documentation" do
       expect(response.code).to eql('200')
     end
   end
+
+  specify do
+    VCR.use_cassette("scim-schemas") do
+      response = hippie.get("#{scheme}://#{host}/scim/v2/Schemas")
+      expect(response.code).to eql('200')
+    end
+  end
+
+  specify do
+    VCR.use_cassette("scim-schemas-users") do
+      response = hippie.get("#{scheme}://#{host}/scim/v2/Schemas/urn:ietf:params:scim:schemas:core:2.0:User")
+      expect(response.code).to eql('200')
+    end
+  end
+
+  specify do
+    VCR.use_cassette("scim-schemas-groups") do
+      response = hippie.get("#{scheme}://#{host}/scim/v2/Schemas/urn:ietf:params:scim:schemas:core:2.0:Group")
+      expect(response.code).to eql('200')
+    end
+  end
 end

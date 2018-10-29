@@ -6,63 +6,50 @@ Example curl request:
 ```bash
 $ curl http://localhost:5000/oauth/clients \
   -X POST \
-  -d '{"redirect_uris":["https://millerspencer.com","https://lebsack.ca"],"client_name":"Jamey Parisian","token_endpoint_auth_method":"client_secret_basic","logo_uri":"https://corkeryskiles.com","jwks_uri":"https://becker.biz"}' \
+  -d '{"redirect_uris":["https://wunsch.biz","https://collier.name"],"client_name":"Emanuel Bergstrom","token_endpoint_auth_method":"client_secret_basic","logo_uri":"https://hodkiewicz.info","jwks_uri":"https://danielfisher.us"}' \
   -H "Accept: application/json" \
   -H "Content-Type: application/json" \
   -H "User-Agent: net/hippie 0.1.9" \
   -H "Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3"
 ```
-Request Headers:
-
+Request:
 ```text
 Accept: application/json
 Content-Type: application/json
 User-Agent: net/hippie 0.1.9
 Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3
 ```
-
-
-Request Body:
 ```json
 {
   "redirect_uris": [
-    "https://millerspencer.com",
-    "https://lebsack.ca"
+    "https://wunsch.biz",
+    "https://collier.name"
   ],
-  "client_name": "Jamey Parisian",
+  "client_name": "Emanuel Bergstrom",
   "token_endpoint_auth_method": "client_secret_basic",
-  "logo_uri": "https://corkeryskiles.com",
-  "jwks_uri": "https://becker.biz"
+  "logo_uri": "https://hodkiewicz.info",
+  "jwks_uri": "https://danielfisher.us"
 }
 ```
-
-Response Headers:
-
+Response:
 ```text
-X-Frame-Options: SAMEORIGIN
-X-Xss-Protection: 1; mode=block
-X-Content-Type-Options: nosniff
-X-Download-Options: noopen
-X-Permitted-Cross-Domain-Policies: none
-Referrer-Policy: strict-origin-when-cross-origin
+201 Created
+
 Cache-Control: no-cache, no-store
 Pragma: no-cache
 Content-Type: application/json; charset=utf-8
-X-Request-Id: e127390c-abc8-4cd1-a181-98b76cf4176b
+X-Request-Id: f6c1e2ba-59f2-4c7b-a06f-080a17a1e65f
 Transfer-Encoding: chunked
 ```
-
-
-Response Body:
 ```json
 {
-  "client_id": "b84321b8-33ca-42cb-a455-14d9a10cac4b",
-  "client_secret": "8QPgFoE2b5LxkG9W51ShSniZ",
-  "client_id_issued_at": 1540771833,
+  "client_id": "4fc7bdcc-d2cc-4ec2-8b06-3c8ce033eb3d",
+  "client_secret": "VK6uUsqiy9ThfbCRCKZrWpen",
+  "client_id_issued_at": 1540775532,
   "client_secret_expires_at": 0,
   "redirect_uris": [
-    "https://millerspencer.com",
-    "https://lebsack.ca"
+    "https://wunsch.biz",
+    "https://collier.name"
   ],
   "grant_types": [
     "authorization_code",
@@ -71,11 +58,10 @@ Response Body:
     "password",
     "urn:ietf:params:oauth:grant-type:saml2-bearer"
   ],
-  "client_name": "Jamey Parisian",
+  "client_name": "Emanuel Bergstrom",
   "token_endpoint_auth_method": "client_secret_basic",
-  "logo_uri": "https://corkeryskiles.com",
-  "jwks_uri": "https://becker.biz"
+  "logo_uri": "https://hodkiewicz.info",
+  "jwks_uri": "https://danielfisher.us"
 }
 ```
-
 

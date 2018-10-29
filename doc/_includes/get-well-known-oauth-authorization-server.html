@@ -12,34 +12,26 @@ $ curl http://localhost:5000/.well-known/oauth-authorization-server \
   -H "User-Agent: net/hippie 0.1.9" \
   -H "Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3"
 ```
-Request Headers:
-
+Request:
 ```text
 Accept: application/json
 Content-Type: application/json
 User-Agent: net/hippie 0.1.9
 Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3
 ```
+```json
 
-
-Response Headers:
-
+```
+Response:
 ```text
-X-Frame-Options: SAMEORIGIN
-X-Xss-Protection: 1; mode=block
-X-Content-Type-Options: nosniff
-X-Download-Options: noopen
-X-Permitted-Cross-Domain-Policies: none
-Referrer-Policy: strict-origin-when-cross-origin
+200 OK
+
 Content-Type: application/json; charset=utf-8
 Etag: W/"7f1eee6ebfc3008c58d630548ed1707c"
 Cache-Control: max-age=0, private, must-revalidate
-X-Request-Id: 08bf72b9-0883-4214-b7a6-ceb414964790
+X-Request-Id: 8ecded39-c4fe-49fd-88a3-b3b50b678ab4
 Transfer-Encoding: chunked
 ```
-
-
-Response Body:
 ```json
 {
   "issuer": "http://localhost:5000/",
@@ -71,5 +63,4 @@ Response Body:
   ]
 }
 ```
-
 
