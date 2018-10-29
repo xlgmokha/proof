@@ -25,6 +25,12 @@ module Oauth
       @client = Client.find(params[:id])
       @client.update!(transform(secure_params))
       render status: :ok, formats: :json
+    rescue ActiveRecord::RecordInvalid => error
+      json = {
+        error: error_type_for(error.record.errors),
+        error_description: error.record.errors.full_messages.join(' ')
+      }
+      render json: json, status: :bad_request
     end
 
     private
