@@ -6,7 +6,7 @@ Example curl request:
 ```bash
 $ curl http://localhost:5000/oauth/clients \
   -X POST \
-  -d '{"redirect_uris":["https://corkery.co.uk","https://nienow.biz"],"client_name":"Phil Bergnaum","token_endpoint_auth_method":"client_secret_basic","logo_uri":"https://stracke.biz","jwks_uri":"https://huel.biz"}' \
+  -d '{"redirect_uris":["https://turnerking.name","https://stoltenberg.co.uk"],"client_name":"Kenna Raynor","token_endpoint_auth_method":"client_secret_basic","logo_uri":"https://kub.ca","jwks_uri":"https://kleinbosco.info"}' \
   -H "Accept: application/json" \
   -H "Content-Type: application/json" \
   -H "User-Agent: net/hippie 0.1.9" \
@@ -22,13 +22,13 @@ Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3
 ```json
 {
   "redirect_uris": [
-    "https://corkery.co.uk",
-    "https://nienow.biz"
+    "https://turnerking.name",
+    "https://stoltenberg.co.uk"
   ],
-  "client_name": "Phil Bergnaum",
+  "client_name": "Kenna Raynor",
   "token_endpoint_auth_method": "client_secret_basic",
-  "logo_uri": "https://stracke.biz",
-  "jwks_uri": "https://huel.biz"
+  "logo_uri": "https://kub.ca",
+  "jwks_uri": "https://kleinbosco.info"
 }
 ```
 Response:
@@ -38,18 +38,18 @@ Response:
 Cache-Control: no-cache, no-store
 Pragma: no-cache
 Content-Type: application/json; charset=utf-8
-X-Request-Id: 788d0eec-b387-4180-b17e-07fa682d50c3
+X-Request-Id: ee26549e-25d4-4d55-ad8d-d0daf2580edc
 Transfer-Encoding: chunked
 ```
 ```json
 {
-  "client_id": "c5a7768d-e55d-4fa8-8f4f-b6e5dc853554",
-  "client_secret": "n1VFy1YXCy2vjyrFwVktq6df",
-  "client_id_issued_at": 1540776259,
+  "client_id": "0f7d01f2-6581-4f99-a9d6-ffc23322005e",
+  "client_secret": "RZEsEaat1mvBFiAJXno8dnph",
+  "client_id_issued_at": 1540776653,
   "client_secret_expires_at": 0,
   "redirect_uris": [
-    "https://corkery.co.uk",
-    "https://nienow.biz"
+    "https://turnerking.name",
+    "https://stoltenberg.co.uk"
   ],
   "grant_types": [
     "authorization_code",
@@ -58,10 +58,10 @@ Transfer-Encoding: chunked
     "password",
     "urn:ietf:params:oauth:grant-type:saml2-bearer"
   ],
-  "client_name": "Phil Bergnaum",
+  "client_name": "Kenna Raynor",
   "token_endpoint_auth_method": "client_secret_basic",
-  "logo_uri": "https://stracke.biz",
-  "jwks_uri": "https://huel.biz"
+  "logo_uri": "https://kub.ca",
+  "jwks_uri": "https://kleinbosco.info"
 }
 ```
 

@@ -1,0 +1,54 @@
+
+#### GET http://localhost:5000/scim/v2/ResourceTypes/Group
+
+Example curl request:
+
+```bash
+$ curl http://localhost:5000/scim/v2/ResourceTypes/Group \
+  -X GET \
+  -d '' \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/scim+json" \
+  -H "User-Agent: net/hippie 0.1.9" \
+  -H "Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3"
+```
+Request:
+```text
+Accept: application/json
+Content-Type: application/scim+json
+User-Agent: net/hippie 0.1.9
+Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+```
+```json
+
+```
+Response:
+```text
+200 OK
+
+Content-Type: application/scim+json
+Etag: W/"d0dea12284b4b8c065c626de41ae8b7c"
+Cache-Control: max-age=0, private, must-revalidate
+X-Request-Id: 0638d0b4-9be7-4178-9090-c514ebee373f
+Transfer-Encoding: chunked
+```
+```json
+{
+  "schemas": [
+    "urn:ietf:params:scim:schemas:core:2.0:ResourceType"
+  ],
+  "id": "Group",
+  "meta": {
+    "location": "http://localhost:5000/scim/v2/resource_types/Group",
+    "resourceType": "ResourceType"
+  },
+  "description": "Group",
+  "endpoint": "http://localhost:5000/scim/v2/groups",
+  "name": "Group",
+  "schema": "urn:ietf:params:scim:schemas:core:2.0:Group",
+  "schemaExtensions": [
+
+  ]
+}
+```
+

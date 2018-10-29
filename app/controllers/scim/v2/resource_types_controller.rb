@@ -3,6 +3,8 @@
 module Scim
   module V2
     class ResourceTypesController < ::Scim::Controller
+      skip_before_action :authenticate!
+
       def index
         render status: :ok
       end

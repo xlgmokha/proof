@@ -1,0 +1,54 @@
+
+#### GET http://localhost:5000/scim/v2/ResourceTypes/User
+
+Example curl request:
+
+```bash
+$ curl http://localhost:5000/scim/v2/ResourceTypes/User \
+  -X GET \
+  -d '' \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/scim+json" \
+  -H "User-Agent: net/hippie 0.1.9" \
+  -H "Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3"
+```
+Request:
+```text
+Accept: application/json
+Content-Type: application/scim+json
+User-Agent: net/hippie 0.1.9
+Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+```
+```json
+
+```
+Response:
+```text
+200 OK
+
+Content-Type: application/scim+json
+Etag: W/"de7bd5d9f401078c697e3c7412e52207"
+Cache-Control: max-age=0, private, must-revalidate
+X-Request-Id: bd85e44a-7b33-45a6-a1fd-c245ccf8cb50
+Transfer-Encoding: chunked
+```
+```json
+{
+  "schemas": [
+    "urn:ietf:params:scim:schemas:core:2.0:ResourceType"
+  ],
+  "id": "User",
+  "meta": {
+    "location": "http://localhost:5000/scim/v2/resource_types/User",
+    "resourceType": "ResourceType"
+  },
+  "description": "User Account",
+  "endpoint": "http://localhost:5000/scim/v2/users",
+  "name": "User",
+  "schema": "urn:ietf:params:scim:schemas:core:2.0:User",
+  "schemaExtensions": [
+
+  ]
+}
+```
+

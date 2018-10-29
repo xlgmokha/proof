@@ -156,4 +156,28 @@ RSpec.describe "documentation" do
       expect(response.code).to eql('200')
     end
   end
+
+  specify do
+    VCR.use_cassette("scim-resource-types") do
+      headers = { 'Content-Type' => Mime[:scim].to_s }
+      response = hippie.get("#{scheme}://#{host}/scim/v2/ResourceTypes", headers: headers)
+      expect(response.code).to eql('200')
+    end
+  end
+
+  specify do
+    VCR.use_cassette("scim-resource-type-user") do
+      headers = { 'Content-Type' => Mime[:scim].to_s }
+      response = hippie.get("#{scheme}://#{host}/scim/v2/ResourceTypes/User", headers: headers)
+      expect(response.code).to eql('200')
+    end
+  end
+
+  specify do
+    VCR.use_cassette("scim-resource-type-group") do
+      headers = { 'Content-Type' => Mime[:scim].to_s }
+      response = hippie.get("#{scheme}://#{host}/scim/v2/ResourceTypes/Group", headers: headers)
+      expect(response.code).to eql('200')
+    end
+  end
 end
