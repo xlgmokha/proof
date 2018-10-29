@@ -135,21 +135,24 @@ RSpec.describe "documentation" do
 
   specify do
     VCR.use_cassette("scim-schemas") do
-      response = hippie.get("#{scheme}://#{host}/scim/v2/Schemas")
+      headers = { 'Content-Type' => Mime[:scim].to_s }
+      response = hippie.get("#{scheme}://#{host}/scim/v2/Schemas", headers: headers)
       expect(response.code).to eql('200')
     end
   end
 
   specify do
     VCR.use_cassette("scim-schemas-users") do
-      response = hippie.get("#{scheme}://#{host}/scim/v2/Schemas/urn:ietf:params:scim:schemas:core:2.0:User")
+      headers = { 'Content-Type' => Mime[:scim].to_s }
+      response = hippie.get("#{scheme}://#{host}/scim/v2/Schemas/urn:ietf:params:scim:schemas:core:2.0:User", headers: headers)
       expect(response.code).to eql('200')
     end
   end
 
   specify do
     VCR.use_cassette("scim-schemas-groups") do
-      response = hippie.get("#{scheme}://#{host}/scim/v2/Schemas/urn:ietf:params:scim:schemas:core:2.0:Group")
+      headers = { 'Content-Type' => Mime[:scim].to_s }
+      response = hippie.get("#{scheme}://#{host}/scim/v2/Schemas/urn:ietf:params:scim:schemas:core:2.0:Group", headers: headers)
       expect(response.code).to eql('200')
     end
   end
