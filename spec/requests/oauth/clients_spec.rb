@@ -152,6 +152,16 @@ RSpec.describe "/oauth/clients" do
 
       specify { expect(response).to have_http_status(:ok) }
       specify { expect(response.content_type).to eql('application/json') }
+      specify { expect(json[:client_id]).to eql(client.to_param) }
+      pending { expect(json[:client_secret]).to eql(client.password) }
+      specify { expect(json[:client_id_issued_at]).to eql(client.created_at.to_i) }
+      specify { expect(json[:client_secret_expires_at]).to be_zero }
+      specify { expect(json[:redirect_uris]).to match_array(request_body[:redirect_uris]) }
+      pending { expect(json[:grant_types]).to match_array(request_body[:grant_types].map(&:to_s)) }
+      specify { expect(json[:client_name]).to eql(request_body[:client_name]) }
+      specify { expect(json[:token_endpoint_auth_method]).to eql(request_body[:token_endpoint_auth_method].to_s) }
+      specify { expect(json[:logo_uri]).to eql(request_body[:logo_uri]) }
+      specify { expect(json[:jwks_uri]).to eql(request_body[:jwks_uri]) }
 
       specify "Valid values of client metadata fields in this request MUST replace, not augment, the values previously associated with this client."
       specify "Omitted fields MUST be treated as null or empty values by the server, indicating the client's request to delete them from the client's registration."

@@ -23,6 +23,7 @@ module Oauth
 
     def update
       @client = Client.find(params[:id])
+      @client.update!(transform(secure_params))
       render status: :ok, formats: :json
     end
 
