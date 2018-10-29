@@ -3,9 +3,11 @@
 module Oauth
   class MetadataController < ApplicationController
     skip_before_action :authenticate!
+    before_action do
+      request.session_options[:skip] = true
+    end
 
     def show
-      request.session_options[:skip] = true
       render formats: :json
     end
   end

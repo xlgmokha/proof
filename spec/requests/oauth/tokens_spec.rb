@@ -311,6 +311,7 @@ RSpec.describe '/oauth/tokens' do
 
       specify { expect(response).to have_http_status(:ok) }
       specify { expect(response['Content-Type']).to include('application/json') }
+      specify { expect(response.headers['Set-Cookie']).to be_nil }
       specify { expect(json[:active]).to be(true) }
       specify { expect(json[:sub]).to eql(token.claims[:sub]) }
       specify { expect(json[:aud]).to eql(token.claims[:aud]) }

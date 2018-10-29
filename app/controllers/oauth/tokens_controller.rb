@@ -3,6 +3,9 @@
 module Oauth
   class TokensController < ApplicationController
     skip_before_action :verify_authenticity_token
+    before_action do
+      request.session_options[:skip] = true
+    end
 
     def create
       response.headers['Cache-Control'] = 'no-store'

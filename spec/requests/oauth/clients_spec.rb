@@ -23,6 +23,7 @@ RSpec.describe "/oauth/clients" do
       end
 
       specify { expect(response).to have_http_status(:created) }
+      specify { expect(response.headers['Set-Cookie']).to be_nil }
       specify { expect(response.headers['Content-Type']).to include("application/json") }
       specify { expect(response.headers['Cache-Control']).to include("no-store") }
       specify { expect(response.headers['Pragma']).to eql("no-cache") }
