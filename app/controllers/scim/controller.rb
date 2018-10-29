@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 module Scim
-  class Controller < ActionController::Base
-    protect_from_forgery with: :null_session
+  class Controller < ActionController::API
+    include ActionController::HttpAuthentication::Token::ControllerMethods
     before_action :apply_scim_content_type
     before_action :ensure_correct_content_type!
     before_action :authenticate!
-    helper_method :current_user
+    helper_method :current_user, :scim_type_for
     rescue_from StandardError do |error|
       Rails.logger.error(error)
       render "server_error", status: :server_error
@@ -61,6 +61,18 @@ module Scim
 
     def acceptable_content_type?
       [:scim, :json].include?(request&.content_mime_type&.symbol)
+    end
+
+    def scim_type_for(error)
+      case error
+      when ActiveRecord::RecordInvalid
+        errors = error.record.errors.full_messages
+        if errors.count == 1 &&
+           errors[0].end_with?('has already been taken')
+          return 'uniqueness'
+        end
+      end
+      "invalidValue"
     end
   end
 end

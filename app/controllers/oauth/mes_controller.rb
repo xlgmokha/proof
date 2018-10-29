@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
 module Oauth
-  class MesController < ApplicationController
+  class MesController < ActionController::API
+    include ActionController::HttpAuthentication::Token::ControllerMethods
+    before_action :authenticate!
+
     def show
       render json: @claims
     end
