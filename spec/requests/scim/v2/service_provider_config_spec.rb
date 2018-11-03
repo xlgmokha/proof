@@ -21,7 +21,7 @@ describe "/ServiceProviderConfig" do
     specify { expect(response).to have_http_status(:ok) }
     specify { expect(response.body).to be_present }
     specify { expect(json[:schemas]).to match_array([Scim::Shady::Schemas::SERVICE_PROVIDER_CONFIG]) }
-    specify { expect(json[:documentationUri]).to be_blank }
+    specify { expect(json[:documentationUri]).to eql(root_url + "doc") }
     specify { expect(json[:patch][:supported]).to be(false) }
     specify { expect(json[:bulk][:supported]).to be(false) }
     specify { expect(json[:filter][:supported]).to be(false) }

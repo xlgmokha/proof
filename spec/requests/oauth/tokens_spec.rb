@@ -58,7 +58,6 @@ RSpec.describe '/oauth/tokens' do
         let(:json) { JSON.parse(response.body, symbolize_names: true) }
 
         before do
-          post '/oauth/tokens', params: { grant_type: 'authorization_code', code: SecureRandom.hex(20) }, headers: headers
           post '/oauth/tokens', params: { grant_type: 'authorization_code', code: authorization.code, code_verifier: code_verifier }, headers: headers
         end
 
@@ -312,6 +311,7 @@ RSpec.describe '/oauth/tokens' do
 
       specify { expect(response).to have_http_status(:ok) }
       specify { expect(response['Content-Type']).to include('application/json') }
+      specify { expect(response.headers['Set-Cookie']).to be_nil }
       specify { expect(json[:active]).to be(true) }
       specify { expect(json[:sub]).to eql(token.claims[:sub]) }
       specify { expect(json[:aud]).to eql(token.claims[:aud]) }
@@ -362,7 +362,7 @@ RSpec.describe '/oauth/tokens' do
   describe "POST /oauth/tokens/revoke" do
     context "when the client credentials are valid" do
       context "when the access token is active and known" do
-        let(:token) { create(:access_token) }
+        let(:token) { create(:access_token, audience: client) }
 
         before { post '/oauth/tokens/revoke', params: { token: token.to_jwt, token_type_hint: :access_token }, headers: headers }
 
@@ -371,8 +371,18 @@ RSpec.describe '/oauth/tokens' do
         specify { expect(token.reload).to be_revoked }
       end
 
+      context "when the token was not issued to this client" do
+        let(:token) { create(:access_token, audience: other_client) }
+        let(:other_client) { create(:client) }
+
+        before { post '/oauth/tokens/revoke', params: { token: token.to_jwt, token_type_hint: :access_token }, headers: headers }
+
+        specify { expect(response).to have_http_status(:ok) }
+        specify { expect(token.reload).not_to be_revoked }
+      end
+
       context "when the refresh token is active and known" do
-        let(:token) { create(:refresh_token) }
+        let(:token) { create(:refresh_token, audience: client) }
 
         before { post '/oauth/tokens/revoke', params: { token: token.to_jwt, token_type_hint: :refresh_token }, headers: headers }
 
@@ -382,7 +392,7 @@ RSpec.describe '/oauth/tokens' do
       end
 
       context "when the access token is expired" do
-        let(:token) { create(:access_token, :expired) }
+        let(:token) { create(:access_token, :expired, audience: client) }
 
         before { post '/oauth/tokens/revoke', params: { token: token.to_jwt, token_type_hint: :refresh_token }, headers: headers }
 

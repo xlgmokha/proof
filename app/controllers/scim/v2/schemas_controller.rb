@@ -3,6 +3,8 @@
 module Scim
   module V2
     class SchemasController < ::Scim::Controller
+      skip_before_action :authenticate!
+
       def index
         @schemas = [:user, :group]
         render status: :ok

@@ -17,8 +17,13 @@ class Token < ApplicationRecord
     end
   end
 
+  def issued_to?(audience)
+    self.audience == audience
+  end
+
   def revoke!
     update!(revoked_at: Time.now)
+    authorization&.revoke!
   end
 
   def revoked?
@@ -52,6 +57,13 @@ class Token < ApplicationRecord
   end
 
   class << self
+    def revoked?(jti)
+      revoked = Rails.cache.fetch("revoked-tokens", expires_in: 10.minutes) do
+        Hash[Token.revoked.pluck(:id).map { |x| [x, true] }]
+      end
+      revoked[jti]
+    end
+
     def claims_for(token, token_type: :access)
       if token_type == :any
         claims = claims_for(token, token_type: :access)

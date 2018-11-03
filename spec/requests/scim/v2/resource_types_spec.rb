@@ -3,13 +3,10 @@
 require 'rails_helper'
 
 RSpec.describe "/scim/v2/ResourceTypes" do
-  let(:user) { create(:user) }
-  let(:token) { create(:access_token, subject: user).to_jwt }
   let(:headers) do
     {
       'Accept' => 'application/scim+json',
       'Content-Type' => 'application/scim+json',
-      'Authorization' => "Bearer #{token}"
     }
   end
 

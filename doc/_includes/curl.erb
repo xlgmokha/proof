@@ -1,0 +1,28 @@
+<% @configuration['http_interactions'].each do |interaction| %>
+#### <%= interaction['request']['method'].upcase %> <%= interaction['request']['uri'].gsub(/\h{8}-\h{4}-\h{4}-\h{4}-\h{12}/, ':id') %>
+
+Example curl request:
+<% headers = interaction['request']['headers'].map { |(key, value)| "-H \"#{key}: #{value[0]}\"" } %>
+```bash
+$ curl <%= interaction['request']['uri'] %> \
+  -X <%= interaction['request']['method'].upcase %> \
+  -d '<%= interaction['request']['body']['string'] %>' \
+  <%= headers.join(" \\\n  ") %>
+```
+Request:
+```text
+<%= interaction['request']['headers'].map { |(key, value)| "#{key}: #{value[0]}" }.join("\n") %>
+```
+```json
+<%= JSON.pretty_generate(JSON.parse(interaction['request']['body']['string'])) rescue nil %>
+```
+Response:
+```text
+<%= interaction['response']['status']['code'] %> <%= interaction['response']['status']['message'] %>
+
+<%= interaction['response']['headers'].map { |(key, value)| "#{key}: #{value[0]}" }.join("\n") %>
+```
+```json
+<%= JSON.pretty_generate(JSON.parse(interaction['response']['body']['string'])) rescue nil %>
+```
+<% end %>

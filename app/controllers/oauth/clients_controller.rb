@@ -1,17 +1,13 @@
 # frozen_string_literal: true
 
 module Oauth
-  class ClientsController < ApplicationController
-    skip_before_action :authenticate!, only: [:create]
-    before_action :apply_cache_headers, only: [:create]
+  class ClientsController < ActionController::API
+    include ActionController::HttpAuthentication::Token::ControllerMethods
+    before_action :apply_cache_headers
+    before_action :authenticate!, except: [:create]
 
     def show
-      unless current_client.to_param == params[:id]
-        return render json: nil, status: :forbidden
-      end
-
-      @client = current_client
-      render formats: :json
+      render status: :ok, formats: :json
     end
 
     def create
@@ -25,7 +21,35 @@ module Oauth
       render json: json, status: :bad_request
     end
 
+    def update
+      @client = Client.find(params[:id])
+      @client.update!(transform(secure_params))
+      render status: :ok, formats: :json
+    rescue ActiveRecord::RecordInvalid => error
+      json = {
+        error: error_type_for(error.record.errors),
+        error_description: error.record.errors.full_messages.join(' ')
+      }
+      render json: json, status: :bad_request
+    end
+
     private
+
+    def authenticate!
+      token = authenticate_with_http_token do |jwt, _options|
+        claims = Token.claims_for(jwt)
+        return if Token.revoked?(claims[:jti]) || claims.empty?
+        Token.find(claims[:jti])
+      end
+      return request_http_token_authentication unless token.present?
+
+      unless Client.where(id: params[:id]).exists?
+        token.revoke!
+        return render json: {}, status: :unauthorized
+      end
+      return render json: {}, status: :forbidden unless token.subject.to_param == params[:id]
+      @client = token.subject
+    end
 
     def secure_params
       params.permit(
@@ -58,17 +82,6 @@ module Oauth
       else
         :invalid_client_metadata
       end
-    end
-
-    attr_reader :current_client
-
-    def authenticate!
-      @current_client = authenticate_with_http_basic do |id, client_secret|
-        Client.find(id)&.authenticate(client_secret)
-      end
-      return if current_client
-
-      render status: :unauthorized
     end
   end
 end

@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
 module Oauth
-  class TokensController < ApplicationController
+  class TokensController < ActionController::API
+    include ActionController::HttpAuthentication::Basic::ControllerMethods
+    before_action :authenticate!
+
     def create
       response.headers['Cache-Control'] = 'no-store'
       response.headers['Pragma'] = 'no-cache'
@@ -17,7 +20,7 @@ module Oauth
 
     def introspect
       claims = Token.claims_for(params[:token], token_type: :any)
-      if claims.empty? || revoked_tokens[claims[:jti]]
+      if claims.empty? || Token.revoked?(claims[:jti])
         render json: { active: false }, status: :ok
       else
         render json: claims.merge(active: true), status: :ok
@@ -26,7 +29,7 @@ module Oauth
 
     def revoke
       claims = Token.claims_for(params[:token], token_type: :any)
-      Token.find(claims[:jti]).revoke! unless claims.empty?
+      current_client.revoke(Token.find(claims[:jti])) unless claims.empty?
       render plain: "", status: :ok
     rescue StandardError => error
       logger.error(error)
@@ -68,7 +71,7 @@ module Oauth
       user.issue_tokens_to(current_client)
     end
 
-    def assertion_grant(raw)
+    def saml_assertion_grant(raw)
       assertion = Saml::Kit::Assertion.new(
         Base64.urlsafe_decode64(raw)
       )
@@ -93,15 +96,9 @@ module Oauth
       when 'password'
         password_grant(params[:username], params[:password])
       when 'urn:ietf:params:oauth:grant-type:saml2-bearer' # RFC7522
-        assertion_grant(params[:assertion])
+        saml_assertion_grant(params[:assertion])
         # when 'urn:ietf:params:oauth:grant-type:jwt-bearer' # RFC7523
         # raise NotImplementedError
-      end
-    end
-
-    def revoked_tokens
-      Rails.cache.fetch("revoked-tokens", expires_in: 10.minutes) do
-        Hash[Token.revoked.pluck(:id).map { |x| [x, true] }]
       end
     end
   end

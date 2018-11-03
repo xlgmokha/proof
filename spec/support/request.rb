@@ -12,5 +12,9 @@ RSpec.configure do |config|
     def mfa_login(user)
       post '/mfa', params: { mfa: { code: user.mfa.current_totp } }
     end
+
+    def json
+      @json ||= JSON.parse(response.body, symbolize_names: true)
+    end
   end)
 end

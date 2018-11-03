@@ -41,6 +41,7 @@ group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'i18n-tasks', '~> 0.9.24'
   gem 'rspec-rails', '~> 3.8'
+  gem 'vcr', '~> 4.0'
 end
 group :test do
   gem 'capybara', '~> 3.6'

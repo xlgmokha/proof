@@ -1,0 +1,111 @@
+
+#### GET http://localhost:5000/scim/v2/Schemas/urn:ietf:params:scim:schemas:core:2.0:Group
+
+Example curl request:
+
+```bash
+$ curl http://localhost:5000/scim/v2/Schemas/urn:ietf:params:scim:schemas:core:2.0:Group \
+  -X GET \
+  -d '' \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/scim+json" \
+  -H "User-Agent: net/hippie 0.1.9" \
+  -H "Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3"
+```
+Request:
+```text
+Accept: application/json
+Content-Type: application/scim+json
+User-Agent: net/hippie 0.1.9
+Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+```
+```json
+
+```
+Response:
+```text
+200 OK
+
+Content-Type: application/scim+json
+Etag: W/"20238e8dae84ccca47f9554b77002d2b"
+Cache-Control: max-age=0, private, must-revalidate
+X-Request-Id: 53f8ea94-6008-4a43-9b24-dab3743db99d
+Transfer-Encoding: chunked
+```
+```json
+{
+  "id": "urn:ietf:params:scim:schemas:core:2.0:Group",
+  "meta": {
+    "resourceType": "Schema",
+    "location": "http://localhost:5000/scim/v2/schemas/urn:ietf:params:scim:schemas:core:2.0:Group"
+  },
+  "name": "Group",
+  "description": "Group",
+  "attributes": [
+    {
+      "name": "displayName",
+      "type": "string",
+      "multiValued": false,
+      "description": "A human-readable name for the Group.",
+      "required": false,
+      "caseExact": false,
+      "mutability": "readWrite",
+      "returned": "default",
+      "uniqueness": "none"
+    },
+    {
+      "name": "members",
+      "type": "complex",
+      "multiValued": true,
+      "description": "A list of members of the Group.",
+      "required": false,
+      "subAttributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "multiValued": false,
+          "description": "Identifier of the member of this Group.",
+          "required": false,
+          "caseExact": false,
+          "mutability": "immutable",
+          "returned": "default",
+          "uniqueness": "none"
+        },
+        {
+          "name": "$ref",
+          "type": "reference",
+          "referenceTypes": [
+            "User",
+            "Group"
+          ],
+          "multiValued": false,
+          "description": "The URI corresponding to a SCIM resource.",
+          "required": false,
+          "caseExact": false,
+          "mutability": "immutable",
+          "returned": "default",
+          "uniqueness": "none"
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "multiValued": false,
+          "description": "A label indicating the type of resource",
+          "required": false,
+          "caseExact": false,
+          "canonicalValues": [
+            "User",
+            "Group"
+          ],
+          "mutability": "immutable",
+          "returned": "default",
+          "uniqueness": "none"
+        }
+      ],
+      "mutability": "readWrite",
+      "returned": "default"
+    }
+  ]
+}
+```
+

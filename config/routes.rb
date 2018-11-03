@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
   post "/session/logout" => "sessions#destroy", as: :logout
   post "/session/new" => "sessions#new"
-  post '/oauth/token', to: 'tokens#create'
+  post '/oauth/token', to: 'oauth/tokens#create'
   resource :mfa, only: [:new, :create]
   resource :metadata, only: [:show]
   resource :session, only: [:new, :create, :destroy]
@@ -17,7 +17,8 @@ Rails.application.routes.draw do
   end
   namespace :oauth do
     resource :authorizations, only: [:show, :create]
-    resources :clients, only: [:show, :create]
+    resource :me, only: [:show]
+    resources :clients, only: [:show, :create, :update]
     resource :tokens, only: [:create] do
       post :introspect
       post :revoke
@@ -51,5 +52,6 @@ Rails.application.routes.draw do
       match 'Bulk', to: lambda { |env| [501, {}, ['']] }, via: [:post]
     end
   end
+  get "/.well-known/oauth-authorization-server", to: "oauth/metadata#show"
   root to: "sessions#new"
 end
