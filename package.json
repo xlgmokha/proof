@@ -2,7 +2,10 @@
   "name": "proof",
   "private": true,
   "scripts": {
-    "lint": "eslint app/javascript/",
+    "lint": "yarn lint:js && yarn lint:scss",
+    "lint:autofix": "yarn lint:js --fix && yarn lint:scss --fix",
+    "lint:js": "eslint app/javascript/",
+    "lint:scss": "stylelint -f unix --color app/javascript/styles/*.scss",
     "start": "./bin/webpack-dev-server",
     "test": "NODE_ENV=test karma start"
   },
@@ -35,6 +38,8 @@
     "karma-mocha-reporter": "^2.2.5",
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^3.0.0",
+    "stylelint": "^9.8.0",
+    "stylelint-config-standard": "^18.2.0",
     "testdouble": "^3.7.0",
     "testdouble-jasmine": "^0.2.1",
     "webpack-dev-server": "2.11.2"

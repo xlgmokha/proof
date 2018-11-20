@@ -13,7 +13,8 @@ import { definitionsFromContext } from 'stimulus/webpack-helpers';
 import LocalTime from 'local-time';
 import Rails from 'rails-ujs';
 import Turbolinks from 'turbolinks';
-import '../application.scss';
+import '../styles';
+import '../images';
 
 const application = Application.start();
 const context = require.context('controllers', true, /.js$/);
