@@ -30,7 +30,7 @@ module SCIM
     end
 
     def ensure_password_update_is_allowed!(user)
-      error = I18n.t('.password_update_not_permitted')
+      error = I18n.t('scim.errors.user.password_update_not_permitted')
       raise StandardError.new(error) unless Current.user == user
     end
 

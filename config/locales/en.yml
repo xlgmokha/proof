@@ -1,7 +1,5 @@
 ---
 en:
-  '':
-    password_update_not_permitted: Password update not permitted
   activemodel:
     attributes:
       scim/user:
@@ -55,6 +53,10 @@ en:
     new:
       register: Register
       title: Register
+  scim:
+    errors:
+      user:
+        password_update_not_permitted: Password update not permitted
   sessions:
     new:
       login: Login
