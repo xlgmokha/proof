@@ -24,6 +24,6 @@ fi
 if [ -f "Gemfile" ]; then
   echo "==> Installing gem dependencies…"
   bundle check --path vendor/bundle >/dev/null 2>&1 || {
-    bundle install --path vendor/bundle --quiet --without production
+    bundle install --path vendor/bundle --quiet
   }
 fi
