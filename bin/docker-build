@@ -8,9 +8,9 @@ FULL_NAME=$(ls pkg/*.tar.gz | xargs basename | cut -d'.' -f1)
 NAME=$(echo "$FULL_NAME" | cut -d'-' -f1)
 VERSION=$(echo "$FULL_NAME" | cut -d'-' -f2)
 
-sudo docker pull ruby:2.5-alpine
+docker pull ruby:2.5-alpine
 echo "Building..." $NAME:$VERSION
-sudo docker image build \
+docker image build \
   -t "$NAME":"$VERSION" \
   -t "$NAME":latest \
   -f Dockerfile pkg/
