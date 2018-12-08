@@ -2,7 +2,7 @@ image: ruby:2.5
 
 before_script:
   - curl -sL https://deb.nodesource.com/setup_10.x | bash -
-  - apt-get update && apt-get install -y locales postgresql postgresql-client libpq-dev nodejs
+  - apt-get update && apt-get install -y locales postgresql postgresql-client libpq-dev nodejs unzip
   - echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
   - locale-gen
   - export LC_ALL=en_US.UTF-8
