@@ -1,11 +1,11 @@
 <div class="container">
   <div class="row">
     <div class="col">
-      <h1>Multi-Factor Authentication (MFA)</h1>
+      <h1><%= t('.title') %></h1>
       <div data-controller="mfa--setup">
         <canvas id="canvas" data-target="mfa--setup.canvas"></canvas>
-        <p>Secret: <%= current_user.mfa.secret %></p>
-        <p>Provisioning URI: <%= current_user.mfa.provisioning_uri %></p>
+        <p><%= t('.secret') %> <%= current_user.mfa.secret %></p>
+        <p><%= t('.provisioning_uri') %> <%= current_user.mfa.provisioning_uri %></p>
 
         <%= form_for current_user, url: my_mfa_path, method: :delete do |form| %>
           <%= form.hidden_field :mfa_secret, data: { target: 'mfa--setup.secret' } %>

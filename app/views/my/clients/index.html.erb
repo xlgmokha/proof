@@ -5,9 +5,9 @@
       <%= link_to t(".new"), new_my_client_path, class: 'btn' %>
       <table class="table">
         <thead>
-          <th>Client ID</th>
-          <th>Name</th>
-          <th>Redirect URIs</th>
+          <th><%= t('.client_id') %></th>
+          <th><%= t('.name') %></th>
+          <th><%= t('.redirect_uris') %></th>
         </thead>
         <tbody>
         <% @clients.each do |client| %>

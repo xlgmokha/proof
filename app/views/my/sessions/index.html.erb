@@ -4,9 +4,9 @@
       <h1><%= t('.title') %></h1>
       <table class="table">
         <thead>
-          <th>Last Used</th>
-          <th>User Agent</th>
-          <th>IP Address</th>
+          <th><%= t('.last_used') %></th>
+          <th><%= t('.user_agent') %></th>
+          <th><%= t('.ip_address') %></th>
         </thead>
         <tbody>
         <% @sessions.each do |user_session| %>

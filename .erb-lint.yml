@@ -1,5 +1,6 @@
 ---
 exclude:
+  - "*/app/views/application/_flash*"
   - "*/doc/_includes*"
   - "*/pkg/*"
   - "*/vendor/bundle*"

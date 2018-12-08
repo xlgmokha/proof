@@ -1,7 +1,7 @@
 <div class="container">
   <div class="row">
     <div class="col">
-      <h1>Login</h1>
+      <h1><%= t('.title') %></h1>
       <%= form_for :user, url: session_path, method: :post, data: { controller: 'sessions--new' } do |form| %>
         <div class="form-group">
           <%= form.email_field :email, class: 'form-control', placeholder: User.human_attribute_name(:email), autofocus: true, required: :required, data: { target: 'sessions--new.email', action: "keyup->sessions--new#validate" } %>

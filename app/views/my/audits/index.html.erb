@@ -4,20 +4,20 @@
       <h1><%= t('.title') %> <%= @audits.count %></h1>
       <table class="table">
         <thead>
-          <th>Action</th>
-          <th>Auditable</th>
-          <th>Changes</th>
-          <th>Associated</th>
-          <th>User</th>
-          <th>Version</th>
-          <th>Remote Address</th>
-          <th>Created At</th>
+          <th><%= t('.action') %></th>
+          <th><%= t('.auditable') %></th>
+          <th><%= t('.changes') %></th>
+          <th><%= t('.associated') %></th>
+          <th><%= t('.user') %></th>
+          <th><%= t('.version') %></th>
+          <th><%= t('.remote_address') %></th>
+          <th><%= t('.created_at') %></th>
         </thead>
         <tbody>
         <% @audits.each do |audit| %>
           <tr>
             <td><%= audit.action %></td>
-            <td><%= audit.auditable.class if audit.auditable %></td>
+            <td><%= audit&.auditable&.class %></td>
             <td><%= audit.audited_changes %></td>
             <td><%= audit.associated&.flipper_id %></td>
             <td><%= audit.user&.email %></td>

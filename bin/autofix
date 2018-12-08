@@ -1,0 +1,5 @@
+#!/bin/sh
+
+yarn lint:autofix
+bundle exec erblint --autocorrect --enable-all-linters --lint-all
+bundle exec rubocop -a

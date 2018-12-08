@@ -15,6 +15,13 @@ en:
       logout: Logout
       mfa: MFA
       sessions: Sessions
+  errors:
+    bad_request:
+      title: 400 - Bad Request
+    forbidden:
+      title: Forbidden
+    not_found:
+      title: 404 - Not Found
   layouts:
     application:
       title: Proof
@@ -22,26 +29,52 @@ en:
   mfas:
     new:
       login: Login
+      title: MFA Login
   my:
     audits:
       index:
+        action: Action
+        associated: Associated
+        auditable: Auditable
+        changes: Changes
+        created_at: Created at
+        remote_address: Remote address
         title: Audits
+        user: User
+        version: Version
     clients:
       create:
         success: Client ID %{client_id} Client Secret %{client_secret}
       index:
+        client_id: Client
+        name: Name
         new: New
+        redirect_uris: Redirect uris
         title: OAuth Clients
       new:
         cancel: Cancel
         enable: Enable
+        title: Title
+    dashboards:
+      show:
+        title: Dashboard
     mfas:
+      edit:
+        provisioning_uri: Provisioning uri
+        secret: Secret
+        title: Multi-Factor Authentication (MFA)
       new:
         cancel: Cancel
         enable: Enable
+        provisioning_uri: Provisioning URI
+        secret: Secret
+        title: Multi Factor Authentication - Setup
     sessions:
       index:
+        ip_address: Ip address
+        last_used: Last used
         title: Sessions
+        user_agent: User agent
   oauth:
     authorizations:
       show:
@@ -55,6 +88,9 @@ en:
     new:
       register: Register
       title: Register
+  responses:
+    response:
+      title: Sending Response to Service Provider
   scim:
     errors:
       user:
@@ -62,3 +98,4 @@ en:
   sessions:
     new:
       login: Login
+      title: Login

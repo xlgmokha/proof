@@ -1,7 +1,8 @@
 <div class="container">
   <div class="row">
     <div class="col">
-      <h1>Client</h1>
+      <h1><%= t('.title') %></h1>
+
       <div data-controller="clients--new">
         <%= form_for @client, url: my_clients_path, method: :post do |form| %>
           <div class="form-group">

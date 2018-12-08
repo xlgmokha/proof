@@ -1,7 +1,7 @@
 <div class="container">
   <div class="row">
     <div class="col">
-      <h1>MFA Login</h1>
+      <h1><%= t('.title') %></h1>
       <%= form_for :mfa, url: mfa_path, method: :post do |form| %>
         <div class="form-group">
           <%= form.number_field :code, class: 'form-control', autofocus: true, required: :required %>
