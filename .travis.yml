@@ -9,6 +9,8 @@ addons:
   chrome: stable
 rvm:
   - 2.5.3
+before_install:
+  - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost &
 install:
   - nvm install node
   - npm install -g yarn
