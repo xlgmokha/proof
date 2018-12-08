@@ -6,8 +6,8 @@ addons:
 rvm:
   - 2.5.3
 before_script:
-  - curl -sL https://deb.nodesource.com/setup_10.x | bash -
-  - wget -q -O - https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+  - curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+  - wget -q -O - https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
   - sudo apt-get update -qq
   - sudo apt-get install -y -qq yarn
   - psql -c 'create database proof;' -U postgres
