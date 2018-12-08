@@ -1,6 +1,7 @@
 sudo: false
 language: ruby
 addons:
+  postgresql: '9.6'
   chrome: stable
 rvm:
   - 2.5.3
