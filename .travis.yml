@@ -1,16 +1,12 @@
 sudo: false
 language: ruby
 addons:
-  postgresql: 10
   chrome: stable
-  apt:
-    packages:
-      - postgresql-10
-      - postgresql-client-10
 rvm:
   - 2.5.3
 before_script:
   - psql -c 'create database proof;' -U postgres
+  - ln -s /usr/lib/chromium-browser/chromedriver ~/bin/chromedriver
 env:
   - DATABASE_URL=postgres://postgres@localhost/proof
 script:
