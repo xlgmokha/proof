@@ -29,6 +29,7 @@
 # Ignore master key for decrypting credentials and more.
 /config/master.key
 .env.local
+.env.development
 .yarn-integrity
 /node_modules
 /public/packs
