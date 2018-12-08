@@ -1,10 +1,15 @@
 image: ruby:2.5
 
 before_script:
-  - apt-get update && apt-get install -y locales postgresql postgresql-client libpq-dev
+  - curl -sL https://deb.nodesource.com/setup | bash -
+  - apt-get update && apt-get install -y locales postgresql postgresql-client libpq-dev nodejs
   - echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
   - locale-gen
   - export LC_ALL=en_US.UTF-8
+  - wget -q -O - https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+  - echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list
+  - apt-get update -yq
+  - apt-get install -y yarn
 
 cibuild:
   script:
