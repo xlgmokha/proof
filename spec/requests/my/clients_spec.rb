@@ -27,8 +27,8 @@ RSpec.describe '/my/clients' do
         before { post '/my/clients', params: { client: attributes } }
 
         specify { expect(response).to redirect_to(my_clients_path) }
-        specify { expect(flash[:notice]).to include('client_id:') }
-        specify { expect(flash[:notice]).to include('client_secret:') }
+        specify { expect(flash[:notice]).to include('Client ID') }
+        specify { expect(flash[:notice]).to include('Client Secret') }
         specify { expect(Client.count).to be(1) }
       end
     end
