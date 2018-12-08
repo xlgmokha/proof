@@ -23,8 +23,11 @@ namespace :lint do
   end
 
   desc "run uilinters"
-  task(:uilint) { sh 'yarn lint' }
+  task(:ui) { sh 'yarn lint' }
+
+  desc "run erb linter"
+  task(:erb) { sh 'erblint --lint-all --enable-all-linters' }
 
   desc "Run linters to check the quality of the code."
-  task all: [:rubocop, 'bundle:audit', :brakeman, :uilint]
+  task all: ['bundle:audit', :brakeman, :erb, :rubocop, :ui]
 end

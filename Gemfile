@@ -32,6 +32,7 @@ end
 group :development do
   gem 'brakeman', '~> 4.3'
   gem 'bundler-audit', '~> 0.6'
+  gem 'erb_lint', require: false
   gem 'listen', '>= 3.0.5', '< 3.2'
   gem 'rubocop', '~> 0.59', require: false
   gem 'web-console', '>= 3.3.0'
