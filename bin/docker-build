@@ -4,12 +4,12 @@ set -e
 
 bin/package
 
-FULL_NAME=$(ls pkg/*.tar.gz | xargs basename | cut -d'.' -f1)
+FULL_NAME=$(find pkg/*.tar.gz -print0 | xargs -0 basename | cut -d'.' -f1)
 NAME=$(echo "$FULL_NAME" | cut -d'-' -f1)
 VERSION=$(echo "$FULL_NAME" | cut -d'-' -f2)
 
 docker pull ruby:2.5-alpine
-echo "Building..." $NAME:$VERSION
+echo "Building..." "$NAME":"$VERSION"
 docker image build \
   -t "$NAME":"$VERSION" \
   -t "$NAME":latest \
