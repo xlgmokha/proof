@@ -11,8 +11,8 @@ module My
     end
 
     def create
-      Client.create!(secure_params)
-      redirect_to my_clients_path, notice: "Client successfully created!"
+      client = Client.create!(secure_params)
+      redirect_to my_clients_path, notice: "client_id: #{client.to_param}, client_secret: #{client.password}"
     end
 
     private

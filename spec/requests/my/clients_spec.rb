@@ -18,8 +18,6 @@ RSpec.describe '/my/clients' do
       before { get '/my/clients/new' }
 
       specify { expect(response).to have_http_status(:ok) }
-      specify { expect(response.body).to include('Client Id') }
-      specify { expect(response.body).to include('Secret') }
     end
 
     describe "POST /my/clients" do
@@ -29,7 +27,8 @@ RSpec.describe '/my/clients' do
         before { post '/my/clients', params: { client: attributes } }
 
         specify { expect(response).to redirect_to(my_clients_path) }
-        specify { expect(flash[:notice]).to include('success') }
+        specify { expect(flash[:notice]).to include('client_id:') }
+        specify { expect(flash[:notice]).to include('client_secret:') }
         specify { expect(Client.count).to be(1) }
       end
     end
