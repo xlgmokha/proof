@@ -1,20 +1,30 @@
 <div class="container">
-  <div class="row">
-    <div class="col">
+  <div class="columns is-centered">
+    <div class="column is-half content">
       <h1><%= t('.title') %></h1>
 
       <div data-controller="clients--new">
         <%= form_for @client, url: my_clients_path, method: :post do |form| %>
-          <div class="form-group">
+          <div class="field">
             <%= form.label :name %>
-            <%= form.text_field :name, data: { target: 'clients--new.name' } %>
+            <div class="control">
+              <%= form.text_field :name, class: 'input', data: { target: 'clients--new.name' } %>
+            </div>
           </div>
-          <div class="form-group">
+          <div class="field">
             <%= form.label :redirect_uris %>
-            <%= form.url_field :redirect_uris, data: { target: 'clients--new.redirect_uris' }, multiple: true %>
+            <div class="control">
+              <%= form.url_field :redirect_uris, class: 'input', data: { target: 'clients--new.redirect_uris' }, multiple: true %>
+            </div>
           </div>
-          <%= form.submit t(".enable"), class: 'btn btn-primary', data: { disable_with: 'Saving…' } %>
-          <%= link_to t(".cancel"), my_clients_path, class: 'btn' %>
+          <div class="field is-grouped is-grouped-right">
+            <div class="control">
+              <%= form.submit t(".enable"), class: 'button is-primary', data: { disable_with: 'Saving…' } %>
+            </div>
+            <div class="control">
+              <%= link_to t(".cancel"), my_clients_path, class: 'button' %>
+            </div>
+          </div>
         <% end %>
       </div>
     </div>

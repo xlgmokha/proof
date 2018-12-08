@@ -1,19 +1,37 @@
 <div class="container">
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <%= link_to my_dashboard_path, class: 'navbar-brand' do %>
-      <img src="<%= asset_pack_path("images/logo.png") %>" width="50" />
-    <% end %>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
-        <%= link_to t(".home"), my_dashboard_path, class: 'nav-item nav-link active' %>
-        <%= link_to t(".clients"), my_clients_path, class: 'nav-item nav-link' %>
-        <%= link_to t(".mfa"), my_mfa_path, class: 'nav-item nav-link' %>
-        <%= link_to t(".sessions"), my_sessions_path, class: 'nav-item nav-link' %>
-        <%= link_to t(".audits"), my_audits_path, class: 'nav-item nav-link' %>
-        <%= button_to t(".logout"), session_path, method: :delete, class: 'nav-item nav-link' %>
+  <nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <%= link_to my_dashboard_path, class: 'navbar-item' do %>
+        <img src="<%= asset_pack_path("images/logo.png") %>" height="28" />
+      <% end %>
+      <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+    <div id="navbarBasicExample" class="navbar-menu">
+      <div class="navbar-start">
+        <%= link_to t(".home"), my_dashboard_path, class: 'navbar-item' %>
+        <%= link_to t(".documentation"), '/doc/', class: 'navbar-item' %>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link"> More </a>
+          <div class="navbar-dropdown">
+            <%= link_to t(".clients"), my_clients_path, class: 'navbar-item' %>
+            <%= link_to t(".mfa"), my_mfa_path, class: 'navbar-item' %>
+            <%= link_to t(".sessions"), my_sessions_path, class: 'navbar-item' %>
+            <%= link_to t(".audits"), my_audits_path, class: 'navbar-item' %>
+            <hr class="navbar-divider">
+            <a class="navbar-item" href="https://github.com/saml-kit/proof/issues/new" target="_blank"> Report an issue </a>
+          </div>
+        </div>
+      </div>
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <div class="buttons">
+            <%= button_to t(".logout"), session_path, method: :delete, class: 'button is-danger' %>
+          </div>
+        </div>
       </div>
     </div>
   </nav>

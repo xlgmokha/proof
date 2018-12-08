@@ -1,8 +1,9 @@
 <div class="container">
-  <div class="row">
-    <div class="col">
+  <div class="columns">
+    <div class="column content">
       <h1><%= t('.title') %></h1>
-      <table class="table">
+
+      <table class="table is-bordered is-narrow is-hoverable is-striped is-fullwidth">
         <thead>
           <th><%= t('.action') %></th>
           <th><%= t('.auditable') %></th>
@@ -18,7 +19,7 @@
           <tr>
             <td><%= audit.action %></td>
             <td><%= audit&.auditable&.class %></td>
-            <td><%= audit.audited_changes %></td>
+            <td><%= JSON.pretty_generate(audit.audited_changes) %></td>
             <td><%= audit.associated&.flipper_id %></td>
             <td><%= audit.user&.email %></td>
             <td><%= audit.version %></td>

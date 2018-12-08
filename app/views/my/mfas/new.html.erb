@@ -1,7 +1,8 @@
 <div class="container">
-  <div class="row">
-    <div class="col">
+  <div class="columns is-centered">
+    <div class="column is-half content">
       <h1><%= t('.title') %></h1>
+
       <div data-controller="mfa--setup">
         <canvas id="canvas" data-target="mfa--setup.canvas"></canvas>
         <p><%= t('.secret') %> <%= current_user.mfa.secret %></p>
@@ -9,8 +10,14 @@
 
         <%= form_for current_user, url: my_mfa_path, method: :post do |form| %>
           <%= form.hidden_field :mfa_secret, data: { target: 'mfa--setup.secret' } %>
-          <%= form.submit t(".enable"), class: 'btn btn-primary', data: { disable_with: 'Saving…' } %>
-          <%= link_to t(".cancel"), my_dashboard_path, class: 'btn' %>
+          <div class="field is-grouped is-grouped-right">
+            <div class="control">
+              <%= form.submit t(".enable"), class: 'button is-primary', data: { disable_with: 'Saving…' } %>
+            </div>
+            <div class="control">
+              <%= link_to t(".cancel"), my_dashboard_path, class: 'button' %>
+            </div>
+          </div>
         <% end %>
       </div>
     </div>

@@ -1,9 +1,9 @@
 <div class="container">
-  <div class="row">
-    <div class="col">
+  <div class="columns">
+    <div class="column content">
       <h1><%= t('.title') %></h1>
-      <%= link_to t(".new"), new_my_client_path, class: 'btn' %>
-      <table class="table">
+      <%= link_to t(".new"), new_my_client_path, class: 'button is-link' %>
+      <table class="table is-bordered is-narrow is-hoverable is-striped is-fullwidth">
         <thead>
           <th><%= t('.client_id') %></th>
           <th><%= t('.name') %></th>
