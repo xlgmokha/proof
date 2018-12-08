@@ -30,6 +30,10 @@ Metrics/LineLength:
 Metrics/MethodLength:
   Enabled: false
 
+Metrics/ParameterLists:
+  Exclude:
+    - 'spec/documentation.rb'
+
 Metrics/PerceivedComplexity:
   Enabled: false
 
@@ -55,6 +59,10 @@ RSpec/NestedGroups:
 
 Style/Documentation:
   Enabled: false
+
+Style/GlobalVars:
+  Exclude:
+    - 'spec/documentation.rb'
 
 Style/RaiseArgs:
   EnforcedStyle: compact

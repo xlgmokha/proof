@@ -12,7 +12,12 @@ module My
 
     def create
       client = Client.create!(secure_params)
-      redirect_to my_clients_path, notice: "client_id: #{client.to_param}, client_secret: #{client.password}"
+      notice = t(
+        '.success',
+        client_id: client.to_param,
+        client_secret: client.password
+      )
+      redirect_to my_clients_path, notice: notice
     end
 
     private

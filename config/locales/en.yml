@@ -27,6 +27,8 @@ en:
       index:
         title: Audits
     clients:
+      create:
+        success: Client ID %{client_id} Client Secret %{client_secret}
       index:
         new: New
         title: OAuth Clients
