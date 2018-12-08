@@ -1,13 +1,18 @@
 sudo: false
 language: ruby
 addons:
+  postgresql: 10
   chrome: stable
+  apt:
+    packages:
+      - postgresql-10
+      - postgresql-client-10
 rvm:
   - 2.5.3
 before_script:
   - psql -c 'create database proof;' -U postgres
 env:
-  - DATABASE_URL=postgres://postgres@localhsot/proof
+  - DATABASE_URL=postgres://postgres@localhost/proof
 script:
   - bin/cibuild
 services:
