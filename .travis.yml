@@ -1,14 +1,22 @@
 sudo: false
 language: ruby
+cache:
+  yarn: true
+  directories:
+    - node_modules
 addons:
   postgresql: '9.6'
   chrome: stable
 rvm:
   - 2.5.3
+install:
+  - nvm isntall node
+  - npm install -g yarn
+  - node -v
+  - yarn install
 before_script:
   - psql -c 'create database proof;' -U postgres
   - ln -s /usr/lib/chromium-browser/chromedriver ~/bin/chromedriver
-  - yarn install
 env:
   - DATABASE_URL=postgres://postgres@localhost/proof
 script:
