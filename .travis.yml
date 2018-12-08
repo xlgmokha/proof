@@ -10,7 +10,7 @@ addons:
 rvm:
   - 2.5.3
 install:
-  - nvm isntall node
+  - nvm install node
   - npm install -g yarn
   - node -v
   - yarn install
