@@ -6,6 +6,10 @@ addons:
 rvm:
   - 2.5.3
 before_script:
+  - curl -sL https://deb.nodesource.com/setup_10.x | bash -
+  - wget -q -O - https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+  - sudo apt-get update -qq
+  - sudo apt-get install -y -qq yarn
   - psql -c 'create database proof;' -U postgres
   - ln -s /usr/lib/chromium-browser/chromedriver ~/bin/chromedriver
 env:
