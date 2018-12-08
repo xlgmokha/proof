@@ -1,7 +1,7 @@
 image: ruby:2.5
 
 before_script:
-  - apt-get update && apt-get install -y locales
+  - apt-get update && apt-get install -y locales postgresql postgresql-client libpq-dev
   - echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
   - locale-gen
   - export LC_ALL=en_US.UTF-8
@@ -9,3 +9,12 @@ before_script:
 cibuild:
   script:
     - bin/cibuild
+
+services:
+  - postgres:latest
+
+variables:
+  DATABASE_URL: postgres://runner:password@postgres/proof
+  POSTGRES_DB: proof
+  POSTGRES_USER: runner
+  POSTGRES_PASSWORD: password
