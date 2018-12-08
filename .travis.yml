@@ -3,6 +3,6 @@ language: ruby
 addons:
   chrome: stable
 rvm:
-  - 2.5.1
+  - 2.5.3
 script:
   - bin/cibuild
