@@ -39,6 +39,7 @@ module Oauth
       token = authenticate_with_http_token do |jwt, _options|
         claims = Token.claims_for(jwt)
         return if Token.revoked?(claims[:jti]) || claims.empty?
+
         Token.find(claims[:jti])
       end
       return request_http_token_authentication unless token.present?
@@ -47,7 +48,10 @@ module Oauth
         token.revoke!
         return render json: {}, status: :unauthorized
       end
-      return render json: {}, status: :forbidden unless token.subject.to_param == params[:id]
+      unless token.subject.to_param == params[:id]
+        return render json: {}, status: :forbidden
+      end
+
       @client = token.subject
     end
 
