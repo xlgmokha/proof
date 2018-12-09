@@ -1,7 +1,7 @@
 <div class="container">
   <div class="columns">
     <div class="column">
-      <h1><%= t('.title') %></h1>
+      <h1 class="title"><%= t('.title') %></h1>
       <% if @model %>
         <ul class="list-unstyled">
           <% @model.errors.full_messages.each do |message| %>

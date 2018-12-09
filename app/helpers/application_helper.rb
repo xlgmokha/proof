@@ -4,26 +4,13 @@ module ApplicationHelper
   def alert_class_for(type)
     case type.to_sym
     when :notice
-      'alert-success'
+      'is-success'
     when :warning
-      'alert-warning'
+      'is-warning'
     when :error
-      'alert-danger'
+      'is-danger'
     else
-      'alert-primary'
-    end
-  end
-
-  def alert_message_for(type)
-    case type.to_sym
-    when :notice
-      'Hot dog!'
-    when :warning
-      'Holy guacamole!'
-    when :error
-      'Danger Will Robinson!'
-    else
-      '🤷'
+      'is-info'
     end
   end
 end

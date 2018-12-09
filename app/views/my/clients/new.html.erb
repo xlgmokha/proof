@@ -1,7 +1,7 @@
 <div class="container">
   <div class="columns is-centered">
-    <div class="column is-half content">
-      <h1><%= t('.title') %></h1>
+    <div class="column is-half">
+      <h1 class="title"><%= t('.title') %></h1>
 
       <div data-controller="clients--new">
         <%= form_for @client, url: my_clients_path, method: :post do |form| %>
