@@ -1,8 +1,8 @@
 <div class="container">
   <% flash.each do |type, message| %>
     <% Array(message).each do |value| %>
-      <div class="notification <%= alert_class_for(type) %>">
-        <button class="delete"></button>
+      <div data-controller="notification" class="notification <%= alert_class_for(type) %>">
+        <button data-action="click->notification#close" class="delete"></button>
         <%= value %>
       </div>
     <% end %>
