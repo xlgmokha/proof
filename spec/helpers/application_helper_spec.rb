@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe ApplicationHelper do
@@ -24,14 +26,13 @@ RSpec.describe ApplicationHelper do
       context "when the item is an instance of ActiveModel::Errors" do
         class User
           extend ActiveModel::Naming
-
           attr_reader :email, :password
 
           def read_attribute_for_validation(attr)
             send(attr)
           end
 
-          def self.human_attribute_name(attr, options = {})
+          def self.human_attribute_name(attr, _options = {})
             attr.to_s.titleize
           end
 
@@ -40,13 +41,15 @@ RSpec.describe ApplicationHelper do
           end
         end
         let(:user) { User.new }
-
-        it "returns an array item for each attribute" do
+        let(:errors) do
           errors = ActiveModel::Errors.new(user)
           errors.add(:email, 'has already been taken.')
           errors.add(:password, 'must contain at least one upper case character.')
           errors.add(:password, 'must contain at least one numeric character.')
+          errors
+        end
 
+        specify do
           expect(helper.flash_error_messages_for(errors)).to match_array([
             'Email has already been taken.',
             'Password must contain at least one upper case character. Password must contain at least one numeric character.',
