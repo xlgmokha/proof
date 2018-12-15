@@ -3,22 +3,24 @@
     <div class="column is-half">
       <h1 class="title"><%= t('.title') %></h1>
 
-      <%= form_for :user, url: session_path, method: :post, data: { controller: 'sessions--new' } do |form| %>
+      <%= form_for :user, url: session_path, method: :post do |form| %>
         <div class="field">
           <%= form.label :email %>
           <div class="control">
-            <%= form.email_field :email, class: 'input', autofocus: true, required: :required, data: { target: 'sessions--new.email', action: "keyup->sessions--new#validate" } %>
+            <%= form.email_field :email, class: 'input', autofocus: true, required: :required, data: { controller: 'input', action: "keyup->input#changed" } %>
           </div>
+          <p class="help"></p>
         </div>
         <div class="field">
           <%= form.label :password %>
           <div class="control">
-            <%= form.password_field :password, class: 'input', required: :required, data: { target: 'sessions--new.password', action: "keyup->sessions--new#validate" } %>
+            <%= form.password_field :password, class: 'input', required: :required, data: { controller: 'input', action: "keyup->input#changed" } %>
           </div>
+          <p class="help"></p>
         </div>
         <div class="field is-grouped is-grouped-right">
           <div class="control">
-            <%= form.button t('.login'), type: 'submit', class: 'button is-primary', data: { disable_with: t('loading'), target: 'sessions--new.submit' } %>
+            <%= form.button t('.login'), type: 'submit', class: 'button is-primary', data: { disable_with: t('loading') } %>
           </div>
           <div class="control">
             <%= link_to "Register", new_registration_path, class: 'button is-text' %>

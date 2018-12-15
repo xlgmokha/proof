@@ -1,5 +1,5 @@
-import validator from 'validator';
 import ApplicationController from './application_controller';
+import Email from '../models/email';
 import FormValidation from '../models/form_validation';
 import I18n from '../i18n';
 
@@ -23,7 +23,7 @@ export default class extends ApplicationController {
     }
 
     const isEmail = element.getAttribute('type') === 'email';
-    if (isEmail && !validator.isEmail(element.value)) {
+    if (isEmail && new Email(element.value).invalid()) {
       return this.displayError(I18n.translate('js.form.errors.invalid'));
     }
 
