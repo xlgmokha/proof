@@ -3,13 +3,13 @@
     <%= link_to my_dashboard_path, class: 'navbar-item' do %>
       <img src="<%= asset_pack_path("images/logo.png") %>" height="28" />
     <% end %>
-    <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+    <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navigation-bar">
       <span aria-hidden="true"></span>
       <span aria-hidden="true"></span>
       <span aria-hidden="true"></span>
     </a>
   </div>
-  <div class="navbar-menu">
+  <div id='navigation-bar' class="navbar-menu">
     <div class="navbar-start">
       <%= link_to t(".home"), my_dashboard_path, class: 'navbar-item' %>
       <%= link_to t(".documentation"), '/doc/', class: 'navbar-item' %>
