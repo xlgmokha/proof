@@ -1,0 +1,39 @@
+<div class="box">
+  <article class="media">
+    <div class="media-left">
+      <figure class="image is-64x64">
+        <img src="https://cdnjs.cloudflare.com/ajax/libs/browser-logos/46.1.0/<%= user_session.browser.name.downcase %>/<%= user_session.browser.name.downcase %>_128x128.png" alt="">
+      </figure>
+    </div>
+    <div class="media-content">
+      <div class="content">
+        <p>
+        <strong><%= user_session.ip %></strong> <small><%= user_session.browser.name %></small> <small><%= local_time_ago(user_session.accessed_at) %></small>
+        <br>
+        <%= user_session.user_agent %>
+        <br>
+        <%= link_to "revoke", my_session_path(user_session.to_param), class: 'button is-danger', method: :destroy %>
+        </p>
+      </div>
+      <nav class="level">
+        <div class="level-left">
+          <a class="level-item" aria-label="reply">
+            <span class="icon is-small">
+              <i class="fas fa-reply" aria-hidden="true"></i>
+            </span>
+          </a>
+          <a class="level-item" aria-label="retweet">
+            <span class="icon is-small">
+              <i class="fas fa-retweet" aria-hidden="true"></i>
+            </span>
+          </a>
+          <a class="level-item" aria-label="like">
+            <span class="icon is-small">
+              <i class="fas fa-heart" aria-hidden="true"></i>
+            </span>
+          </a>
+        </div>
+      </nav>
+    </div>
+  </article>
+</div>

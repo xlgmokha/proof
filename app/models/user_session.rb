@@ -19,6 +19,10 @@ class UserSession < ApplicationRecord
     active.find_by(key: key)
   end
 
+  def browser
+    @browser ||= ::Browser.new(user_agent, accept_language: "en-us")
+  end
+
   def revoke!
     update!(revoked_at: Time.now)
   end
