@@ -13,8 +13,9 @@ RSpec.describe '/registrations' do
   describe "POST /registrations" do
     context "when the new registration data is valid" do
       let(:email) { FFaker::Internet.email }
+      let(:new_password) { FFaker::Internet.password }
 
-      before { post "/registrations", params: { user: { email: email, password: "password" } } }
+      before { post "/registrations", params: { user: { email: email, password: new_password, password_confirmation: new_password } } }
 
       specify { expect(response).to redirect_to(new_session_url) }
       specify { expect(User.count).to be(1) }
@@ -25,6 +26,16 @@ RSpec.describe '/registrations' do
       let(:user) { create(:user) }
 
       before { post "/registrations", params: { user: { email: user.email, password: "password" } } }
+
+      specify { expect(response).to redirect_to(new_registration_path) }
+      specify { expect(flash[:error]).to be_present }
+    end
+
+    context "when the password confirmation does not match" do
+      let(:email) { FFaker::Internet.email }
+      let(:new_password) { FFaker::Internet.password }
+
+      before { post "/registrations", params: { user: { email: email, password: new_password, password_confirmation: 'other' } } }
 
       specify { expect(response).to redirect_to(new_registration_path) }
       specify { expect(flash[:error]).to be_present }
