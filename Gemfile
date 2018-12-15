@@ -8,6 +8,7 @@ gem 'activerecord-session_store', '~> 1.1'
 gem 'audited', '~> 4.8'
 gem 'bcrypt', '~> 3.1'
 gem 'bootsnap', '>= 1.1.0', require: false
+gem 'browser', '~> 2.5'
 gem 'dotenv', '~> 2.5'
 gem 'email_validator', '~> 1.6'
 gem 'flipper', '~> 0.16'
