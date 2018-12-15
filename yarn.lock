@@ -4822,11 +4822,6 @@ jasmine-core@^3.1.0, jasmine-core@~3.3.0:
   resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-3.3.0.tgz#dea1cdc634bc93c7e0d4ad27185df30fa971b10e"
   integrity sha512-3/xSmG/d35hf80BEN66Y6g9Ca5l/Isdeg/j6zvbTYlTzeKinzmaTM4p9am5kYqOmE05D7s1t8FGjzdSnbUbceA==
 
-jasmine-fixture@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/jasmine-fixture/-/jasmine-fixture-2.0.0.tgz#b6d0c5a3bb4834d23dd137464ef96f04f93bbd60"
-  integrity sha1-ttDFo7tINNI90TdGTvlvBPk7vWA=
-
 jasmine@^3.1.0:
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/jasmine/-/jasmine-3.3.1.tgz#d61bb1dd8888859bd11ea83074a78ee13d949905"

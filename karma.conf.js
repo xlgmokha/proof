@@ -11,7 +11,6 @@ module.exports = function(config) {
       'spec/fixtures/**/*.html',
       'spec/fixtures/**/*.json',
       'node_modules/jquery/dist/jquery.min.js',
-      'node_modules/jasmine-fixture/dist/jasmine-fixture.min.js'
     ],
     exclude: [ ],
     preprocessors: {
