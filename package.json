@@ -25,6 +25,7 @@
     "validator": "^10.9.0"
   },
   "devDependencies": {
+    "@fortawesome/fontawesome-free": "^5.6.1",
     "babel-eslint": "^9.0.0",
     "babel-preset-env": "^1.6.1",
     "eslint": "^5.5.0",
@@ -42,6 +43,7 @@
     "karma-mocha-reporter": "^2.2.5",
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^3.0.0",
+    "resolve-url-loader": "^3.0.0",
     "stylelint": "^9.8.0",
     "stylelint-config-standard": "^18.2.0",
     "testdouble": "^3.7.0",

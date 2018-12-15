@@ -13,7 +13,7 @@ Rails.application.routes.draw do
     resource :mfa, only: [:show, :new, :edit, :create, :destroy]
     resources :audits, only: [:index]
     resources :clients, only: [:index, :new, :create]
-    resources :sessions, only: [:index]
+    resources :sessions, only: [:index, :destroy]
   end
   namespace :oauth do
     resource :authorizations, only: [:show, :create]

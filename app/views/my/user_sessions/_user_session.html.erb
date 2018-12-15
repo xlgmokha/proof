@@ -11,27 +11,15 @@
         <strong><%= user_session.ip %></strong> <small><%= user_session.browser.name %></small> <small><%= local_time_ago(user_session.accessed_at) %></small>
         <br>
         <%= user_session.user_agent %>
-        <br>
-        <%= link_to "revoke", my_session_path(user_session.to_param), class: 'button is-danger', method: :destroy %>
         </p>
       </div>
       <nav class="level">
         <div class="level-left">
-          <a class="level-item" aria-label="reply">
+          <%= link_to my_session_path(user_session.to_param), class: 'level-item', method: :delete, data: { remote: true, disable_with: t('loading') } do %>
             <span class="icon is-small">
-              <i class="fas fa-reply" aria-hidden="true"></i>
+              <i class="fas fa-trash" aria-hidden="true"></i>
             </span>
-          </a>
-          <a class="level-item" aria-label="retweet">
-            <span class="icon is-small">
-              <i class="fas fa-retweet" aria-hidden="true"></i>
-            </span>
-          </a>
-          <a class="level-item" aria-label="like">
-            <span class="icon is-small">
-              <i class="fas fa-heart" aria-hidden="true"></i>
-            </span>
-          </a>
+          <% end %>
         </div>
       </nav>
     </div>

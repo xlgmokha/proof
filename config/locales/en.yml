@@ -70,6 +70,8 @@ en:
         secret: Secret
         title: Multi Factor Authentication - Setup
     sessions:
+      destroy:
+        success: Success
       index:
         ip_address: Ip address
         last_used: Last used
