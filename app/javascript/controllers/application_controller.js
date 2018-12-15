@@ -29,13 +29,11 @@ export default class extends Controller {
   }
 
   hide(element) {
-    if (element)
-      element.classList.add('hide');
+    if (element) element.classList.add('hide');
   }
 
   show(element) {
-    if (element)
-      element.classList.remove('hide');
+    if (element) element.classList.remove('hide');
   }
 
   log(message) {

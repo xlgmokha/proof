@@ -29,6 +29,7 @@ module Authenticatable
 
   def authenticate_mfa!
     return unless Current.user?
+
     redirect_to new_mfa_path unless mfa_completed?
   end
 
