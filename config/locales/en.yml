@@ -7,14 +7,6 @@ en:
         password: password
         schemas: schemas
         userName: userName
-  application:
-    navbar:
-      audits: Audits
-      clients: Clients
-      home: Home
-      logout: Logout
-      mfa: MFA
-      sessions: Sessions
   errors:
     bad_request:
       title: 400 - Bad Request
@@ -86,6 +78,7 @@ en:
         invalid_request: invalid_request
   registrations:
     new:
+      login: Login
       register: Register
       title: Register
   responses:
@@ -99,3 +92,11 @@ en:
     new:
       login: Login
       title: Login
+    show:
+      audits: Audits
+      clients: Clients
+      documentation: Documentation
+      home: Home
+      logout: Logout
+      mfa: MFA
+      sessions: Sessions

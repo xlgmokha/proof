@@ -26,6 +26,10 @@ class SessionsController < ApplicationController
     redirect_to my_dashboard_path if current_user?
   end
 
+  def show
+    render layout: nil
+  end
+
   def create
     user_params = params.require(:user).permit(:email, :password)
     if (user = User.login(user_params[:email], user_params[:password]))
