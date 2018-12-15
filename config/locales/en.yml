@@ -54,7 +54,7 @@ en:
       new:
         cancel: Cancel
         enable: Enable
-        title: Title
+        title: New OAuth Client
     dashboards:
       show:
         title: Dashboard
