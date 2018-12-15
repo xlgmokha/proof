@@ -14,14 +14,14 @@
       <%= link_to t(".home"), my_dashboard_path, class: 'navbar-item' %>
       <%= link_to t(".documentation"), '/doc/', class: 'navbar-item' %>
       <div class="navbar-item has-dropdown is-hoverable">
-        <a class="navbar-link"> More </a>
+        <a class="navbar-link"> <%= t('.more') %> </a>
         <div class="navbar-dropdown">
           <%= link_to t(".clients"), my_clients_path, class: 'navbar-item' %>
           <%= link_to t(".mfa"), my_mfa_path, class: 'navbar-item' %>
           <%= link_to t(".sessions"), my_sessions_path, class: 'navbar-item' %>
           <%= link_to t(".audits"), my_audits_path, class: 'navbar-item' %>
           <hr class="navbar-divider" />
-          <a class="navbar-item" href="https://github.com/saml-kit/proof/issues/new" target="_blank"> Report an issue </a>
+          <a class="navbar-item" href="https://github.com/saml-kit/proof/issues/new" target="_blank"><%= t('.report_an_issue') %></a>
         </div>
       </div>
     </div>
