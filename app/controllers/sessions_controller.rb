@@ -10,7 +10,7 @@ class SessionsController < ApplicationController
     :Signature,
   ].freeze
   skip_before_action :verify_authenticity_token, only: [:new, :destroy]
-  skip_before_action :authenticate!, only: [:new, :create, :destroy]
+  skip_before_action :authenticate!, only: [:new, :show, :create, :destroy]
 
   def new
     binding = binding_for(

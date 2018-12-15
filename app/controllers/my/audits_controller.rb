@@ -3,7 +3,7 @@
 module My
   class AuditsController < ApplicationController
     def index
-      @audits = Audited::Audit.all
+      @audits = current_user.own_and_associated_audits
     end
   end
 end
