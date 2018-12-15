@@ -6,7 +6,7 @@ module Authenticatable
     before_action :apply_current_request_details
     before_action :authenticate!
     before_action :authenticate_mfa!
-    helper_method :current_user, :current_user?
+    helper_method :current_user, :current_user?, :mfa_completed?
   end
 
   def current_user
@@ -17,6 +17,10 @@ module Authenticatable
     Current.user?
   end
 
+  def mfa_completed?
+    Current.user.mfa.valid_session?(session[:mfa])
+  end
+
   private
 
   def authenticate!
@@ -25,9 +29,7 @@ module Authenticatable
 
   def authenticate_mfa!
     return unless Current.user?
-
-    mfa = Current.user.mfa
-    redirect_to new_mfa_path unless mfa.valid_session?(session[:mfa])
+    redirect_to new_mfa_path unless mfa_completed?
   end
 
   def apply_current_request_details
