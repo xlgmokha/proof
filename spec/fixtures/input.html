@@ -1,0 +1,13 @@
+<form action="#">
+  <div>
+    <input type="text" id="name" data-controller='input' data-action='keyup->input#changed' required="required" minLength=3 maxLength=9 />
+    <div id='name-help-block' class="help-block">
+      <span id=name-error class='help-block__text'></span>
+    </div>
+  </div>
+  <input type="email" id="email" data-controller='input' data-action='keyup->input#changed' required="required">
+  <input type="checkbox" id="accept" data-controller='input' data-action='keyup->input#changed' required="required">
+  <input type="password" id="password" data-controller='input' data-action='keyup->input#changed' required="required">
+  <input type="password" id="password_confirmation" data-controller='input' data-action='keyup->input#changed' required="required" data-is-equal-to="#password">
+  <button type="submit" id="submit-button">submit</button>
+</form>

@@ -14,6 +14,14 @@ en:
       title: Forbidden
     not_found:
       title: 404 - Not Found
+  js:
+    form:
+      errors:
+        confirmation: doesn't match
+        invalid: is invalid
+        required: is required
+        too_long: is too long
+        too_short: is too short
   layouts:
     application:
       title: Proof

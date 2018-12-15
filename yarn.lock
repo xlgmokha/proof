@@ -4973,6 +4973,16 @@ karma-chrome-launcher@^2.2.0:
     fs-access "^1.0.0"
     which "^1.2.1"
 
+karma-fixture@^0.2.6:
+  version "0.2.6"
+  resolved "https://registry.yarnpkg.com/karma-fixture/-/karma-fixture-0.2.6.tgz#971cea8c216d73f07043964cb73f10e0830018ef"
+  integrity sha1-lxzqjCFtc/BwQ5ZMtz8Q4IMAGO8=
+
+karma-html2js-preprocessor@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/karma-html2js-preprocessor/-/karma-html2js-preprocessor-1.1.0.tgz#fc09edf04bbe2bb6eee9ba1968f826b7388020bd"
+  integrity sha1-/Ant8Eu+K7bu6boZaPgmtziAIL0=
+
 karma-jasmine@^1.1.1:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/karma-jasmine/-/karma-jasmine-1.1.2.tgz#394f2b25ffb4a644b9ada6f22d443e2fd08886c3"
@@ -4982,6 +4992,11 @@ karma-jquery@^0.2.2:
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/karma-jquery/-/karma-jquery-0.2.3.tgz#e67107934d0b4047c206baa520e43c78d7e8411f"
   integrity sha1-5nEHk00LQEfCBrqlIOQ8eNfoQR8=
+
+karma-json-fixtures-preprocessor@^0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/karma-json-fixtures-preprocessor/-/karma-json-fixtures-preprocessor-0.0.6.tgz#4f78a2ebcd34387f8e55ababff634655164c4c76"
+  integrity sha1-T3ii6800OH+OVaur/2NGVRZMTHY=
 
 karma-mocha-reporter@^2.2.5:
   version "2.2.5"
@@ -9384,6 +9399,11 @@ validate-npm-package-license@^3.0.1:
   dependencies:
     spdx-correct "^3.0.0"
     spdx-expression-parse "^3.0.0"
+
+validator@^10.9.0:
+  version "10.9.0"
+  resolved "https://registry.yarnpkg.com/validator/-/validator-10.9.0.tgz#d10c11673b5061fb7ccf4c1114412411b2bac2a8"
+  integrity sha512-hZJcZSWz9poXBlAkjjcsNAdrZ6JbjD3kWlNjq/+vE7RLLS/+8PAj3qVVwrwsOz/WL8jPmZ1hYkRvtlUeZAm4ug==
 
 vary@~1.1.2:
   version "1.1.2"

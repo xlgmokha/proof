@@ -7,7 +7,8 @@
     "lint:js": "eslint app/javascript/",
     "lint:scss": "stylelint -f unix --color app/javascript/styles/*.scss",
     "start": "./bin/webpack-dev-server",
-    "test": "NODE_ENV=test karma start"
+    "test": "NODE_ENV=test karma start",
+    "test:watch": "yarn test --no-single-run"
   },
   "dependencies": {
     "@rails/webpacker": "3.4",
@@ -20,7 +21,8 @@
     "rails-translations-webpack-plugin": "^1.1.0",
     "rails-ujs": "^5.2.1",
     "stimulus": "^1.1.0",
-    "turbolinks": "^5.2.0"
+    "turbolinks": "^5.2.0",
+    "validator": "^10.9.0"
   },
   "devDependencies": {
     "babel-eslint": "^9.0.0",
@@ -33,8 +35,11 @@
     "jasmine-fixture": "^2.0.0",
     "karma": "^2.0.0",
     "karma-chrome-launcher": "^2.2.0",
+    "karma-fixture": "^0.2.6",
+    "karma-html2js-preprocessor": "^1.1.0",
     "karma-jasmine": "^1.1.1",
     "karma-jquery": "^0.2.2",
+    "karma-json-fixtures-preprocessor": "^0.0.6",
     "karma-mocha-reporter": "^2.2.5",
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^3.0.0",

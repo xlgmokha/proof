@@ -3,14 +3,17 @@ import { Application } from 'stimulus';
 
 describe('sessions--new', () => {
   beforeEach(() => {
-    let $form = affix('form[data-controller="sessions--new"]')
-    $form.affix('input[data-target="sessions--new.email" data-action="keyup->sessions--new#validate" type="email" id="user_email"]')
-    $form.affix('input[data-target="sessions--new.password" data-action="keyup->sessions--new#validate" type="password" id="user_password"]')
-    $form.affix('button[name="button" type="submit" data-target="sessions--new.submit"]')
+    fixture.setBase('spec/fixtures')
+    const el = fixture.load('sessions-new.html')
+
     const application = new Application();
     application.router.start();
     application.dispatcher.start();
     application.register('sessions--new', Controller);
+  });
+
+  afterEach(() => {
+    fixture.cleanup();
   });
 
   describe("validate", () => {

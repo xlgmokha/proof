@@ -5,7 +5,7 @@ describe("I18n", () => {
     const subject = I18n;
 
     it("returns the correct translations for a nested value", () => {
-      const result = subject.translate('application.navbar.home')
+      const result = subject.translate('sessions.show.home')
       expect(result).toEqual('Home')
     });
   });
