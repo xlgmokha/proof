@@ -13,4 +13,14 @@ module ApplicationHelper
       'is-info'
     end
   end
+
+  def flash_error_messages_for(item)
+    if item.is_a?(ActiveModel::Errors)
+      item.keys.map do |key|
+        item.full_messages_for(key).join(' ')
+      end
+    else
+      Array(item)
+    end
+  end
 end
