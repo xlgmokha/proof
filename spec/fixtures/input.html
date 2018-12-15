@@ -1,13 +1,44 @@
 <form action="#">
-  <div>
-    <input type="text" id="name" data-controller='input' data-action='keyup->input#changed' required="required" minLength=3 maxLength=9 />
-    <div id='name-help-block' class="help-block">
-      <span id=name-error class='help-block__text'></span>
+  <div class="field">
+    <label for="name">Name</label>
+    <div class="control">
+      <input type="text" id="name" class='input' data-controller='input' data-action='keyup->input#changed' required="required" minlength=3 maxlength=9 />
     </div>
+    <p id='name-help' class="help"></p>
   </div>
-  <input type="email" id="email" data-controller='input' data-action='keyup->input#changed' required="required">
-  <input type="checkbox" id="accept" data-controller='input' data-action='keyup->input#changed' required="required">
-  <input type="password" id="password" data-controller='input' data-action='keyup->input#changed' required="required">
-  <input type="password" id="password_confirmation" data-controller='input' data-action='keyup->input#changed' required="required" data-is-equal-to="#password">
-  <button type="submit" id="submit-button">submit</button>
+  <div class="field">
+    <label for="email">email</label>
+    <div class="control">
+      <input type="email" id="email" class='input' data-controller='input' data-action='keyup->input#changed' required="required">
+    </div>
+    <p class="help"></p>
+  </div>
+  <div class="field">
+    <div class="control">
+      <label class="checkbox">
+        <input type="checkbox" id="accept" data-controller='input' data-action='keyup->input#changed' required="required">
+      </label>
+    </div>
+    <p class="help"></p>
+  </div>
+  <div class="field">
+    <label for="password">password</label>
+    <div class="control">
+      <input type="password" id="password" class='input' data-controller='input' data-action='keyup->input#changed' required="required">
+    </div>
+    <p class="help"></p>
+  </div>
+  <div class="field">
+    <label for="password_confirmation">password confirmation</label>
+    <div class="control">
+      <input type="password" id="password_confirmation" class='input' data-controller='input' data-action='keyup->input#changed' required="required" data-is-equal-to="#password">
+    </div>
+    <p class="help"></p>
+  </div>
+  <div class="field">
+    <div class="control">
+      <button type="submit" id="submit-button">submit</button>
+    </div>
+    <p class="help"></p>
+  </div>
 </form>

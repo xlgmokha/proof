@@ -20,15 +20,15 @@ describe('input', () => {
     const nameElement = document.querySelector('#name')
     nameElement.value = ''
     nameElement.dispatchEvent(new Event('keyup'));
+    expect(nameElement.classList.contains('is-danger')).toEqual(true);
 
-    const errorElement = document.querySelector('#name-error')
-    expect(errorElement.textContent).toEqual('is required')
-
-    const helpElement = document.querySelector('#name-help-block')
+    const helpElement = document.querySelector('#name-help')
+    expect(helpElement.textContent).toEqual('is required')
     expect(helpElement.classList.contains('hide')).toEqual(false)
+    expect(helpElement.classList.contains('is-danger')).toEqual(true)
   });
 
-  it("disables the submit button, one one field is valid and the other is not", () => {
+  it("disables the submit button, when one field is valid and the other is not", () => {
     let nameElement = document.querySelector('#name');
     nameElement.value = '';
     nameElement.dispatchEvent(new Event('keyup'));
@@ -119,10 +119,9 @@ describe('input', () => {
     nameElement.value = 'Tsuyoshi';
     nameElement.dispatchEvent(new Event('keyup'));
 
-    const helpElement = document.querySelector('#name-help-block')
+    const helpElement = document.querySelector('#name-help')
+    expect(helpElement.textContent).toEqual('')
     expect(helpElement.classList.contains('hide')).toEqual(true)
-
-    const errorElement = document.querySelector('#name-error')
-    expect(errorElement.textContent).toEqual('')
+    expect(helpElement.classList.contains('is-danger')).toEqual(false)
   });
 });

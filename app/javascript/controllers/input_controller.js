@@ -27,12 +27,12 @@ export default class extends ApplicationController {
       return this.displayError(I18n.translate('js.form.errors.invalid'));
     }
 
-    const minLength = element.getAttribute('minLength');
+    const minLength = element.getAttribute('minlength');
     if (minLength && element.value.length < parseInt(minLength, 10)) {
       return this.displayError(I18n.translate('js.form.errors.too_short'));
     }
 
-    const maxLength = element.getAttribute('maxLength');
+    const maxLength = element.getAttribute('maxlength');
     if (maxLength && element.value.length > parseInt(maxLength, 10)) {
       return this.displayError(I18n.translate('js.form.errors.too_long'));
     }
@@ -46,29 +46,29 @@ export default class extends ApplicationController {
   }
 
   hideError() {
-    this.element.classList.remove('input--state-danger');
-
-    const { parentElement } = this.element;
-    super.hide(parentElement.querySelector('.help-block'));
-
-    const textElement = parentElement.querySelector('.help-block__text');
-    textElement.classList.remove('help-block__text--state-danger');
-    if (textElement) textElement.textContent = '';
-
     this.data.set('valid', true);
+    this.element.classList.remove('is-danger');
+    const controlElement = this.element.parentElement;
+    const fieldElement = controlElement.parentElement;
+    const helpElement = fieldElement.querySelector('.help');
+    if (helpElement) {
+      helpElement.textContent = '';
+      helpElement.classList.remove('is-danger');
+      super.hide(helpElement);
+    }
   }
 
   displayError(message) {
-    this.element.classList.add('input--state-danger');
-
-    const { parentElement } = this.element;
-    super.show(parentElement.querySelector('.help-block'));
-
-    const textElement = parentElement.querySelector('.help-block__text');
-    textElement.classList.add('help-block__text--state-danger');
-    if (textElement) textElement.textContent = message;
-
     this.data.set('valid', false);
     super.disable(this.submitButton);
+    this.element.classList.add('is-danger');
+    const controlElement = this.element.parentElement;
+    const fieldElement = controlElement.parentElement;
+    const helpElement = fieldElement.querySelector('.help');
+    if (helpElement) {
+      helpElement.textContent = message;
+      helpElement.classList.add('is-danger');
+      super.show(helpElement);
+    }
   }
 }

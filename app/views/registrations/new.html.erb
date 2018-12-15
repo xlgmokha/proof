@@ -7,14 +7,23 @@
         <div class="field">
           <%= form.label :email %>
           <div class="control">
-            <%= form.email_field :email, class: 'input', autofocus: true, required: :required %>
+            <%= form.email_field :email, class: 'input', autofocus: true, required: :required, data: { controller: 'input', action: 'keyup->input#changed' } %>
           </div>
+          <p class="help"></p>
         </div>
         <div class="field">
           <%= form.label :password %>
           <div class="control">
-            <%= form.password_field :password, class: 'input', required: :required %>
+            <%= form.password_field :password, class: 'input', required: :required, maxlength: 50, minlength: 8, data: { controller: 'input', action: 'keyup->input#changed' } %>
           </div>
+          <p class="help"></p>
+        </div>
+        <div class="field">
+          <%= form.label :password_confirmation %>
+          <div class="control">
+            <%= form.password_field :password_confirmation, class: 'input', data: { controller: 'input', action: 'keyup->input#changed', is_equal_to: '#user_password' } %>
+          </div>
+          <p class="help"></p>
         </div>
         <div class="field is-grouped is-grouped-right">
           <div class="control">
