@@ -19,6 +19,6 @@ class Current < ActiveSupport::CurrentAttributes
     self.request = request
     self.user_session = UserSession.authenticate(session[:user_session_key])
     self.user = user_session&.user
-    session[:user_session_key] = user_session&.access(request)
+    user_session&.access(request)
   end
 end

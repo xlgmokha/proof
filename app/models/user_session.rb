@@ -2,10 +2,8 @@
 
 class UserSession < ApplicationRecord
   audited associated_with: :user, except: [:key, :accessed_at]
+  has_secure_token :key
   belongs_to :user
-  before_validation do |model|
-    model.key = SecureRandom.urlsafe_base64(32)
-  end
 
   scope :active, -> { where.not(id: revoked).where.not(id: expired) }
   scope :revoked, -> { where.not(revoked_at: nil) }

@@ -24,7 +24,7 @@ RSpec.describe ApplicationHelper do
       end
 
       context "when the item is an instance of ActiveModel::Errors" do
-        class User
+        class TestUser
           extend ActiveModel::Naming
           attr_reader :email, :password
 
@@ -40,7 +40,7 @@ RSpec.describe ApplicationHelper do
             [self]
           end
         end
-        let(:user) { User.new }
+        let(:user) { TestUser.new }
         let(:errors) do
           errors = ActiveModel::Errors.new(user)
           errors.add(:email, 'has already been taken.')

@@ -73,10 +73,7 @@ en:
       destroy:
         success: Success
       index:
-        ip_address: Ip address
-        last_used: Last used
         title: Sessions
-        user_agent: User agent
   oauth:
     authorizations:
       show:

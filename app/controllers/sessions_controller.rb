@@ -11,6 +11,7 @@ class SessionsController < ApplicationController
   ].freeze
   skip_before_action :verify_authenticity_token, only: [:new, :destroy]
   skip_before_action :authenticate!, only: [:new, :show, :create, :destroy]
+  skip_before_action :authenticate_mfa!, only: [:show]
 
   def new
     binding = binding_for(
