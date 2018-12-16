@@ -2,33 +2,7 @@
   <div class="columns">
     <div class="column">
       <h1 class="title"><%= t('.title') %></h1>
-
-      <table class="table is-bordered is-narrow is-hoverable is-striped is-fullwidth">
-        <thead>
-          <th><%= t('.action') %></th>
-          <th><%= t('.auditable') %></th>
-          <th><%= t('.changes') %></th>
-          <th><%= t('.associated') %></th>
-          <th><%= t('.user') %></th>
-          <th><%= t('.version') %></th>
-          <th><%= t('.remote_address') %></th>
-          <th><%= t('.created_at') %></th>
-        </thead>
-        <tbody>
-        <% @audits.each do |audit| %>
-          <tr>
-            <td><%= audit.action %></td>
-            <td><%= audit&.auditable&.class %></td>
-            <td><%= JSON.pretty_generate(audit.audited_changes) %></td>
-            <td><%= audit.associated&.flipper_id %></td>
-            <td><%= audit.user&.email %></td>
-            <td><%= audit.version %></td>
-            <td><%= audit.remote_address %></td>
-            <td><%= local_time_ago(audit.created_at) %></td>
-          </tr>
-        <% end %>
-        </tbody>
-      </table>
+      <%= render partial: "audit", collection: @audits %>
     </div>
   </div>
 </div>

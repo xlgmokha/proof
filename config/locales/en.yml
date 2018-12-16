@@ -39,7 +39,7 @@ en:
         changes: Changes
         created_at: Created at
         remote_address: Remote address
-        title: Audits
+        title: Audit Log
         user: User
         version: Version
     clients:
@@ -100,7 +100,7 @@ en:
       login: Login
       title: Login
     show:
-      audits: Audits
+      audits: Audit Log
       clients: Clients
       documentation: Documentation
       home: Home

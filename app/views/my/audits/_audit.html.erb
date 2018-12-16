@@ -1,0 +1,33 @@
+<div class="box">
+  <article class="media">
+    <div class="media-left">
+      <figure class="image is-64x64">
+        <img src="https://bulma.io/images/placeholders/128x128.png" alt="Image">
+      </figure>
+    </div>
+    <div class="media-content">
+      <div class="content">
+        <p>
+          <strong><%= audit&.auditable&.class&.model_name&.human %></strong> <small><%= audit.action %></small> <small><%= local_time_ago(audit.created_at) %></small>
+          <pre><%= JSON.pretty_generate(audit.audited_changes) %></pre>
+        </p>
+        <table class="table is-bordered is-narrow is-hoverable is-striped is-fullwidth">
+          <thead>
+            <th><%= t('.associated') %></th>
+            <th><%= t('.user') %></th>
+            <th><%= t('.version') %></th>
+            <th><%= t('.remote_address') %></th>
+          </thead>
+          <tbody>
+            <tr>
+              <td><%= audit.associated&.flipper_id %></td>
+              <td><%= audit.user&.email %></td>
+              <td><%= audit.version %></td>
+              <td><%= audit.remote_address %></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </article>
+</div>
