@@ -7,6 +7,17 @@ en:
         password: password
         schemas: schemas
         userName: userName
+  activerecord:
+    attributes:
+      user:
+        mfa_secret: MFA Secret
+        password_digest: Password
+      user_session:
+        ip: IP Address
+        sudo_enabled_at: Sudo Enabled At
+        user_agent: User Agent
+    models:
+      user_session: Session
   errors:
     bad_request:
       title: 400 - Bad Request
@@ -32,6 +43,10 @@ en:
       title: MFA Login
   my:
     audits:
+      audit:
+        attribute: Attribute
+        new: New
+        old: Old
       index:
         action: Action
         associated: Associated

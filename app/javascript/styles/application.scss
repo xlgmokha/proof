@@ -2,6 +2,7 @@
 @import '~@fortawesome/fontawesome-free/scss/regular';
 @import '~@fortawesome/fontawesome-free/scss/solid';
 @import '~bulma/bulma';
+@import '~bourbon/core/bourbon';
 
 @keyframes spinner {
   0% { transform: rotate(0deg); }
@@ -18,4 +19,10 @@
 .spinner svg {
   width: 48px;
   height: 48px;
+}
+
+.my-audits-index {
+  .attribute-truncate {
+    @include ellipsis(200px);
+  }
 }

@@ -23,4 +23,15 @@ module ApplicationHelper
       Array(item)
     end
   end
+
+  def audit_icon_for(audit)
+    case audit.auditable_type
+    when 'User'
+      'fa-user'
+    when 'UserSession'
+      'fa-bookmark'
+    else
+      'fa-archive'
+    end
+  end
 end
