@@ -8,23 +8,23 @@
     <div class="media-content">
       <div class="content">
         <p>
-          <strong><%= audit&.auditable&.class&.model_name&.human %></strong> <small><%= audit.action %></small> <small><%= local_time_ago(audit.created_at) %></small>
-          <pre><%= JSON.pretty_generate(audit.audited_changes) %></pre>
+          <strong><%= audit.auditable_type.constantize.model_name.human %></strong> <small><%= audit.action %></small> <small><%= local_time_ago(audit.created_at) %></small>
+          by <%= audit.user&.email %> from  <%= audit.remote_address %> (version <%= audit.version %>)
         </p>
         <table class="table is-bordered is-narrow is-hoverable is-striped is-fullwidth">
           <thead>
-            <th><%= t('.associated') %></th>
-            <th><%= t('.user') %></th>
-            <th><%= t('.version') %></th>
-            <th><%= t('.remote_address') %></th>
+            <th><%= t('.attribute') %></th>
+            <th><%= t('.old') %></th>
+            <th><%= t('.new') %></th>
           </thead>
           <tbody>
+            <% audit.audited_changes.each do |(key, value)| %>
             <tr>
-              <td><%= audit.associated&.flipper_id %></td>
-              <td><%= audit.user&.email %></td>
-              <td><%= audit.version %></td>
-              <td><%= audit.remote_address %></td>
+              <td><%= audit.auditable_type.constantize.human_attribute_name(key) %></td>
+              <td><%= value.is_a?(Array) ? value[0] : nil %></td>
+              <td><%= value.is_a?(Array) ? value[1] : value %></td>
             </tr>
+            <% end %>
           </tbody>
         </table>
       </div>
