@@ -1,19 +1,17 @@
+<% content_for :page_title, t(".title") %>
 <div class="container">
   <div class="columns is-centered">
     <div class="column is-half">
       <h1 class="title"><%= t('.title') %></h1>
+      <p class="content">MFA gives you a second line of defense against unauthorized attempts to access your account.</p>
       <div class="box content">
         <h2>Step 1: Download Authenticator</h2>
-        <p>MFA gives you a second line of defense against unauthorized attempts to access your account.</p>
         <p>To enable MFA, you must have a device that can run Google Authenticator or another <a href="https://tools.ietf.org/html/rfc6238">RFC-6238</a> compatible app.</p>
         <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2"><span class="icon is-large"><i class="fab fa-android fa-3x" aria-hidden="true"></i></span></a>
         <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8"><span class="icon is-large"><i class="fab fa-apple fa-3x" aria-hidden="true"></i></span></a>
       </div>
       <div class="box content">
-        <h2>Scan QR Code</h2>
-        <div class="notification is-warning">
-          This QR code is your personal provisioning secret. This should be kept secure.
-        </div>
+        <h2>Step 2: Scan QR Code</h2>
         <div data-controller="mfa--setup">
           <canvas id="canvas" data-target="mfa--setup.canvas"></canvas>
           <%= form_with model: current_user, url: '#' do |form| %>
@@ -33,7 +31,7 @@
         </div>
       </div>
       <div class="box content" data-controller="mfa--test">
-        <h2>Test Verfication Code</h2>
+        <h2>Step 3: Test Verfication Code</h2>
         <span data-target="mfa--test.message"></span>
         <ol type="1">
           <li>Open your Authenticator app</li>
@@ -58,8 +56,8 @@
           <%#<li>code1</li>%>
           <%#<li>code2</li>%>
           <%#<li>code3</li>%>
-        <%#</ul>%>
-      <%#</div>%>
+          <%#</ul>%>
+        <%#</div>%>
       <%= form_for current_user, url: my_mfa_path, method: :post do |form| %>
         <%= form.hidden_field :mfa_secret, data: { target: 'mfa--setup.secret' } %>
         <div class="field is-grouped is-grouped-right">
