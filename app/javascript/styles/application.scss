@@ -22,6 +22,8 @@
   height: 48px;
 }
 
+.hide { display: none; }
+
 .my-audits-index {
   .attribute-truncate {
     @include ellipsis(200px);

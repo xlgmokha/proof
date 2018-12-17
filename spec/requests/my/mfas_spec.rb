@@ -53,6 +53,25 @@ RSpec.describe '/my/mfa' do
       end
     end
 
+    describe "POST /my/mfa/test" do
+      context "when the code is correct" do
+        let(:mfa_secret) { ::ROTP::Base32.random_base32 }
+        let(:current_code) { ROTP::TOTP.new(mfa_secret).now }
+
+        before { post '/my/mfa/test', params: { user: { code: current_code, mfa_secret: mfa_secret } }, xhr: true }
+        specify { expect(response).to have_http_status(:ok) }
+      end
+
+      context "when the code is incorrect" do
+        let(:mfa_secret) { ::ROTP::Base32.random_base32 }
+        let(:current_code) { "12345" }
+
+        before { post '/my/mfa/test', params: { user: { code: current_code, mfa_secret: mfa_secret } }, xhr: true }
+        specify { expect(response).to have_http_status(:ok) }
+        specify { expect(response.body).to include(I18n.t('my.mfas.test.invalid')) }
+      end
+    end
+
     describe "DELETE /my/mfa" do
       context "when mfa is enabled" do
         let(:current_user) { create(:user, :mfa_configured) }

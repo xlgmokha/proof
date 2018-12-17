@@ -1,0 +1,11 @@
+<% if @valid %>
+  <div data-controller="notification" class="notification is-success">
+    <button data-action="click->notification#close" class="delete"></button>
+    <%= t('.success') %>
+  </div>
+<% else %>
+  <div data-controller="notification" class="notification is-danger">
+    <button data-action="click->notification#close" class="delete"></button>
+    <%= t('.invalid') %>
+  </div>
+<% end %>

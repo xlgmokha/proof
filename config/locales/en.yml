@@ -37,6 +37,7 @@ en:
     application:
       title: Proof
   loading: Loading…
+  saving: Saving…
   mfas:
     new:
       login: Login
@@ -75,6 +76,9 @@ en:
         enable: Enable
         test: Test
         title: Multi Factor Authentication - Setup
+      test:
+        invalid: Invalid
+        success: Success
     sessions:
       destroy:
         success: Success

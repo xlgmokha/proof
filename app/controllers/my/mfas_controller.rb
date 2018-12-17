@@ -19,6 +19,13 @@ module My
 
     def edit; end
 
+    def test
+      secure_params = params.require(:user).permit(:mfa_secret, :code)
+      current_user.mfa_secret = secure_params[:mfa_secret]
+      @valid = current_user.mfa.authenticate(secure_params[:code])
+      render status: :ok, layout: nil
+    end
+
     def destroy
       current_user.mfa.disable!
       redirect_to my_dashboard_path, notice: 'MFA has been disabled'

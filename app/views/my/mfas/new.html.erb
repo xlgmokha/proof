@@ -12,33 +12,34 @@
       <div class="box content">
         <h2>Scan QR Code</h2>
         <div class="notification is-warning">
-          Warning: This QR code is your personal provisioning secret. This should be kept secure.
+          This QR code is your personal provisioning secret. This should be kept secure.
         </div>
         <div data-controller="mfa--setup">
           <canvas id="canvas" data-target="mfa--setup.canvas"></canvas>
           <%= form_with model: current_user, url: '#' do |form| %>
-              <div class="field">
-                <%= form.label :mfa_secret %>
-                <div class="control">
-                  <%= form.text_field :mfa_secret, class: 'input', disabled: :disabled, data: { target: 'mfa--setup.secret' } %>
-                </div>
+            <div class="field">
+              <%= form.label :mfa_secret %>
+              <div class="control">
+                <%= form.text_field :mfa_secret, class: 'input', disabled: :disabled, data: { target: 'mfa--setup.secret' } %>
               </div>
-              <div class="field">
-                <%= form.label :provisioning_uri %>
-                <div class="control">
-                  <%= form.text_field :provisioning_uri, value: current_user.mfa.provisioning_uri, class: 'input', disabled: :disabled %>
-                </div>
+            </div>
+            <div class="field">
+              <%= form.label :provisioning_uri %>
+              <div class="control">
+                <%= form.text_field :provisioning_uri, value: current_user.mfa.provisioning_uri, class: 'input', disabled: :disabled %>
               </div>
+            </div>
           <% end %>
         </div>
       </div>
-      <div class="box content">
+      <div class="box content" data-controller="mfa--test">
         <h2>Test Verfication Code</h2>
+        <span data-target="mfa--test.message"></span>
         <ol type="1">
           <li>Open your Authenticator app</li>
           <li>Enter the verification code displayed</li>
         </ol>
-        <%= form_with model: current_user, url: test_my_mfa_path, method: :post do |form| %>
+        <%= form_with model: current_user, url: test_my_mfa_path, method: :post, data: { action: 'ajax:success->mfa--test#onResponse' } do |form| %>
           <div class="field has-addons">
             <div class="control">
               <%= form.number_field :code, value: '', placeholder: 'code', class: 'input', required: :required, data: { controller: 'input' } %>
@@ -50,20 +51,20 @@
           </div>
         <% end %>
       </div>
-      <div class="box content">
-        <h2>Save Backup Codes</h2>
-        <h3>Backup Codes</h3>
-        <ul>
-          <li>code1</li>
-          <li>code2</li>
-          <li>code3</li>
-        </ul>
-      </div>
+      <%#<div class="box content">%>
+        <%#<h2>Save Backup Codes</h2>%>
+        <%#<h3>Backup Codes</h3>%>
+        <%#<ul>%>
+          <%#<li>code1</li>%>
+          <%#<li>code2</li>%>
+          <%#<li>code3</li>%>
+        <%#</ul>%>
+      <%#</div>%>
       <%= form_for current_user, url: my_mfa_path, method: :post do |form| %>
         <%= form.hidden_field :mfa_secret, data: { target: 'mfa--setup.secret' } %>
         <div class="field is-grouped is-grouped-right">
           <div class="control">
-            <%= form.submit t(".enable"), class: 'button is-primary', data: { disable_with: 'Saving…' } %>
+            <%= form.submit t(".enable"), id: 'enable-button', class: 'button is-primary', data: { disable_with: t('.saving') } %>
           </div>
           <div class="control">
             <%= link_to t(".cancel"), my_dashboard_path, class: 'button' %>
