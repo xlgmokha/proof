@@ -1,6 +1,7 @@
 @import '~@fortawesome/fontawesome-free/scss/fontawesome';
 @import '~@fortawesome/fontawesome-free/scss/regular';
 @import '~@fortawesome/fontawesome-free/scss/solid';
+@import '~@fortawesome/fontawesome-free/scss/brands';
 @import '~bulma/bulma';
 @import '~bourbon/core/bourbon';
 
@@ -24,5 +25,13 @@
 .my-audits-index {
   .attribute-truncate {
     @include ellipsis(200px);
+  }
+}
+
+.my-mfas-new {
+  #canvas {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
   }
 }

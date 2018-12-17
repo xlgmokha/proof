@@ -2,24 +2,74 @@
   <div class="columns is-centered">
     <div class="column is-half">
       <h1 class="title"><%= t('.title') %></h1>
-
-      <div data-controller="mfa--setup">
-        <canvas id="canvas" data-target="mfa--setup.canvas"></canvas>
-        <p><%= t('.secret') %> <%= current_user.mfa.secret %></p>
-        <p><%= t('.provisioning_uri') %> <%= current_user.mfa.provisioning_uri %></p>
-
-        <%= form_for current_user, url: my_mfa_path, method: :post do |form| %>
-          <%= form.hidden_field :mfa_secret, data: { target: 'mfa--setup.secret' } %>
-          <div class="field is-grouped is-grouped-right">
+      <div class="box content">
+        <h2>Step 1: Download Authenticator</h2>
+        <p>MFA gives you a second line of defense against unauthorized attempts to access your account.</p>
+        <p>To enable MFA, you must have a device that can run Google Authenticator or another <a href="https://tools.ietf.org/html/rfc6238">RFC-6238</a> compatible app.</p>
+        <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2"><span class="icon is-large"><i class="fab fa-android fa-3x" aria-hidden="true"></i></span></a>
+        <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8"><span class="icon is-large"><i class="fab fa-apple fa-3x" aria-hidden="true"></i></span></a>
+      </div>
+      <div class="box content">
+        <h2>Scan QR Code</h2>
+        <div class="notification is-warning">
+          Warning: This QR code is your personal provisioning secret. This should be kept secure.
+        </div>
+        <div data-controller="mfa--setup">
+          <canvas id="canvas" data-target="mfa--setup.canvas"></canvas>
+          <%= form_with model: current_user, url: '#' do |form| %>
+              <div class="field">
+                <%= form.label :mfa_secret %>
+                <div class="control">
+                  <%= form.text_field :mfa_secret, class: 'input', disabled: :disabled, data: { target: 'mfa--setup.secret' } %>
+                </div>
+              </div>
+              <div class="field">
+                <%= form.label :provisioning_uri %>
+                <div class="control">
+                  <%= form.text_field :provisioning_uri, value: current_user.mfa.provisioning_uri, class: 'input', disabled: :disabled %>
+                </div>
+              </div>
+          <% end %>
+        </div>
+      </div>
+      <div class="box content">
+        <h2>Test Verfication Code</h2>
+        <ol type="1">
+          <li>Open your Authenticator app</li>
+          <li>Enter the verification code displayed</li>
+        </ol>
+        <%= form_with model: current_user, url: test_my_mfa_path, method: :post do |form| %>
+          <div class="field has-addons">
             <div class="control">
-              <%= form.submit t(".enable"), class: 'button is-primary', data: { disable_with: 'Saving…' } %>
+              <%= form.number_field :code, value: '', placeholder: 'code', class: 'input', required: :required, data: { controller: 'input' } %>
             </div>
             <div class="control">
-              <%= link_to t(".cancel"), my_dashboard_path, class: 'button' %>
+              <%= form.hidden_field :mfa_secret %>
+              <%= form.submit t(".test"), class: 'button is-primary', data: { disable_with: t('loading') } %>
             </div>
           </div>
         <% end %>
       </div>
+      <div class="box content">
+        <h2>Save Backup Codes</h2>
+        <h3>Backup Codes</h3>
+        <ul>
+          <li>code1</li>
+          <li>code2</li>
+          <li>code3</li>
+        </ul>
+      </div>
+      <%= form_for current_user, url: my_mfa_path, method: :post do |form| %>
+        <%= form.hidden_field :mfa_secret, data: { target: 'mfa--setup.secret' } %>
+        <div class="field is-grouped is-grouped-right">
+          <div class="control">
+            <%= form.submit t(".enable"), class: 'button is-primary', data: { disable_with: 'Saving…' } %>
+          </div>
+          <div class="control">
+            <%= link_to t(".cancel"), my_dashboard_path, class: 'button' %>
+          </div>
+        </div>
+      <% end %>
     </div>
   </div>
 </div>

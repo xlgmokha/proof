@@ -10,7 +10,11 @@ Rails.application.routes.draw do
   resource :response, only: [:show]
   namespace :my do
     resource :dashboard, only: [:show]
-    resource :mfa, only: [:show, :new, :edit, :create, :destroy]
+    resource :mfa, only: [:show, :new, :edit, :create, :destroy] do
+      member do
+        post :test
+      end
+    end
     resources :audits, only: [:index]
     resources :clients, only: [:index, :new, :create]
     resources :sessions, only: [:index, :destroy]

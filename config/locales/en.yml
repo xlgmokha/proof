@@ -48,15 +48,7 @@ en:
         new: New
         old: Old
       index:
-        action: Action
-        associated: Associated
-        auditable: Auditable
-        changes: Changes
-        created_at: Created at
-        remote_address: Remote address
         title: Audit Log
-        user: User
-        version: Version
     clients:
       create:
         success: Client ID %{client_id} Client Secret %{client_secret}
@@ -81,8 +73,7 @@ en:
       new:
         cancel: Cancel
         enable: Enable
-        provisioning_uri: Provisioning URI
-        secret: Secret
+        test: Test
         title: Multi Factor Authentication - Setup
     sessions:
       destroy:
