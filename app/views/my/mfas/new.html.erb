@@ -32,12 +32,12 @@
       </div>
       <div class="box content" data-controller="mfa--test">
         <h2>Step 3: Test Verfication Code</h2>
-        <span data-target="mfa--test.message"></span>
+        <span data-target="mfa--test.output"></span>
         <ol type="1">
           <li>Open your Authenticator app</li>
           <li>Enter the verification code displayed</li>
         </ol>
-        <%= form_with model: current_user, url: test_my_mfa_path, method: :post, data: { action: 'ajax:success->mfa--test#onResponse' } do |form| %>
+        <%= form_with model: current_user, url: test_my_mfa_path, method: :post, data: { action: 'ajax:success->mfa--test#onSuccess' } do |form| %>
           <div class="field has-addons">
             <div class="control">
               <%= form.number_field :code, value: '', placeholder: 'code', class: 'input', required: :required, data: { controller: 'input' } %>

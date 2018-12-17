@@ -1,10 +1,10 @@
 import ApplicationController from '../application_controller';
 
 export default class extends ApplicationController {
-  static targets = ["message"];
+  static targets = ["output"];
 
-  onResponse(event) {
+  onSuccess(event) {
     let [data, status, xhr] = event.detail;
-    this.messageTarget.innerHTML = xhr.response;
+    this.outputTarget.innerHTML = xhr.response;
   }
 }
