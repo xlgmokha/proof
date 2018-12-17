@@ -18,6 +18,7 @@ en:
         user_agent: User Agent
     models:
       user_session: Session
+  cancel: Cancel
   errors:
     bad_request:
       title: 400 - Bad Request
@@ -66,6 +67,11 @@ en:
       show:
         title: Dashboard
     mfas:
+      create:
+        success: successfully updated!
+      destroy:
+        error: MFA code is incorrect
+        success: MFA has been disabled
       edit:
         cancel: Cancel
         disable: Disable

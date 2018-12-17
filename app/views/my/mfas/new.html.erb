@@ -15,16 +15,22 @@
         <div data-controller="mfa--setup">
           <canvas id="canvas" data-target="mfa--setup.canvas"></canvas>
           <%= form_with model: current_user, url: '#' do |form| %>
-            <div class="field">
+            <div class="field" data-controller="clipboard">
               <%= form.label :mfa_secret %>
               <div class="control">
-                <%= form.text_field :mfa_secret, class: 'input', disabled: :disabled, data: { target: 'mfa--setup.secret' } %>
+                <%= form.text_field :mfa_secret, class: 'input', readonly: :readonly, data: { target: 'mfa--setup.secret clipboard.source' } %>
+              </div>
+              <div class="control">
+                <button type="button" data-action="clipboard#copy" class="button clipboard-button">Copy to Clipboard</button>
               </div>
             </div>
-            <div class="field">
+            <div class="field" data-controller="clipboard">
               <%= form.label :provisioning_uri %>
               <div class="control">
-                <%= form.text_field :provisioning_uri, value: current_user.mfa.provisioning_uri, class: 'input', disabled: :disabled %>
+                <%= form.text_field :provisioning_uri, value: current_user.mfa.provisioning_uri, class: 'input', readonly: :readonly, data: { target: 'clipboard.source' } %>
+              </div>
+              <div class="control">
+                <button type="button" data-action="clipboard#copy" class="button clipboard-button">Copy to Clipboard</button>
               </div>
             </div>
           <% end %>

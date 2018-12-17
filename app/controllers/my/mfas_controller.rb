@@ -14,7 +14,7 @@ module My
 
     def create
       current_user.update!(params.require(:user).permit(:mfa_secret))
-      redirect_to my_dashboard_path, notice: "successfully updated!"
+      redirect_to my_dashboard_path, notice: t('.success')
     end
 
     def edit; end
@@ -28,9 +28,9 @@ module My
 
     def destroy
       if current_user.mfa.disable!(params[:user][:code])
-        redirect_to my_dashboard_path, notice: 'MFA has been disabled'
+        redirect_to my_dashboard_path, notice: t('.success')
       else
-        redirect_to edit_my_mfa_path, error: "MFA code is incorrect"
+        redirect_to edit_my_mfa_path, error: t('.error')
       end
     end
   end
