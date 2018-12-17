@@ -21,7 +21,7 @@
                 <%= form.text_field :mfa_secret, class: 'input', readonly: :readonly, data: { target: 'mfa--setup.secret clipboard.source' } %>
               </div>
               <div class="control">
-                <button type="button" data-action="clipboard#copy" class="button clipboard-button">Copy to Clipboard</button>
+                <button type="button" data-action="clipboard#copy" class="button clipboard-button"><%= t('.copy') %></button>
               </div>
             </div>
             <div class="field" data-controller="clipboard">
@@ -30,7 +30,7 @@
                 <%= form.text_field :provisioning_uri, value: current_user.mfa.provisioning_uri, class: 'input', readonly: :readonly, data: { target: 'clipboard.source' } %>
               </div>
               <div class="control">
-                <button type="button" data-action="clipboard#copy" class="button clipboard-button">Copy to Clipboard</button>
+                <button type="button" data-action="clipboard#copy" class="button clipboard-button"><%= t('.copy') %></button>
               </div>
             </div>
           <% end %>

@@ -81,6 +81,7 @@ en:
         title: Multi-Factor Authentication (MFA)
       new:
         cancel: Cancel
+        copy: Copy
         enable: Enable
         saving: Saving
         test: Test
