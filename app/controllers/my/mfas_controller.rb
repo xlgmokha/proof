@@ -27,8 +27,11 @@ module My
     end
 
     def destroy
-      current_user.mfa.disable!
-      redirect_to my_dashboard_path, notice: 'MFA has been disabled'
+      if current_user.mfa.disable!(params[:user][:code])
+        redirect_to my_dashboard_path, notice: 'MFA has been disabled'
+      else
+        redirect_to edit_my_mfa_path, error: "MFA code is incorrect"
+      end
     end
   end
 end

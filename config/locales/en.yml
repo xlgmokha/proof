@@ -37,7 +37,6 @@ en:
     application:
       title: Proof
   loading: Loading…
-  saving: Saving…
   mfas:
     new:
       login: Login
@@ -68,12 +67,16 @@ en:
         title: Dashboard
     mfas:
       edit:
+        cancel: Cancel
+        disable: Disable
         provisioning_uri: Provisioning uri
+        saving: Saving
         secret: Secret
         title: Multi-Factor Authentication (MFA)
       new:
         cancel: Cancel
         enable: Enable
+        saving: Saving
         test: Test
         title: Multi Factor Authentication - Setup
       test:
@@ -101,6 +104,7 @@ en:
   responses:
     response:
       title: Sending Response to Service Provider
+  saving: Saving…
   scim:
     errors:
       user:

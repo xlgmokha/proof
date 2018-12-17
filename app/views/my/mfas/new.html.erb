@@ -62,10 +62,10 @@
         <%= form.hidden_field :mfa_secret, data: { target: 'mfa--setup.secret' } %>
         <div class="field is-grouped is-grouped-right">
           <div class="control">
-            <%= form.submit t(".enable"), id: 'enable-button', class: 'button is-primary', data: { disable_with: t('.saving') } %>
+            <%= form.submit t(".enable"), class: 'button is-primary', data: { disable_with: t('saving') } %>
           </div>
           <div class="control">
-            <%= link_to t(".cancel"), my_dashboard_path, class: 'button' %>
+            <%= link_to t("cancel"), my_dashboard_path, class: 'button' %>
           </div>
         </div>
       <% end %>
