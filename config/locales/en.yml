@@ -91,8 +91,8 @@ en:
         saving: Saving
         step_1: 'Step 1: Download Authenticator'
         step_1_blurb_html: To enable MFA, you must have a device that can run Google Authenticator or another <a href="https://tools.ietf.org/html/rfc6238">RFC-6238</a> compatible app.
-        step_2: Step 2: Scan QR Code
-        step_3: Step 3: Test Verfication Code
+        step_2: 'Step 2: Scan QR Code'
+        step_3: 'Step 3: Test Verfication Code'
         step_3_1: Open your Authenticator app
         step_3_2: Enter the verification code displayed
         test: Test
