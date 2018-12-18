@@ -12,6 +12,7 @@ en:
       user:
         mfa_secret: MFA Secret
         password_digest: Password
+        provisioning_uri: Provisioning URI
       user_session:
         ip: IP Address
         sudo_enabled_at: Sudo Enabled At
