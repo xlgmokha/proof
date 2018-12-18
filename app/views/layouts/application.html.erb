@@ -9,7 +9,7 @@
     <%= stylesheet_pack_tag 'application' %>
   </head>
   <body class="<%= body_class %>">
-    <div class="container" data-controller="content-loader" data-content-loader-url="<%= session_path %>"></div>
+    <header class="container" style="min-height: 52px;" data-controller="content-loader" data-content-loader-url="<%= session_path %>"></header>
     <%= render partial: 'flash' %>
     <%= yield %>
   </body>
