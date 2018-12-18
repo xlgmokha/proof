@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class UserSession < ApplicationRecord
+  IDLE_TIMEOUT=30.minutes
   audited associated_with: :user, except: [:key, :accessed_at]
   has_secure_token :key
   belongs_to :user
@@ -8,7 +9,7 @@ class UserSession < ApplicationRecord
   scope :active, -> { where.not(id: revoked).where.not(id: expired) }
   scope :revoked, -> { where.not(revoked_at: nil) }
   scope :expired, -> { where(id: idle_timeout).or(where(id: absolute_timeout)) }
-  scope :idle_timeout, -> { where("accessed_at < ?", 30.minutes.ago) }
+  scope :idle_timeout, -> { where("accessed_at < ?", IDLE_TIMEOUT.ago) }
   scope :absolute_timeout, -> { where('created_at < ?', 24.hours.ago) }
 
   def self.authenticate(key)

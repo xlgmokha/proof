@@ -28,6 +28,7 @@ class SessionsController < ApplicationController
   end
 
   def show
+    expires_in UserSession::IDLE_TIMEOUT
     render layout: nil
   end
 
