@@ -21,6 +21,7 @@ class Mfa
 
   def disable!(entered_code)
     return false unless authenticate(entered_code)
+
     user.update!(mfa_secret: nil)
   end
 

@@ -9,7 +9,7 @@
       <div class="content">
         <p>
           <strong><%= audit.auditable_type.constantize.model_name.human %></strong> <small><%= t(audit.action) %></small> <small><%= local_time_ago(audit.created_at) %></small>
-          by <%= audit.user&.email %> from  <%= audit.remote_address %> (version <%= audit.version %>)
+          <%= t('.by') %> <%= audit.user&.email %> <%= t('.from') %> <%= audit.remote_address %> <%= t('.version', version: audit.version) %>
         </p>
         <table class="table is-bordered is-narrow is-hoverable is-striped is-fullwidth">
           <thead>

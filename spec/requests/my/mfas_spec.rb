@@ -59,6 +59,7 @@ RSpec.describe '/my/mfa' do
         let(:current_code) { ROTP::TOTP.new(mfa_secret).now }
 
         before { post '/my/mfa/test', params: { user: { code: current_code, mfa_secret: mfa_secret } }, xhr: true }
+
         specify { expect(response).to have_http_status(:ok) }
       end
 
@@ -67,6 +68,7 @@ RSpec.describe '/my/mfa' do
         let(:current_code) { "12345" }
 
         before { post '/my/mfa/test', params: { user: { code: current_code, mfa_secret: mfa_secret } }, xhr: true }
+
         specify { expect(response).to have_http_status(:ok) }
         specify { expect(response.body).to include(I18n.t('my.mfas.test.invalid')) }
       end

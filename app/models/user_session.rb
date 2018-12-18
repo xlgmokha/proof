@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class UserSession < ApplicationRecord
-  IDLE_TIMEOUT=30.minutes
+  IDLE_TIMEOUT = 30.minutes
   audited associated_with: :user, except: [:key, :accessed_at]
   has_secure_token :key
   belongs_to :user

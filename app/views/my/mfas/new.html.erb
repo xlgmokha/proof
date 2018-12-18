@@ -3,15 +3,15 @@
   <div class="columns is-centered">
     <div class="column is-half">
       <h1 class="title"><%= t('.title') %></h1>
-      <p class="content">MFA gives you a second line of defense against unauthorized attempts to access your account.</p>
+      <p class="content"><%= t('.blurb') %></p>
       <div class="box content">
-        <h2>Step 1: Download Authenticator</h2>
-        <p>To enable MFA, you must have a device that can run Google Authenticator or another <a href="https://tools.ietf.org/html/rfc6238">RFC-6238</a> compatible app.</p>
+        <h2><%= t('.step_1') %></h2>
+        <p><%= t('.step_1_blurb_html') %></p>
         <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2"><span class="icon is-large"><i class="fab fa-android fa-3x" aria-hidden="true"></i></span></a>
         <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8"><span class="icon is-large"><i class="fab fa-apple fa-3x" aria-hidden="true"></i></span></a>
       </div>
       <div class="box content">
-        <h2>Step 2: Scan QR Code</h2>
+        <h2><%= t('.step_2') %></h2>
         <div data-controller="mfa--setup">
           <canvas id="canvas" data-target="mfa--setup.canvas"></canvas>
           <%= form_with model: current_user, url: '#' do |form| %>
@@ -37,11 +37,11 @@
         </div>
       </div>
       <div class="box content" data-controller="mfa--test">
-        <h2>Step 3: Test Verfication Code</h2>
+        <h2><%= t('.step_3') %></h2>
         <span data-target="mfa--test.output"></span>
         <ol type="1">
-          <li>Open your Authenticator app</li>
-          <li>Enter the verification code displayed</li>
+          <li><%= t('.step_3_1') %></li>
+          <li><%= t('.step_3_2') %></li>
         </ol>
         <%= form_with model: current_user, url: test_my_mfa_path, method: :post, data: { action: 'ajax:success->mfa--test#onSuccess' } do |form| %>
           <div class="field has-addons">

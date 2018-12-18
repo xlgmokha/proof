@@ -4,7 +4,7 @@
   <div class="columns is-centered">
     <div class="column is-half">
       <h1 class="title"><%= t('.title') %></h1>
-      <p class="content">MFA gives you a second line of defense against unauthorized attempts to access your account.</p>
+      <p class="content"><%= t('.blurb') %></p>
       <%= form_for current_user, url: my_mfa_path, method: :delete do |form| %>
         <div class="field">
           <div class="control">
