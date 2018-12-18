@@ -13,7 +13,7 @@
     <div id='navigation-bar' class="navbar-menu">
       <div class="navbar-start">
         <%= link_to t(".home"), my_dashboard_path, class: 'navbar-item' %>
-        <%= link_to t(".documentation"), '/doc/', class: 'navbar-item' %>
+        <%= link_to t(".documentation"), '/doc/', class: 'navbar-item', data: { turbolinks: false } %>
         <div class="navbar-item has-dropdown is-hoverable">
           <a class="navbar-link"> <%= t('.more') %> </a>
           <div class="navbar-dropdown">
