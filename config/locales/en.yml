@@ -34,9 +34,6 @@ en:
         required: is required
         too_long: is too long
         too_short: is too short
-  layouts:
-    application:
-      title: Proof
   loading: Loading…
   mfas:
     new:
@@ -77,18 +74,12 @@ en:
         success: MFA has been disabled
       edit:
         blurb: MFA gives you a second line of defense against unauthorized attempts to access your account.
-        cancel: Cancel
         disable: Disable
-        provisioning_uri: Provisioning uri
-        saving: Saving
-        secret: Secret
         title: Multi-Factor Authentication (MFA)
       new:
         blurb: MFA gives you a second line of defense against unauthorized attempts to access your account.
-        cancel: Cancel
         copy: Copy
         enable: Enable
-        saving: Saving
         step_1: 'Step 1: Download Authenticator'
         step_1_blurb_html: To enable MFA, you must have a device that can run Google Authenticator or another <a href="https://tools.ietf.org/html/rfc6238">RFC-6238</a> compatible app.
         step_2: 'Step 2: Scan QR Code'
