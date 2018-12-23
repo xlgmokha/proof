@@ -6,6 +6,7 @@ module Scim
       skip_before_action :authenticate!
 
       def index
+        @resource_types = [:user, :group]
         render status: :ok
       end
 
