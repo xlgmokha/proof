@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
-ruby '2.5.3'
+ruby '2.6.0'
 
 gem 'activerecord-session_store', '~> 1.1'
 gem 'audited', '~> 4.8'
@@ -20,6 +20,7 @@ gem 'puma', '~> 3.11'
 gem 'rails', '~> 5.2.0'
 gem 'rotp', '~> 3.3'
 gem 'saml-kit', '~> 1.0'
+gem 'scim-kit'
 gem 'scim-shady', '~> 0.2'
 gem 'spank', '~> 1.0'
 gem 'turbolinks', '~> 5'

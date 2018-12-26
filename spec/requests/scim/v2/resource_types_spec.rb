@@ -16,6 +16,7 @@ RSpec.describe "/scim/v2/ResourceTypes" do
     let(:json) { JSON.parse(response.body, symbolize_names: true) }
 
     specify { expect(response).to have_http_status(:ok) }
+    specify { expect(response.content_type).to eql('application/scim+json') }
     specify { expect(json.count).to be(2) }
     specify { expect(json[0][:schemas]).to match_array(["urn:ietf:params:scim:schemas:core:2.0:ResourceType"]) }
     specify { expect(json[0][:id]).to eql('User') }
@@ -40,6 +41,7 @@ RSpec.describe "/scim/v2/ResourceTypes" do
     let(:json) { JSON.parse(response.body, symbolize_names: true) }
 
     specify { expect(response).to have_http_status(:ok) }
+    specify { expect(response.content_type).to eql('application/scim+json') }
     specify { expect(json[:schemas]).to match_array(["urn:ietf:params:scim:schemas:core:2.0:ResourceType"]) }
     specify { expect(json[:id]).to eql('User') }
     specify { expect(json[:name]).to eql('User') }
@@ -54,6 +56,7 @@ RSpec.describe "/scim/v2/ResourceTypes" do
     let(:json) { JSON.parse(response.body, symbolize_names: true) }
 
     specify { expect(response).to have_http_status(:ok) }
+    specify { expect(response.content_type).to eql('application/scim+json') }
     specify { expect(json[:schemas]).to match_array(["urn:ietf:params:scim:schemas:core:2.0:ResourceType"]) }
     specify { expect(json[:id]).to eql('Group') }
     specify { expect(json[:name]).to eql('Group') }
