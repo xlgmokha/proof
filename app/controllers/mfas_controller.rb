@@ -7,6 +7,8 @@ class MfasController < ApplicationController
 
   def create
     if current_user.mfa.authenticate(secure_params[:code])
+      reset_session
+      session[:user_session_key] = Current.user_session.key
       session[:mfa] = { issued_at: Time.now.utc.to_i }
       redirect_to response_path
     else

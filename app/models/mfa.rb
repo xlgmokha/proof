@@ -8,7 +8,7 @@ class Mfa
   end
 
   def setup?
-    secret.present?
+    secret.present? && user.changes[:mfa_secret].nil?
   end
 
   def provisioning_uri
@@ -19,7 +19,9 @@ class Mfa
     user.mfa_secret = ::ROTP::Base32.random_base32
   end
 
-  def disable!
+  def disable!(entered_code)
+    return false unless authenticate(entered_code)
+
     user.update!(mfa_secret: nil)
   end
 

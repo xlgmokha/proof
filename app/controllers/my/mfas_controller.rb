@@ -14,14 +14,24 @@ module My
 
     def create
       current_user.update!(params.require(:user).permit(:mfa_secret))
-      redirect_to my_dashboard_path, notice: "successfully updated!"
+      redirect_to my_dashboard_path, notice: t('.success')
     end
 
     def edit; end
 
+    def test
+      secure_params = params.require(:user).permit(:mfa_secret, :code)
+      current_user.mfa_secret = secure_params[:mfa_secret]
+      @valid = current_user.mfa.authenticate(secure_params[:code])
+      render status: :ok, layout: nil
+    end
+
     def destroy
-      current_user.mfa.disable!
-      redirect_to my_dashboard_path, notice: 'MFA has been disabled'
+      if current_user.mfa.disable!(params[:user][:code])
+        redirect_to my_dashboard_path, notice: t('.success')
+      else
+        redirect_to edit_my_mfa_path, error: t('.error')
+      end
     end
   end
 end

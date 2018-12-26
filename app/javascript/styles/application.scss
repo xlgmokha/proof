@@ -1,8 +1,17 @@
-@import '~bootstrap/scss/bootstrap';
+@import '~@fortawesome/fontawesome-free/scss/fontawesome';
+@import '~@fortawesome/fontawesome-free/scss/regular';
+@import '~@fortawesome/fontawesome-free/scss/solid';
+@import '~@fortawesome/fontawesome-free/scss/brands';
+@import '~bulma/bulma';
+@import '~bourbon/core/bourbon';
 
 @keyframes spinner {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+header {
+  min-height: 52px;
 }
 
 .spinner {
@@ -15,4 +24,28 @@
 .spinner svg {
   width: 48px;
   height: 48px;
+}
+
+.hide { display: none; }
+
+.clipboard-button {
+  display: none;
+}
+
+.clipboard--supported .clipboard-button {
+  display: initial;
+}
+
+.my-audits-index {
+  .attribute-truncate {
+    @include ellipsis(200px);
+  }
+}
+
+.my-mfas-new {
+  #canvas {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+  }
 }

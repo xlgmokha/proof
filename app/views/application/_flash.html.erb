@@ -1,11 +1,10 @@
 <div class="container">
-  <% flash.each do |type, message| %>
-    <% Array(message).each do |value| %>
-      <div class="alert <%= alert_class_for(type) %> alert-dismissible fade show" role="alert">
-        <strong><%= alert_message_for(type) %></strong> <%= value %>
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+  <% flash.each do |type, item| %>
+    <% alter_class = alert_class_for(type) %>
+    <% flash_error_messages_for(item).each do |value| %>
+      <div data-controller="notification" class="notification <%= alter_class %>">
+        <button data-action="click->notification#close" class="delete"></button>
+        <%= value %>
       </div>
     <% end %>
   <% end %>

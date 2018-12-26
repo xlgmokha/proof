@@ -89,6 +89,19 @@ describe "/sessions" do
     end
   end
 
+  describe "GET /session" do
+    let(:user) { create(:user) }
+
+    before { http_login(user) }
+
+    context 'when logged in' do
+      before { get '/session' }
+
+      specify { expect(response).to have_http_status(:ok) }
+      specify { expect(response.body).to include(I18n.t('sessions.show.logout')) }
+    end
+  end
+
   describe "GET /session/new" do
     let(:redirect_binding) { Saml::Kit::Bindings::HttpRedirect.new(location: new_session_url) }
 

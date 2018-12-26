@@ -10,7 +10,8 @@ class SessionsController < ApplicationController
     :Signature,
   ].freeze
   skip_before_action :verify_authenticity_token, only: [:new, :destroy]
-  skip_before_action :authenticate!, only: [:new, :create, :destroy]
+  skip_before_action :authenticate!, only: [:new, :show, :create, :destroy]
+  skip_before_action :authenticate_mfa!, only: [:show]
 
   def new
     binding = binding_for(
@@ -24,6 +25,11 @@ class SessionsController < ApplicationController
   rescue StandardError => error
     logger.error(error)
     redirect_to my_dashboard_path if current_user?
+  end
+
+  def show
+    expires_in UserSession::IDLE_TIMEOUT
+    render layout: nil
   end
 
   def create

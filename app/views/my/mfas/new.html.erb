@@ -1,18 +1,80 @@
+<% content_for :page_title, t(".title") %>
 <div class="container">
-  <div class="row">
-    <div class="col">
-      <h1><%= t('.title') %></h1>
-      <div data-controller="mfa--setup">
-        <canvas id="canvas" data-target="mfa--setup.canvas"></canvas>
-        <p><%= t('.secret') %> <%= current_user.mfa.secret %></p>
-        <p><%= t('.provisioning_uri') %> <%= current_user.mfa.provisioning_uri %></p>
-
-        <%= form_for current_user, url: my_mfa_path, method: :post do |form| %>
-          <%= form.hidden_field :mfa_secret, data: { target: 'mfa--setup.secret' } %>
-          <%= form.submit t(".enable"), class: 'btn btn-primary', data: { disable_with: 'Saving…' } %>
-          <%= link_to t(".cancel"), my_dashboard_path, class: 'btn' %>
+  <div class="columns is-centered">
+    <div class="column is-half">
+      <h1 class="title"><%= t('.title') %></h1>
+      <p class="content"><%= t('.blurb') %></p>
+      <div class="box content">
+        <h2><%= t('.step_1') %></h2>
+        <p><%= t('.step_1_blurb_html') %></p>
+        <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2"><span class="icon is-large"><i class="fab fa-android fa-3x" aria-hidden="true"></i></span></a>
+        <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8"><span class="icon is-large"><i class="fab fa-apple fa-3x" aria-hidden="true"></i></span></a>
+      </div>
+      <div class="box content">
+        <h2><%= t('.step_2') %></h2>
+        <div data-controller="mfa--setup">
+          <canvas id="canvas" data-target="mfa--setup.canvas"></canvas>
+          <%= form_with model: current_user, url: '#' do |form| %>
+            <div class="field" data-controller="clipboard">
+              <%= form.label :mfa_secret %>
+              <div class="control">
+                <%= form.text_field :mfa_secret, class: 'input', readonly: :readonly, data: { target: 'mfa--setup.secret clipboard.source' } %>
+              </div>
+              <div class="control">
+                <button type="button" data-action="clipboard#copy" class="button clipboard-button"><%= t('.copy') %></button>
+              </div>
+            </div>
+            <div class="field" data-controller="clipboard">
+              <%= form.label :provisioning_uri %>
+              <div class="control">
+                <%= form.text_field :provisioning_uri, value: current_user.mfa.provisioning_uri, class: 'input', readonly: :readonly, data: { target: 'clipboard.source' } %>
+              </div>
+              <div class="control">
+                <button type="button" data-action="clipboard#copy" class="button clipboard-button"><%= t('.copy') %></button>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+      <div class="box content" data-controller="mfa--test">
+        <h2><%= t('.step_3') %></h2>
+        <span data-target="mfa--test.output"></span>
+        <ol type="1">
+          <li><%= t('.step_3_1') %></li>
+          <li><%= t('.step_3_2') %></li>
+        </ol>
+        <%= form_with model: current_user, url: test_my_mfa_path, method: :post, data: { action: 'ajax:success->mfa--test#onSuccess' } do |form| %>
+          <div class="field has-addons">
+            <div class="control">
+              <%= form.number_field :code, value: '', placeholder: 'code', class: 'input', required: :required, data: { controller: 'input' } %>
+            </div>
+            <div class="control">
+              <%= form.hidden_field :mfa_secret %>
+              <%= form.submit t(".test"), class: 'button is-primary', data: { disable_with: t('loading') } %>
+            </div>
+          </div>
         <% end %>
       </div>
+      <%#<div class="box content">%>
+        <%#<h2>Save Backup Codes</h2>%>
+        <%#<h3>Backup Codes</h3>%>
+        <%#<ul>%>
+          <%#<li>code1</li>%>
+          <%#<li>code2</li>%>
+          <%#<li>code3</li>%>
+          <%#</ul>%>
+        <%#</div>%>
+      <%= form_for current_user, url: my_mfa_path, method: :post do |form| %>
+        <%= form.hidden_field :mfa_secret, data: { target: 'mfa--setup.secret' } %>
+        <div class="field is-grouped is-grouped-right">
+          <div class="control">
+            <%= form.submit t(".enable"), class: 'button is-primary', data: { disable_with: t('saving') } %>
+          </div>
+          <div class="control">
+            <%= link_to t("cancel"), my_dashboard_path, class: 'button' %>
+          </div>
+        </div>
+      <% end %>
     </div>
   </div>
 </div>

@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="<%= I18n.locale %>">
   <head>
-    <title><%= t('.title') %></title>
+    <title><%= page_title %></title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <%= csrf_meta_tags %>
 
     <%= javascript_pack_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= stylesheet_pack_tag 'application' %>
   </head>
-  <body>
-    <%= render partial: 'navbar' if current_user? %>
+  <body class="<%= body_class %>">
+    <header class="container" style="min-height: 52px;" data-controller="content-loader" data-content-loader-url="<%= session_path %>"></header>
     <%= render partial: 'flash' %>
     <%= yield %>
   </body>

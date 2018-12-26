@@ -3,7 +3,7 @@
 class User < ApplicationRecord
   VALID_TIMEZONES = ActiveSupport::TimeZone::MAPPING.values
   VALID_LOCALES = I18n.available_locales.map(&:to_s)
-  audited
+  audited except: [:password_digest, :mfa_secret]
   has_secure_password
   has_many :sessions, foreign_key: "user_id", class_name: UserSession.name
 

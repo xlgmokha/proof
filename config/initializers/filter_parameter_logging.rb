@@ -9,5 +9,6 @@ Rails.application.config.filter_parameters += [
   :SAMLResponse,
   :authenticity_token,
   :client_secret,
+  :mfa_secret,
   :password,
 ]

@@ -1,23 +1,8 @@
 <div class="container">
-  <div class="row">
-    <div class="col">
-      <h1><%= t('.title') %></h1>
-      <table class="table">
-        <thead>
-          <th><%= t('.last_used') %></th>
-          <th><%= t('.user_agent') %></th>
-          <th><%= t('.ip_address') %></th>
-        </thead>
-        <tbody>
-        <% @sessions.each do |user_session| %>
-          <tr>
-            <td><%= local_time_ago(user_session.accessed_at) %></td>
-            <td><%= user_session.user_agent %></td>
-            <td><%= user_session.ip %></td>
-          </tr>
-        <% end %>
-        </tbody>
-      </table>
+  <div class="columns">
+    <div class="column">
+      <h1 class="title"><%= t('.title') %></h1>
+      <%= render @sessions %>
     </div>
   </div>
 </div>

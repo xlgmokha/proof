@@ -28,6 +28,14 @@ export default class extends Controller {
     element.setAttribute('disabled', 'disabled');
   }
 
+  hide(element) {
+    if (element) element.classList.add('hide');
+  }
+
+  show(element) {
+    if (element) element.classList.remove('hide');
+  }
+
   log(message) {
     if (this.isDevelopment) {
       console.log(message); /* eslint-disable-line no-console */

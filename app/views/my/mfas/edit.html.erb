@@ -1,18 +1,25 @@
-<div class="container">
-  <div class="row">
-    <div class="col">
-      <h1><%= t('.title') %></h1>
-      <div data-controller="mfa--setup">
-        <canvas id="canvas" data-target="mfa--setup.canvas"></canvas>
-        <p><%= t('.secret') %> <%= current_user.mfa.secret %></p>
-        <p><%= t('.provisioning_uri') %> <%= current_user.mfa.provisioning_uri %></p>
+<% content_for :page_title, t(".title") %>
 
-        <%= form_for current_user, url: my_mfa_path, method: :delete do |form| %>
-          <%= form.hidden_field :mfa_secret, data: { target: 'mfa--setup.secret' } %>
-          <%= form.submit "Disable", class: 'btn btn-danger', data: { disable_with: 'Saving…' } %>
-          <%= link_to "Cancel", my_dashboard_path, class: 'btn' %>
-        <% end %>
-      </div>
+<div class="container">
+  <div class="columns is-centered">
+    <div class="column is-half">
+      <h1 class="title"><%= t('.title') %></h1>
+      <p class="content"><%= t('.blurb') %></p>
+      <%= form_for current_user, url: my_mfa_path, method: :delete do |form| %>
+        <div class="field">
+          <div class="control">
+            <%= form.number_field :code, value: '', placeholder: 'code', class: 'input', required: :required, data: { controller: 'input' } %>
+          </div>
+        </div>
+        <div class="field is-grouped is-grouped-right">
+          <div class="control">
+            <%= form.submit t(".disable"), class: 'button is-danger', data: { disable_with: t('saving') } %>
+          </div>
+          <div class="control">
+            <%= link_to t("cancel"), my_dashboard_path, class: 'button' %>
+          </div>
+        </div>
+      <% end %>
     </div>
   </div>
 </div>

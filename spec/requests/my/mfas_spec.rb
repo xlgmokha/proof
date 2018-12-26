@@ -53,15 +53,48 @@ RSpec.describe '/my/mfa' do
       end
     end
 
-    describe "DELETE /my/mfa" do
-      context "when mfa is enabled" do
-        let(:current_user) { create(:user, :mfa_configured) }
+    describe "POST /my/mfa/test" do
+      context "when the code is correct" do
+        let(:mfa_secret) { ::ROTP::Base32.random_base32 }
+        let(:current_code) { ROTP::TOTP.new(mfa_secret).now }
 
-        before { delete '/my/mfa' }
+        before { post '/my/mfa/test', params: { user: { code: current_code, mfa_secret: mfa_secret } }, xhr: true }
+
+        specify { expect(response).to have_http_status(:ok) }
+      end
+
+      context "when the code is incorrect" do
+        let(:mfa_secret) { ::ROTP::Base32.random_base32 }
+        let(:current_code) { "12345" }
+
+        before { post '/my/mfa/test', params: { user: { code: current_code, mfa_secret: mfa_secret } }, xhr: true }
+
+        specify { expect(response).to have_http_status(:ok) }
+        specify { expect(response.body).to include(I18n.t('my.mfas.test.invalid')) }
+      end
+    end
+
+    describe "DELETE /my/mfa" do
+      context "when mfa is enabled and the code is correct" do
+        let(:current_user) { create(:user, :mfa_configured) }
+        let(:current_code) { current_user.mfa.current_totp }
+
+        before { delete '/my/mfa', params: { user: { code: current_code } } }
 
         specify { expect(current_user.reload.mfa_secret).to be_nil }
         specify { expect(response).to redirect_to(my_dashboard_path) }
         specify { expect(flash[:notice]).to include("MFA has been disabled") }
+      end
+
+      context "when mfa is enabled and the code is incorrect" do
+        let(:current_user) { create(:user, :mfa_configured) }
+        let!(:original_secret) { current_user.mfa_secret }
+
+        before { delete '/my/mfa', params: { user: { code: 'incorrect' } } }
+
+        specify { expect(current_user.reload.mfa_secret).to eql(original_secret) }
+        specify { expect(response).to redirect_to(edit_my_mfa_path) }
+        specify { expect(flash[:error]).to include("MFA code is incorrect") }
       end
     end
   end

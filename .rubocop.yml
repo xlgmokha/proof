@@ -15,6 +15,9 @@ AllCops:
     - 'tmp/**/*'
     - 'vendor/**/*'
 
+Layout/IndentArray:
+  EnforcedStyle: consistent
+
 Metrics/AbcSize:
   Enabled: false
 

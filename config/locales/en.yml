@@ -7,14 +7,19 @@ en:
         password: password
         schemas: schemas
         userName: userName
-  application:
-    navbar:
-      audits: Audits
-      clients: Clients
-      home: Home
-      logout: Logout
-      mfa: MFA
-      sessions: Sessions
+  activerecord:
+    attributes:
+      user:
+        mfa_secret: MFA Secret
+        password_digest: Password
+        provisioning_uri: Provisioning URI
+      user_session:
+        ip: IP Address
+        sudo_enabled_at: Sudo Enabled At
+        user_agent: User Agent
+    models:
+      user_session: Session
+  cancel: Cancel
   errors:
     bad_request:
       title: 400 - Bad Request
@@ -22,9 +27,14 @@ en:
       title: Forbidden
     not_found:
       title: 404 - Not Found
-  layouts:
-    application:
-      title: Proof
+  js:
+    form:
+      errors:
+        confirmation: doesn't match
+        invalid: is invalid
+        required: is required
+        too_long: is too long
+        too_short: is too short
   loading: Loading…
   mfas:
     new:
@@ -32,16 +42,15 @@ en:
       title: MFA Login
   my:
     audits:
+      audit:
+        attribute: Attribute
+        by: By
+        from: From
+        new: New
+        old: Old
+        version: "(Version %{version})"
       index:
-        action: Action
-        associated: Associated
-        auditable: Auditable
-        changes: Changes
-        created_at: Created at
-        remote_address: Remote address
-        title: Audits
-        user: User
-        version: Version
+        title: Audit Log
     clients:
       create:
         success: Client ID %{client_id} Client Secret %{client_secret}
@@ -54,27 +63,40 @@ en:
       new:
         cancel: Cancel
         enable: Enable
-        title: Title
+        title: New OAuth Client
     dashboards:
       show:
         title: Dashboard
     mfas:
+      create:
+        success: successfully updated!
+      destroy:
+        error: MFA code is incorrect
+        success: MFA has been disabled
       edit:
-        provisioning_uri: Provisioning uri
-        secret: Secret
+        blurb: MFA gives you a second line of defense against unauthorized attempts to access your account.
+        disable: Disable
         title: Multi-Factor Authentication (MFA)
       new:
-        cancel: Cancel
+        blurb: MFA gives you a second line of defense against unauthorized attempts to access your account.
+        copy: Copy
         enable: Enable
-        provisioning_uri: Provisioning URI
-        secret: Secret
+        step_1: 'Step 1: Download Authenticator'
+        step_1_blurb_html: To enable MFA, you must have a device that can run Google Authenticator or another <a href="https://tools.ietf.org/html/rfc6238">RFC-6238</a> compatible app.
+        step_2: 'Step 2: Scan QR Code'
+        step_3: 'Step 3: Test Verfication Code'
+        step_3_1: Open your Authenticator app
+        step_3_2: Enter the verification code displayed
+        test: Test
         title: Multi Factor Authentication - Setup
+      test:
+        invalid: Invalid
+        success: Success
     sessions:
+      destroy:
+        success: Success
       index:
-        ip_address: Ip address
-        last_used: Last used
         title: Sessions
-        user_agent: User agent
   oauth:
     authorizations:
       show:
@@ -86,11 +108,13 @@ en:
         invalid_request: invalid_request
   registrations:
     new:
+      login: Login
       register: Register
       title: Register
   responses:
     response:
       title: Sending Response to Service Provider
+  saving: Saving…
   scim:
     errors:
       user:
@@ -99,3 +123,13 @@ en:
     new:
       login: Login
       title: Login
+    show:
+      audits: Audit Log
+      clients: Clients
+      documentation: Documentation
+      home: Home
+      logout: Logout
+      mfa: MFA
+      more: More
+      report_an_issue: Report an issue
+      sessions: Sessions

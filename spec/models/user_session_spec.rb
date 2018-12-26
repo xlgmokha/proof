@@ -14,7 +14,6 @@ RSpec.describe UserSession do
   describe "#access" do
     subject { create(:user_session) }
 
-    let!(:original_key) { subject.key }
     let(:request) { instance_double(ActionDispatch::Request, ip: "192.168.1.1", user_agent: "blah") }
     let(:result) { subject.access(request) }
 
@@ -27,7 +26,6 @@ RSpec.describe UserSession do
     specify { expect(subject.ip).to eql(request.ip) }
     specify { expect(subject.user_agent).to eql(request.user_agent) }
     specify { expect(subject).to be_persisted }
-    specify { expect(subject.key).not_to eql(original_key) }
     specify { expect(result).to eql(subject.key) }
   end
 
