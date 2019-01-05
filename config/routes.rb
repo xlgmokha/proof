@@ -57,5 +57,8 @@ Rails.application.routes.draw do
     end
   end
   get "/.well-known/oauth-authorization-server", to: "oauth/metadata#show"
+  direct :documentation do
+    root_url + 'doc'
+  end
   root to: "sessions#new"
 end

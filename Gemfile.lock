@@ -290,7 +290,7 @@ GEM
     sass-listen (4.0.0)
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
-    scim-kit (0.1.0)
+    scim-kit (0.2.0)
       tilt (~> 2.0)
       tilt-jbuilder (~> 0.7)
     scim-shady (0.2.1)
@@ -387,7 +387,7 @@ DEPENDENCIES
   rubocop (~> 0.59)
   rubocop-rspec (~> 1.30)
   saml-kit (~> 1.0)
-  scim-kit
+  scim-kit (~> 0.2)
   scim-shady (~> 0.2)
   selenium-webdriver (~> 3.14)
   spank (~> 1.0)

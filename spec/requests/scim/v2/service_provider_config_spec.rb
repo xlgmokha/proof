@@ -28,7 +28,12 @@ describe "/ServiceProviderConfig" do
     specify { expect(json[:changePassword][:supported]).to be(false) }
     specify { expect(json[:sort][:supported]).to be(false) }
     specify { expect(json[:etag][:supported]).to be(false) }
-    specify { expect(json[:authenticationSchemes]).to match_array([name: 'OAuth Bearer Token', description: 'Authentication scheme using the OAuth Bearer Token Standard', specUri: 'http://www.rfc-editor.org/info/rfc6750', documentationUri: 'http://example.com/help/oauth.html', type: 'oauthbearertoken', primary: true]) }
+    specify { expect(json[:authenticationSchemes][0][:name]).to eql('OAuth Bearer Token') }
+    specify { expect(json[:authenticationSchemes][0][:description]).to eql('Authentication scheme using the OAuth Bearer Token Standard') }
+    specify { expect(json[:authenticationSchemes][0][:specUri]).to eql('http://www.rfc-editor.org/info/rfc6750') }
+    specify { expect(json[:authenticationSchemes][0][:documentationUri]).to eql('http://example.com/help/oauth.html') }
+    specify { expect(json[:authenticationSchemes][0][:type]).to eql('oauthbearertoken') }
+    specify { expect(json[:authenticationSchemes][0][:primary]).to be(true) }
     specify { expect(json[:meta][:location]).to eql(scim_v2_ServiceProviderConfig_url) }
     specify { expect(json[:meta][:resourceType]).to eql('ServiceProviderConfig') }
     specify { expect(json[:meta][:created]).to be_present }
