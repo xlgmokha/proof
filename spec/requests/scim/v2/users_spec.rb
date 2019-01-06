@@ -18,7 +18,7 @@ describe '/scim/v2/users' do
       let(:email) { generate(:email) }
       let(:locale) { 'en' }
       let(:timezone) { 'Etc/UTC' }
-      let(:body) { { schemas: [Scim::Shady::Schemas::USER], userName: email, locale: locale, timezone: timezone } }
+      let(:body) { { schemas: [Scim::Kit::V2::Schemas::USER], userName: email, locale: locale, timezone: timezone } }
       let(:json) { JSON.parse(response.body, symbolize_names: true) }
 
       before { post '/scim/v2/users', params: body.to_json, headers: headers }
@@ -27,7 +27,7 @@ describe '/scim/v2/users' do
       specify { expect(response.headers['Content-Type']).to eql('application/scim+json') }
       specify { expect(response.headers['Location']).to be_present }
       specify { expect(response.body).to be_present }
-      specify { expect(json[:schemas]).to match_array([Scim::Shady::Schemas::USER]) }
+      specify { expect(json[:schemas]).to match_array([Scim::Kit::V2::Schemas::USER]) }
       specify { expect(json[:id]).to be_present }
       specify { expect(json[:userName]).to eql(email) }
       specify { expect(json[:meta][:resourceType]).to eql('User') }
@@ -68,7 +68,7 @@ describe '/scim/v2/users' do
       specify { expect(response.headers['ETag']).to be_present }
       specify { expect(response.body).to be_present }
 
-      specify { expect(json[:schemas]).to match_array([Scim::Shady::Schemas::USER]) }
+      specify { expect(json[:schemas]).to match_array([Scim::Kit::V2::Schemas::USER]) }
       specify { expect(json[:id]).to eql(user.to_param) }
       specify { expect(json[:userName]).to eql(user.email) }
       specify { expect(json[:meta][:resourceType]).to eql('User') }
@@ -115,7 +115,7 @@ describe '/scim/v2/users' do
     specify { expect(response).to have_http_status(:ok) }
     specify { expect(response.headers['Content-Type']).to eql('application/scim+json') }
     specify { expect(response.body).to be_present }
-    specify { expect(json[:schemas]).to match_array([Scim::Shady::Messages::LIST_RESPONSE]) }
+    specify { expect(json[:schemas]).to match_array([Scim::Kit::V2::Messages::LIST_RESPONSE]) }
     specify { expect(json[:totalResults]).to be_zero }
     specify { expect(json[:Resources]).to be_empty }
   end
@@ -125,7 +125,7 @@ describe '/scim/v2/users' do
     let(:new_email) { FFaker::Internet.email }
     let(:locale) { 'ja' }
     let(:timezone) { 'America/Denver' }
-    let(:body) { { schemas: [Scim::Shady::Schemas::USER], userName: new_email, locale: locale, timezone: timezone } }
+    let(:body) { { schemas: [Scim::Kit::V2::Schemas::USER], userName: new_email, locale: locale, timezone: timezone } }
     let(:json) { JSON.parse(response.body, symbolize_names: true) }
 
     before { put "/scim/v2/users/#{user.to_param}", headers: headers, params: body.to_json }
@@ -134,7 +134,7 @@ describe '/scim/v2/users' do
     specify { expect(response.headers['Content-Type']).to eql('application/scim+json') }
     specify { expect(response.headers['Location']).to eql(scim_v2_user_url(user)) }
     specify { expect(response.body).to be_present }
-    specify { expect(json[:schemas]).to match_array([Scim::Shady::Schemas::USER]) }
+    specify { expect(json[:schemas]).to match_array([Scim::Kit::V2::Schemas::USER]) }
     specify { expect(json[:id]).to be_present }
     specify { expect(json[:userName]).to eql(new_email) }
     specify { expect(json[:meta][:resourceType]).to eql('User') }

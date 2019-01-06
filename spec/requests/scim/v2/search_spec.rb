@@ -16,7 +16,7 @@ describe '/scim/v1/.search' do
   describe "POST /scim/v2/.search" do
     let(:request_body) do
       {
-        "schemas": [Scim::Shady::Messages::SEARCH_REQUEST],
+        "schemas": [Scim::Kit::V2::Messages::SEARCH_REQUEST],
         "attributes": %w[displayName userName],
         "filter": "displayName sw \"smith\"",
         "startIndex": 1,
@@ -30,7 +30,7 @@ describe '/scim/v1/.search' do
     specify { expect(response).to have_http_status(:ok) }
     specify { expect(response.headers['Content-Type']).to eql('application/scim+json') }
     specify { expect(response.body).to be_present }
-    specify { expect(json[:schemas]).to match_array([Scim::Shady::Messages::LIST_RESPONSE]) }
+    specify { expect(json[:schemas]).to match_array([Scim::Kit::V2::Messages::LIST_RESPONSE]) }
     specify { expect(json[:totalResults]).to be_zero }
     specify { expect(json[:itemsPerPage]).to be_zero }
     specify { expect(json[:startIndex]).to be(1) }

@@ -10,7 +10,7 @@ module Scim
 
       def index
         render json: {
-          schemas: [Scim::Shady::Messages::LIST_RESPONSE],
+          schemas: [Scim::Kit::V2::Messages::LIST_RESPONSE],
           totalResults: 0,
           Resources: [],
         }.to_json, status: :ok

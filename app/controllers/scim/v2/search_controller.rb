@@ -6,7 +6,7 @@ module Scim
       def index
         response.headers['Content-Type'] = 'application/scim+json'
         render json: {
-          schemas: [Scim::Shady::Messages::LIST_RESPONSE],
+          schemas: [Scim::Kit::V2::Messages::LIST_RESPONSE],
           totalResults: 0,
           itemsPerPage: 0,
           startIndex: 1,

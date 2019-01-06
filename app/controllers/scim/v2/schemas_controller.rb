@@ -16,15 +16,15 @@ module Scim
       private
 
       def current_schema(url = request.original_url)
-        return group_schema if url.include?(Scim::Kit::V2::Schema::GROUP)
-        return user_schema if url.include?(Scim::Kit::V2::Schema::USER)
+        return group_schema if url.include?(Scim::Kit::V2::Schemas::GROUP)
+        return user_schema if url.include?(Scim::Kit::V2::Schemas::USER)
       end
 
       def user_schema
         Scim::Kit::V2::Schema.build(
-          id: Scim::Kit::V2::Schema::USER,
+          id: Scim::Kit::V2::Schemas::USER,
           name: "User",
-          location: scim_v2_schema_url(id: Scim::Kit::V2::Schema::USER)
+          location: scim_v2_schema_url(id: Scim::Kit::V2::Schemas::USER)
         ) do |schema|
           schema.description = "User Account"
           schema.add_attribute(name: 'userName') do |x|
@@ -71,9 +71,9 @@ module Scim
 
       def group_schema
         Scim::Kit::V2::Schema.new(
-          id: Scim::Kit::V2::Schema::GROUP,
+          id: Scim::Kit::V2::Schemas::GROUP,
           name: "Group",
-          location: scim_v2_schema_url(id: Scim::Kit::V2::Schema::GROUP)
+          location: scim_v2_schema_url(id: Scim::Kit::V2::Schemas::GROUP)
         ) do |schema|
           schema.description = "Group"
           schema.add_attribute(name: 'displayName') do |x|

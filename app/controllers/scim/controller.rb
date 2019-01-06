@@ -27,7 +27,7 @@ module Scim
 
     def not_found
       render json: {
-        schemas: [Scim::Shady::Messages::ERROR],
+        schemas: [Scim::Kit::V2::Messages::ERROR],
         detail: "Resource #{params[:id]} not found",
         status: "404",
       }.to_json, status: :not_found

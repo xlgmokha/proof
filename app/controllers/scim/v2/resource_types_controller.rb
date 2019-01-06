@@ -30,7 +30,7 @@ module Scim
         Scim::Kit::V2::ResourceType.build(location: location) do |x|
           x.id = 'User'
           x.name = 'User'
-          x.schema = SCIM::Schema::USER
+          x.schema = Scim::Kit::V2::Schemas::USER
           x.description = 'User Account'
           x.endpoint = scim_v2_users_url
         end
@@ -41,7 +41,7 @@ module Scim
         Scim::Kit::V2::ResourceType.build(location: location) do |x|
           x.id = 'Group'
           x.name = 'Group'
-          x.schema = SCIM::Schema::GROUP
+          x.schema = Scim::Kit::V2::Schemas::GROUP
           x.description = 'Group'
           x.endpoint = scim_v2_groups_url
         end

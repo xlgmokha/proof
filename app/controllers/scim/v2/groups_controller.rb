@@ -5,7 +5,7 @@ module Scim
     class GroupsController < ::Scim::Controller
       def index
         render json: {
-          schemas: [Scim::Shady::Messages::LIST_RESPONSE],
+          schemas: [Scim::Kit::V2::Messages::LIST_RESPONSE],
           totalResults: User.count,
           Resources: resources,
         }.to_json, status: :ok
