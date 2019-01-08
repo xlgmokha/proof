@@ -142,7 +142,7 @@ describe '/scim/v2/users' do
     specify { expect(json[:meta][:lastModified]).to be_present }
     specify { expect(json[:meta][:version]).to be_present }
     specify { expect(json[:meta][:location]).to be_present }
-    specify { expect(json[:emails]).to match_array([value: new_email, type: 'work', primary: true]) }
+    specify { expect(json[:emails]).to match_array([value: new_email, primary: true]) }
     specify { expect(json[:locale]).to eql(locale) }
     specify { expect(json[:timezone]).to eql(timezone) }
   end

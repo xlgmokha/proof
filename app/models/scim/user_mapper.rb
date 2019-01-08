@@ -7,19 +7,17 @@ module SCIM
     end
 
     def map_from(user)
-      Scim::Shady::User.build do |x|
-        x.id = user.id
-        x.username = user.email
-        x.created_at = user.created_at
-        x.updated_at = user.updated_at
-        x.location = @url_helpers.scim_v2_user_url(user)
-        x.locale = user.locale
-        x.timezone = user.timezone
-        x.version = user.lock_version
-        x.emails do |y|
-          y.add(user.email, primary: true)
-        end
-      end
+      schema = SCIM::Schema.user
+      x = Scim::Kit::V2::Resource.new(schemas: [schema], location: @url_helpers.scim_v2_user_url(user))
+      x.meta.version = user.lock_version
+      x.meta.created = user.created_at
+      x.meta.last_modified = user.updated_at
+      x.id = user.id
+      x.user_name = user.email
+      x.locale = user.locale
+      x.timezone = user.timezone
+      x.emails = [{ value: user.email, primary: true }]
+      x
     end
   end
 end
