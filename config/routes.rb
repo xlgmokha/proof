@@ -62,3 +62,4 @@ Rails.application.routes.draw do
   end
   root to: "sessions#new"
 end
+ActiveSupport::Notifications.instrument 'proof.routes_loaded'
