@@ -6,22 +6,19 @@ module Scim
       skip_before_action :authenticate!
 
       def index
-        render json: [schema.user, schema.group].to_json
+        render json: schemas.values.to_json
       end
 
       def show
+        current_schema = schemas[params[:id]]
+        raise ActiveRecord::RecordNotFound unless current_schema
         render json: current_schema.to_json
       end
 
       private
 
-      def current_schema(url = request.original_url)
-        return schema.group if url.include?(Scim::Kit::V2::Schemas::GROUP)
-        return schema.user if url.include?(Scim::Kit::V2::Schemas::USER)
-      end
-
-      def schema
-        SCIM::Schema
+      def schemas
+        Scim::Kit::V2.configuration.schemas
       end
     end
   end

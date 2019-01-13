@@ -5,8 +5,8 @@ require 'rails_helper'
 RSpec.describe "/scim/v2/ResourceTypes" do
   let(:headers) do
     {
-      'Accept' => 'application/scim+json',
-      'Content-Type' => 'application/scim+json',
+      'Accept' => Mime[:scim].to_s,
+      'Content-Type' => Mime[:scim].to_s,
     }
   end
 
