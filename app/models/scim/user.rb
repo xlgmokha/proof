@@ -26,7 +26,7 @@ module SCIM
     private
 
     def must_be_user_schema
-      errors.add(:schemas, "is invalid") unless schemas == [SCIM::Schema::USER]
+      errors.add(:schemas, "is invalid") unless schemas == [Scim::Kit::V2::Schemas::USER]
     end
 
     def ensure_password_update_is_allowed!(user)
