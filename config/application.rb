@@ -28,6 +28,6 @@ module Proof
     # the framework and any gems in your application.
     config.middleware.delete(Rack::Runtime)
     routes.default_url_options[:host] = ENV['RAILS_HOST']
-    routes.default_url_options[:protocol] = 'https' unless Rails.env.test?
+    routes.default_url_options[:protocol] = 'https' if Rails.env.production?
   end
 end

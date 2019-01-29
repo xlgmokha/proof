@@ -7,6 +7,9 @@ en:
         password: password
         schemas: schemas
         userName: userName
+    errors:
+      messages:
+        record_invalid: "Invalid"
   activerecord:
     attributes:
       user:
