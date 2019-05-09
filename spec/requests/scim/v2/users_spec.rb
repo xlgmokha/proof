@@ -201,6 +201,23 @@ describe '/scim/v2/users' do
       end
     end
 
+    context "when searching for users" do
+      let!(:users) { create_list(:user, 10) }
+
+      context "when searching for an exact match on one field" do
+        let(:matching_user) { users.sample }
+
+        before { get "/scim/v2/users", params: { filter: "userName eq #{matching_user.email}" }, headers: headers }
+
+        specify { expect(response).to have_http_status(:ok) }
+        specify { expect(json[:totalResults]).to be(1) }
+        specify { expect(json[:startIndex]).to eql(1) }
+        specify { expect(json[:itemsPerPage]).to eql(25) }
+        specify { expect(json[:Resources]).to be_present }
+        specify { expect(json[:Resources][0][:id]).to eql(matching_user.to_param) }
+      end
+    end
+
     xcontext "when fetching specific attributes" do
       let!(:user) { create(:user) }
       let(:json) { JSON.parse(response.body, symbolize_names: true) }
