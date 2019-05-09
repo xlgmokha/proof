@@ -10,7 +10,7 @@ module Scim
       end
 
       def index
-        @users = paginate(User.all)
+        @users = paginate(User.order(:created_at), page: page - 1, page_size: page_size)
 
         render formats: :scim, status: :ok
       end
@@ -46,6 +46,14 @@ module Scim
 
       def repository(container = Spank::IOC)
         container.resolve(:user_repository)
+      end
+
+      def page
+        page_param(:startIndex, default: 0, bottom: 1, top: 100)
+      end
+
+      def page_size
+        page_param(:count, default: 25, bottom: 0, top: 25)
       end
     end
   end

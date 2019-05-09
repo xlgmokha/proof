@@ -1,7 +1,10 @@
 class Paginate < SimpleDelegator
-  def initialize(query, params)
+  attr_reader :page, :page_size
+
+  def initialize(query, page:, page_size:)
     @query = query
-    @params = params
+    @page = page
+    @page_size = page_size
     super(records)
   end
 
@@ -9,24 +12,7 @@ class Paginate < SimpleDelegator
     @total_count ||= @query.count
   end
 
-  def page
-    @page ||= page_param(:startIndex, default: 1, bottom: 1, top: 100)
-  end
-
-  def page_size
-    @page_size ||= page_param(:count, default: 25, bottom: 0, top: 25)
-  end
-
   def records
-    @records ||= @query.offset(page - 1).limit(page_size)
-  end
-
-  private
-
-  def page_param(key, default:, bottom: 0, top: 250)
-    actual = @params.fetch(key, default).to_i
-    return bottom if actual < bottom
-    return top if actual > top
-    actual
+    @records ||= @query.offset(page).limit(page_size)
   end
 end

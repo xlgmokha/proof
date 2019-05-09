@@ -146,7 +146,7 @@ describe '/scim/v2/users' do
         specify { expect(json[:totalResults]).to be(users.count + 1) }
         specify { expect(json[:startIndex]).to eql(1) }
         specify { expect(json[:itemsPerPage]).to eql(1) }
-        specify { expect(json[:Resources][0][:id]).to eql(User.offset(0).limit(1).pluck(:id).first) }
+        specify { expect(json[:Resources][0][:id]).to eql(User.order(:created_at).offset(0).limit(1).pluck(:id).first) }
       end
 
       context "when requesting a negative page of results" do
