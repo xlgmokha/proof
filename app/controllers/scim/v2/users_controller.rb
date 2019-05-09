@@ -3,13 +3,15 @@
 module Scim
   module V2
     class UsersController < ::Scim::Controller
+      PAGE_SIZE=25
       rescue_from ActiveRecord::RecordNotFound do |_error|
         @resource_id = params[:id] if params[:id].present?
         render "record_not_found", status: :not_found
       end
 
       def index
-        @users = User.all.limit(25)
+        @page = 0
+        @users = User.all.limit(PAGE_SIZE)
         render formats: :scim, status: :ok
       end
 

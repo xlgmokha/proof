@@ -119,7 +119,32 @@ describe '/scim/v2/users' do
       specify { expect(response.body).to be_present }
       specify { expect(json[:schemas]).to match_array([Scim::Kit::V2::Messages::LIST_RESPONSE]) }
       specify { expect(json[:totalResults]).to be(1) }
+      specify { expect(json[:startIndex]).to be(0) }
+      specify { expect(json[:itemsPerPage]).to be(25) }
       specify { expect(json[:Resources]).not_to be_empty }
+      specify { expect(json[:Resources][0][:id]).to eql(user.to_param) }
+      specify { expect(json[:Resources][0][:active]).to be(true) }
+      specify { expect(json[:Resources][0][:displayName]).to eql(user.email) }
+      specify { expect(json[:Resources][0][:locale]).to eql(user.locale) }
+      specify { expect(json[:Resources][0][:timezone]).to eql(user.timezone) }
+      specify { expect(json[:Resources][0][:emails]).to match_array([{ primary: true, value: user.email }]) }
+      specify { expect(json[:Resources][0][:groups]).to be_empty }
+      specify { expect(json[:Resources][0][:meta]).to be_present }
+    end
+
+    xcontext "when fetching specific attributes" do
+      let!(:user) { create(:user) }
+      let(:json) { JSON.parse(response.body, symbolize_names: true) }
+
+      before { get "/scim/v2/users?attributes=userName", headers: headers }
+
+      specify { expect(response).to have_http_status(:ok) }
+      specify { expect(response.headers['Content-Type']).to eql('application/scim+json') }
+      specify { expect(response.body).to be_present }
+      specify { expect(json[:schemas]).to match_array([Scim::Kit::V2::Messages::LIST_RESPONSE]) }
+      specify { expect(json[:totalResults]).to be(1) }
+      specify { expect(json[:Resources]).not_to be_empty }
+      specify { expect(json[:Resources][0]).to eql({ id: user.to_param, displayName: user.email }) }
     end
   end
 
