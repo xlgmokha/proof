@@ -3,17 +3,15 @@
 module Scim
   module V2
     class UsersController < ::Scim::Controller
-      PAGE_SIZE=25
       rescue_from ActiveRecord::RecordNotFound do |_error|
         @resource_id = params[:id] if params[:id].present?
         render "record_not_found", status: :not_found
       end
 
       def index
-        @page = params.fetch(:startIndex, 1).to_i
-        @page_size = params.fetch(:count, Scim::V2::UsersController::PAGE_SIZE).to_i
+        @page, @page_size = page_params
         @total = User.count
-        @users = @page_size >= 0 ? User.offset(@page - 1).limit(@page_size) : User.none
+        @users = User.offset(@page - 1).limit(@page_size)
         render formats: :scim, status: :ok
       end
 
@@ -44,6 +42,20 @@ module Scim
 
       def user_params
         params.permit(:schemas, :userName, :locale, :timezone)
+      end
+
+      def page_params
+        [
+          page_param(:startIndex, default: 1, bottom: 1, top: 100),
+          page_param(:count, default: 25, bottom: 0, top: 25)
+        ]
+      end
+
+      def page_param(key, default:, bottom: 0, top: 250)
+        actual = params.fetch(key, default).to_i
+        return bottom if actual < bottom
+        return top if actual > top
+        actual
       end
 
       def repository(container = Spank::IOC)
