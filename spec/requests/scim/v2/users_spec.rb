@@ -149,7 +149,27 @@ describe '/scim/v2/users' do
         specify { expect(json[:Resources][0][:id]).to eql(User.offset(0).limit(1).pluck(:id).first) }
       end
 
-      context "when requesting a count of 0 results" do
+      context "when requesting a negative page of results" do
+        before { get "/scim/v2/users", params: { startIndex: -1 }, headers: headers }
+
+        specify { expect(response).to have_http_status(:ok) }
+        specify { expect(json[:totalResults]).to be(users.count + 1) }
+        specify { expect(json[:startIndex]).to eql(1) }
+        specify { expect(json[:itemsPerPage]).to eql(25) }
+        specify { expect(json[:Resources]).to be_present }
+      end
+
+      context "when requesting a page 0" do
+        before { get "/scim/v2/users", params: { startIndex: 0 }, headers: headers }
+
+        specify { expect(response).to have_http_status(:ok) }
+        specify { expect(json[:totalResults]).to be(users.count + 1) }
+        specify { expect(json[:startIndex]).to eql(1) }
+        specify { expect(json[:itemsPerPage]).to eql(25) }
+        specify { expect(json[:Resources]).to be_present }
+      end
+
+      context "when requesting a page size of 0 results" do
         before { get "/scim/v2/users", params: { count: 0 }, headers: headers }
 
         specify { expect(response).to have_http_status(:ok) }
@@ -160,7 +180,7 @@ describe '/scim/v2/users' do
         specify { expect(json[:Resources]).to be_empty }
       end
 
-      context "when requesting a count of negative results" do
+      context "when requesting a page size of negative results" do
         before { get "/scim/v2/users", params: { count: -1 }, headers: headers }
 
         specify { expect(response).to have_http_status(:ok) }
