@@ -136,15 +136,31 @@ describe '/scim/v2/users' do
       let(:json) { JSON.parse(response.body, symbolize_names: true) }
       let!(:users) { create_list(:user, 10) }
 
-      before { get "/scim/v2/users", params: { startIndex: 1, count: 1 }, headers: headers }
+      context "when requesting the first page of results (1-based index)" do
+        before { get "/scim/v2/users", params: { startIndex: 1, count: 1 }, headers: headers }
 
-      specify { expect(response).to have_http_status(:ok) }
-      specify { expect(response.headers['Content-Type']).to eql('application/scim+json') }
-      specify { expect(response.body).to be_present }
-      specify { expect(json[:schemas]).to match_array([Scim::Kit::V2::Messages::LIST_RESPONSE]) }
-      specify { expect(json[:totalResults]).to be(users.count + 1) }
-      specify { expect(json[:startIndex]).to eql(1) }
-      specify { expect(json[:itemsPerPage]).to eql(1) }
+        specify { expect(response).to have_http_status(:ok) }
+        specify { expect(response.headers['Content-Type']).to eql('application/scim+json') }
+        specify { expect(response.body).to be_present }
+        specify { expect(json[:schemas]).to match_array([Scim::Kit::V2::Messages::LIST_RESPONSE]) }
+        specify { expect(json[:totalResults]).to be(users.count + 1) }
+        specify { expect(json[:startIndex]).to eql(1) }
+        specify { expect(json[:itemsPerPage]).to eql(1) }
+        specify { expect(json[:Resources][0][:id]).to eql(User.offset(0).limit(1).pluck(:id).first) }
+      end
+
+      context "when requesting a count of 0 results" do
+        before { get "/scim/v2/users", params: { count: 0 }, headers: headers }
+
+        specify { expect(response).to have_http_status(:ok) }
+        specify { expect(response.headers['Content-Type']).to eql('application/scim+json') }
+        specify { expect(response.body).to be_present }
+        specify { expect(json[:schemas]).to match_array([Scim::Kit::V2::Messages::LIST_RESPONSE]) }
+        specify { expect(json[:totalResults]).to be(users.count + 1) }
+        specify { expect(json[:startIndex]).to eql(1) }
+        specify { expect(json[:itemsPerPage]).to eql(0) }
+        specify { expect(json[:Resources]).to be_empty }
+      end
     end
 
     xcontext "when fetching specific attributes" do
