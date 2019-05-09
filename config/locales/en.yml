@@ -9,7 +9,7 @@ en:
         userName: userName
     errors:
       messages:
-        record_invalid: "Invalid"
+        record_invalid: Invalid
   activerecord:
     attributes:
       user:

@@ -12,6 +12,7 @@ module Scim
       def show
         current_schema = schemas[params[:id]]
         raise ActiveRecord::RecordNotFound unless current_schema
+
         render json: current_schema.to_json
       end
 

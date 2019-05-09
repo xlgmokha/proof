@@ -8,7 +8,10 @@ module SCIM
 
     def map_from(user)
       schema = Scim::Kit::V2.configuration.schemas[Scim::Kit::V2::Schemas::USER]
-      Scim::Kit::V2::Resource.new(schemas: [schema], location: @url_helpers.scim_v2_user_url(user)) do |x|
+      Scim::Kit::V2::Resource.new(
+        schemas: [schema],
+        location: @url_helpers.scim_v2_user_url(user)
+      ) do |x|
         x.meta.version = user.lock_version
         x.meta.created = user.created_at
         x.meta.last_modified = user.updated_at

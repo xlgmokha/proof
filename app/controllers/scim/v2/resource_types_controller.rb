@@ -12,6 +12,7 @@ module Scim
       def show
         current_resource = resource_types[params[:id]]
         raise ActiveRecord::RecordNotFound unless current_resource
+
         render status: :ok, json: current_resource.to_json
       end
 

@@ -15,7 +15,7 @@ AllCops:
     - 'tmp/**/*'
     - 'vendor/**/*'
 
-Layout/IndentArray:
+Layout/IndentFirstArrayElement:
   EnforcedStyle: consistent
 
 Metrics/AbcSize:
@@ -39,6 +39,9 @@ Metrics/ParameterLists:
 
 Metrics/PerceivedComplexity:
   Enabled: false
+
+Naming/RescuedExceptionsVariableName:
+  PreferredName: error
 
 RSpec/DescribeClass:
   Enabled: false

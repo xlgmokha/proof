@@ -10,8 +10,8 @@ class RegistrationsController < ApplicationController
   def create
     User.create!(user_params)
     redirect_to new_session_path
-  rescue ActiveRecord::RecordInvalid => invalid
-    redirect_to new_registration_path, error: invalid.record.errors
+  rescue ActiveRecord::RecordInvalid => error
+    redirect_to new_registration_path, error: error.record.errors
   end
 
   private
