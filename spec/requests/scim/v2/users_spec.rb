@@ -169,6 +169,16 @@ describe '/scim/v2/users' do
         specify { expect(json[:Resources]).to be_present }
       end
 
+      context "when requesting an invalid page" do
+        before { get "/scim/v2/users", params: { startIndex: 'x' }, headers: headers }
+
+        specify { expect(response).to have_http_status(:ok) }
+        specify { expect(json[:totalResults]).to be(users.count + 1) }
+        specify { expect(json[:startIndex]).to eql(1) }
+        specify { expect(json[:itemsPerPage]).to eql(25) }
+        specify { expect(json[:Resources]).to be_present }
+      end
+
       context "when requesting a page size of 0 results" do
         before { get "/scim/v2/users", params: { count: 0 }, headers: headers }
 

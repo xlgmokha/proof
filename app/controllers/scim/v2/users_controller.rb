@@ -10,8 +10,9 @@ module Scim
 
       def index
         @page, @page_size = page_params
-        @total = User.count
-        @users = User.offset(@page - 1).limit(@page_size)
+        query = User.all
+        @total = query.count
+        @users = query.offset(@page - 1).limit(@page_size)
         render formats: :scim, status: :ok
       end
 
