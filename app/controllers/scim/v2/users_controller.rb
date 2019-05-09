@@ -3,6 +3,7 @@
 module Scim
   module V2
     class UsersController < ::Scim::Controller
+      include Pageable
       rescue_from ActiveRecord::RecordNotFound do |_error|
         @resource_id = params[:id] if params[:id].present?
         render "record_not_found", status: :not_found
@@ -41,10 +42,6 @@ module Scim
 
       def user_params
         params.permit(:schemas, :userName, :locale, :timezone)
-      end
-
-      def paginate(query)
-        Paginate.new(query, params)
       end
 
       def repository(container = Spank::IOC)
