@@ -10,8 +10,10 @@ module Scim
       end
 
       def index
-        @page = 0
-        @users = User.all.limit(PAGE_SIZE)
+        @page = params.fetch(:startIndex, 0).to_i
+        @page_size = params.fetch(:count, Scim::V2::UsersController::PAGE_SIZE).to_i
+        @total = User.count
+        @users = User.offset(@page).limit(@page_size)
         render formats: :scim, status: :ok
       end
 
