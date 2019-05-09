@@ -9,10 +9,8 @@ module Scim
       end
 
       def index
-        @page, @page_size = page_params
-        query = User.all
-        @total = query.count
-        @users = query.offset(@page - 1).limit(@page_size)
+        @users = paginate(User.all)
+
         render formats: :scim, status: :ok
       end
 
@@ -45,18 +43,8 @@ module Scim
         params.permit(:schemas, :userName, :locale, :timezone)
       end
 
-      def page_params
-        [
-          page_param(:startIndex, default: 1, bottom: 1, top: 100),
-          page_param(:count, default: 25, bottom: 0, top: 25)
-        ]
-      end
-
-      def page_param(key, default:, bottom: 0, top: 250)
-        actual = params.fetch(key, default).to_i
-        return bottom if actual < bottom
-        return top if actual > top
-        actual
+      def paginate(query)
+        Paginate.new(query, params)
       end
 
       def repository(container = Spank::IOC)
