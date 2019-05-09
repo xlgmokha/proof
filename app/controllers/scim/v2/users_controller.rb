@@ -9,11 +9,8 @@ module Scim
       end
 
       def index
-        render json: {
-          schemas: [Scim::Kit::V2::Messages::LIST_RESPONSE],
-          totalResults: 0,
-          Resources: [],
-        }.to_json, status: :ok
+        @users = User.all.limit(25)
+        render formats: :scim, status: :ok
       end
 
       def show

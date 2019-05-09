@@ -108,16 +108,19 @@ describe '/scim/v2/users' do
   end
 
   describe "GET /scim/v2/users" do
-    let(:json) { JSON.parse(response.body, symbolize_names: true) }
+    context "when fetching all users" do
+      let(:json) { JSON.parse(response.body, symbolize_names: true) }
+      let!(:user) { create(:user) }
 
-    before { get "/scim/v2/users?attributes=userName", headers: headers }
+      before { get "/scim/v2/users", headers: headers }
 
-    specify { expect(response).to have_http_status(:ok) }
-    specify { expect(response.headers['Content-Type']).to eql('application/scim+json') }
-    specify { expect(response.body).to be_present }
-    specify { expect(json[:schemas]).to match_array([Scim::Kit::V2::Messages::LIST_RESPONSE]) }
-    specify { expect(json[:totalResults]).to be_zero }
-    specify { expect(json[:Resources]).to be_empty }
+      specify { expect(response).to have_http_status(:ok) }
+      specify { expect(response.headers['Content-Type']).to eql('application/scim+json') }
+      specify { expect(response.body).to be_present }
+      specify { expect(json[:schemas]).to match_array([Scim::Kit::V2::Messages::LIST_RESPONSE]) }
+      specify { expect(json[:totalResults]).to be(1) }
+      specify { expect(json[:Resources]).not_to be_empty }
+    end
   end
 
   describe "PUT /scim/v2/users" do
