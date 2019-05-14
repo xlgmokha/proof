@@ -13,6 +13,18 @@ class User < ApplicationRecord
   validates :timezone, inclusion: VALID_TIMEZONES
   validates :locale, inclusion: VALID_LOCALES
 
+  scope :scim_filter_for, -> (tree) do
+    attr = SCIM::User::ATTRIBUTES[tree[:attribute].to_s] || tree[:attribute].to_s
+    case tree[:comparison_operator].to_s
+    when 'eq'
+      where(attr => tree[:comparison_value].to_s[1..-2])
+    when 'ne'
+      where.not(attr => tree[:comparison_value].to_s[1..-2])
+    else
+      self
+    end
+  end
+
   def name_id_for(name_id_format)
     Saml::Kit::Namespaces::PERSISTENT == name_id_format ? id : email
   end

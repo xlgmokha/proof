@@ -207,7 +207,7 @@ describe '/scim/v2/users' do
       context "when searching for an exact match on one field" do
         let(:matching_user) { users.sample }
 
-        before { get "/scim/v2/users", params: { filter: "userName eq #{matching_user.email}" }, headers: headers }
+        before { get "/scim/v2/users", params: { filter: "userName eq \"#{matching_user.email}\"" }, headers: headers }
 
         specify { expect(response).to have_http_status(:ok) }
         specify { expect(json[:totalResults]).to be(1) }

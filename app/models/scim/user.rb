@@ -2,6 +2,9 @@
 
 module SCIM
   class User
+    ATTRIBUTES = {
+      userName: :email,
+    }.with_indifferent_access
     include ActiveModel::Model
     attr_accessor :id, :schemas, :userName, :name, :locale, :timezone, :password
 
