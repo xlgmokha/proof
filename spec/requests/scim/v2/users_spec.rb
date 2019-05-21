@@ -216,6 +216,24 @@ describe '/scim/v2/users' do
         specify { expect(json[:Resources]).to be_present }
         specify { expect(json[:Resources][0][:id]).to eql(matching_user.to_param) }
       end
+
+      context "when searhing for a match using a logical or condition" do
+        let(:first_matching_user) { users.sample }
+        let(:second_matching_user) { users.sample }
+        let(:filter) do
+          %(userName eq "#{first_matching_user.email}" or userName eq "#{second_matching_user.email}")
+        end
+
+        before { get "/scim/v2/users", params: { filter: filter  }, headers: headers }
+
+        specify { expect(response).to have_http_status(:ok) }
+        specify { expect(json[:totalResults]).to be(2) }
+        specify { expect(json[:startIndex]).to eql(1) }
+        specify { expect(json[:itemsPerPage]).to eql(25) }
+        specify { expect(json[:Resources]).to be_present }
+        specify { expect(json[:Resources][0][:id]).to eql(first_matching_user.to_param) }
+        specify { expect(json[:Resources][1][:id]).to eql(second_matching_user.to_param) }
+      end
     end
 
     xcontext "when fetching specific attributes" do
