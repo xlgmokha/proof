@@ -41,7 +41,15 @@ RSpec.describe User do
     end
 
     specify do
-      results = User.scim_filter_for(tree_for("userName ew \"#{random_user.email[-3..-1]}\""))
+      results = User.scim_filter_for(tree_for("userName ew \"#{random_user.email[-5..-1]}\""))
+      expect(results).to match_array([random_user])
+    end
+
+    specify do
+      freeze_time
+      random_user.update!(updated_at: 10.minutes.from_now)
+
+      results = User.scim_filter_for(tree_for("meta.lastModified gt \"#{Time.now.iso8601}\""))
       expect(results).to match_array([random_user])
     end
 

@@ -15,6 +15,10 @@ module Scim
         User.where("#{attr} like ?", "#{tree[:value].to_s[1..-2]}%")
       when 'ew'
         User.where("#{attr} like ?", "%#{tree[:value].to_s[1..-2]}")
+      when 'gt'
+        value = tree[:value].to_s[1..-2]
+        value = DateTime.parse(value)
+        User.where("#{attr} > ?", value)
       else
         User.none
       end
