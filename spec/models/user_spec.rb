@@ -31,7 +31,7 @@ RSpec.describe User do
     end
 
     specify do
-      results = User.scim_filter_for(tree_for("userName co \"#{random_user.email[1..3]}\""))
+      results = User.scim_filter_for(tree_for("userName co \"#{random_user.email[1..-2]}\""))
       expect(results).to match_array([random_user])
     end
 
@@ -57,8 +57,24 @@ RSpec.describe User do
       freeze_time
       random_user.update!(updated_at: 10.minutes.from_now)
 
+      results = User.scim_filter_for(tree_for("meta.lastModified ge \"#{random_user.updated_at.iso8601}\""))
+      expect(results).to match_array([random_user])
+    end
+
+    specify do
+      freeze_time
+      random_user.update!(updated_at: 10.minutes.from_now)
+
       results = User.scim_filter_for(tree_for("meta.lastModified lt \"#{Time.now.iso8601}\""))
       expect(results).to match_array(users - [random_user])
+    end
+
+    specify do
+      freeze_time
+      random_user.update!(updated_at: 10.minutes.ago)
+
+      results = User.scim_filter_for(tree_for("meta.lastModified le \"#{random_user.updated_at.iso8601}\""))
+      expect(results).to match_array([random_user])
     end
 
     specify do
