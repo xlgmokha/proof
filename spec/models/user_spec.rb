@@ -54,6 +54,14 @@ RSpec.describe User do
     end
 
     specify do
+      freeze_time
+      random_user.update!(updated_at: 10.minutes.from_now)
+
+      results = User.scim_filter_for(tree_for("meta.lastModified lt \"#{Time.now.iso8601}\""))
+      expect(results).to match_array(users - [random_user])
+    end
+
+    specify do
       first_user = users.sample
       second_user = users.sample
       results = User.scim_filter_for(

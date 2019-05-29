@@ -19,6 +19,10 @@ module Scim
         value = tree[:value].to_s[1..-2]
         value = DateTime.parse(value)
         User.where("#{attr} > ?", value)
+      when 'lt'
+        value = tree[:value].to_s[1..-2]
+        value = DateTime.parse(value)
+        User.where("#{attr} < ?", value)
       else
         User.none
       end
