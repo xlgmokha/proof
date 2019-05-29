@@ -85,5 +85,13 @@ RSpec.describe User do
       )
       expect(results.pluck(:email)).to match_array([first_user.email, second_user.email])
     end
+
+    specify do
+      first_user = users.sample
+      second_user = users.sample
+      results = User.scim_filter_for(tree_for(%(meta.lastModified gt "#{first_user.updated_at.iso8601}" and meta.lastModified eq "#{second_user.updated_at.iso8601}")))
+      puts results.to_sql
+      expect(results).to match_array([first_user, second_user])
+    end
   end
 end
