@@ -31,7 +31,17 @@ RSpec.describe User do
     end
 
     specify do
-      results = User.scim_filter_for(tree_for("userName co \"#{random_user.email[0..3]}\""))
+      results = User.scim_filter_for(tree_for("userName co \"#{random_user.email[1..3]}\""))
+      expect(results).to match_array([random_user])
+    end
+
+    specify do
+      results = User.scim_filter_for(tree_for("userName sw \"#{random_user.email[0..3]}\""))
+      expect(results).to match_array([random_user])
+    end
+
+    specify do
+      results = User.scim_filter_for(tree_for("userName ew \"#{random_user.email[-3..-1]}\""))
       expect(results).to match_array([random_user])
     end
 
