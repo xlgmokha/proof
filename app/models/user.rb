@@ -15,11 +15,11 @@ class User < ApplicationRecord
 
   scope :scim_filter_for, -> (tree) do
     attr = SCIM::User::ATTRIBUTES[tree[:attribute].to_s] || tree[:attribute].to_s
-    case tree[:comparison_operator].to_s
+    case tree[:operator].to_s
     when 'eq'
-      where(attr => tree[:comparison_value].to_s[1..-2])
+      where(attr => tree[:value].to_s[1..-2])
     when 'ne'
-      where.not(attr => tree[:comparison_value].to_s[1..-2])
+      where.not(attr => tree[:value].to_s[1..-2])
     else
       self
     end
