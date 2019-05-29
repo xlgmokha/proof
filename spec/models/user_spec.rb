@@ -31,12 +31,16 @@ RSpec.describe User do
     end
 
     specify do
+      results = User.scim_filter_for(tree_for("userName co \"#{random_user.email[0..3]}\""))
+      expect(results).to match_array([random_user])
+    end
+
+    specify do
       first_user = users.sample
       second_user = users.sample
-      parse_tree = tree_for(%(userName eq "#{first_user.email}" or userName eq "#{second_user.email}"))
-      puts parse_tree
-      results = User.scim_filter_for(parse_tree)
-      puts results.to_sql
+      results = User.scim_filter_for(
+        tree_for(%(userName eq "#{first_user.email}" or userName eq "#{second_user.email}"))
+      )
       expect(results.pluck(:email)).to match_array([first_user.email, second_user.email])
     end
   end

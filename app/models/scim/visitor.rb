@@ -9,6 +9,8 @@ module Scim
         User.where(attr => tree[:value].to_s[1..-2])
       when 'ne'
         User.where.not(attr => tree[:value].to_s[1..-2])
+      when 'co'
+        User.where("#{attr} like ?", "#{tree[:value].to_s[1..-2]}%")
       else
         User.none
       end
