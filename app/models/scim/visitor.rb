@@ -1,12 +1,10 @@
 module Scim
   class Visitor
     def self.result_for(tree)
-      puts tree.inspect
-
       attr = SCIM::User::ATTRIBUTES[tree[:attribute].to_s] || tree[:attribute].to_s
       case tree[:operator].to_s
       when 'and'
-        result_for(tree[:left]).where(result_for(tree[:right]))
+        result_for(tree[:left]).merge(result_for(tree[:right]))
       when 'or'
         result_for(tree[:left]).or(result_for(tree[:right]))
       when 'eq'
