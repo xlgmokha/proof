@@ -59,7 +59,7 @@ module Scim
         page_param(:count, default: 25, bottom: 0, top: 25)
       end
 
-      def apply_filter_to(scope, raw_filter)
+      def apply_filter_to(scope, _raw_filter)
         parser = Scim::Kit::V2::Filter.new
         parse_tree = parser.parse(params[:filter])
         scope.scim_filter_for(parse_tree)

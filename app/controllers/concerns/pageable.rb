@@ -12,6 +12,7 @@ module Pageable
       actual = params.fetch(key, default).to_i
       return bottom if actual < bottom
       return top if actual > top
+
       actual
     end
   end

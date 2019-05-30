@@ -144,8 +144,8 @@ describe '/scim/v2/users' do
         specify { expect(response.body).to be_present }
         specify { expect(json[:schemas]).to match_array([Scim::Kit::V2::Messages::LIST_RESPONSE]) }
         specify { expect(json[:totalResults]).to be(users.count + 1) }
-        specify { expect(json[:startIndex]).to eql(1) }
-        specify { expect(json[:itemsPerPage]).to eql(1) }
+        specify { expect(json[:startIndex]).to be(1) }
+        specify { expect(json[:itemsPerPage]).to be(1) }
         specify { expect(json[:Resources][0][:id]).to eql(User.order(:created_at).offset(0).limit(1).pluck(:id).first) }
       end
 
@@ -154,8 +154,8 @@ describe '/scim/v2/users' do
 
         specify { expect(response).to have_http_status(:ok) }
         specify { expect(json[:totalResults]).to be(users.count + 1) }
-        specify { expect(json[:startIndex]).to eql(1) }
-        specify { expect(json[:itemsPerPage]).to eql(25) }
+        specify { expect(json[:startIndex]).to be(1) }
+        specify { expect(json[:itemsPerPage]).to be(25) }
         specify { expect(json[:Resources]).to be_present }
       end
 
@@ -164,8 +164,8 @@ describe '/scim/v2/users' do
 
         specify { expect(response).to have_http_status(:ok) }
         specify { expect(json[:totalResults]).to be(users.count + 1) }
-        specify { expect(json[:startIndex]).to eql(1) }
-        specify { expect(json[:itemsPerPage]).to eql(25) }
+        specify { expect(json[:startIndex]).to be(1) }
+        specify { expect(json[:itemsPerPage]).to be(25) }
         specify { expect(json[:Resources]).to be_present }
       end
 
@@ -174,8 +174,8 @@ describe '/scim/v2/users' do
 
         specify { expect(response).to have_http_status(:ok) }
         specify { expect(json[:totalResults]).to be(users.count + 1) }
-        specify { expect(json[:startIndex]).to eql(1) }
-        specify { expect(json[:itemsPerPage]).to eql(25) }
+        specify { expect(json[:startIndex]).to be(1) }
+        specify { expect(json[:itemsPerPage]).to be(25) }
         specify { expect(json[:Resources]).to be_present }
       end
 
@@ -185,8 +185,8 @@ describe '/scim/v2/users' do
         specify { expect(response).to have_http_status(:ok) }
         specify { expect(json[:schemas]).to match_array([Scim::Kit::V2::Messages::LIST_RESPONSE]) }
         specify { expect(json[:totalResults]).to be(users.count + 1) }
-        specify { expect(json[:startIndex]).to eql(1) }
-        specify { expect(json[:itemsPerPage]).to eql(0) }
+        specify { expect(json[:startIndex]).to be(1) }
+        specify { expect(json[:itemsPerPage]).to be(0) }
         specify { expect(json[:Resources]).to be_empty }
       end
 
@@ -195,8 +195,8 @@ describe '/scim/v2/users' do
 
         specify { expect(response).to have_http_status(:ok) }
         specify { expect(json[:totalResults]).to be(users.count + 1) }
-        specify { expect(json[:startIndex]).to eql(1) }
-        specify { expect(json[:itemsPerPage]).to eql(0) }
+        specify { expect(json[:startIndex]).to be(1) }
+        specify { expect(json[:itemsPerPage]).to be(0) }
         specify { expect(json[:Resources]).to be_empty }
       end
     end
@@ -211,8 +211,8 @@ describe '/scim/v2/users' do
 
         specify { expect(response).to have_http_status(:ok) }
         specify { expect(json[:totalResults]).to be(1) }
-        specify { expect(json[:startIndex]).to eql(1) }
-        specify { expect(json[:itemsPerPage]).to eql(25) }
+        specify { expect(json[:startIndex]).to be(1) }
+        specify { expect(json[:itemsPerPage]).to be(25) }
         specify { expect(json[:Resources]).to be_present }
         specify { expect(json[:Resources][0][:id]).to eql(matching_user.to_param) }
       end
@@ -224,12 +224,12 @@ describe '/scim/v2/users' do
           %(userName eq "#{first_matching_user.email}" or userName eq "#{second_matching_user.email}")
         end
 
-        before { get "/scim/v2/users", params: { filter: filter  }, headers: headers }
+        before { get "/scim/v2/users", params: { filter: filter }, headers: headers }
 
         specify { expect(response).to have_http_status(:ok) }
         specify { expect(json[:totalResults]).to be(2) }
-        specify { expect(json[:startIndex]).to eql(1) }
-        specify { expect(json[:itemsPerPage]).to eql(25) }
+        specify { expect(json[:startIndex]).to be(1) }
+        specify { expect(json[:itemsPerPage]).to be(25) }
         specify { expect(json[:Resources]).to be_present }
         specify { expect(json[:Resources].map { |x| x[:id] }).to match_array([first_matching_user.to_param, second_matching_user.to_param]) }
       end
@@ -247,7 +247,7 @@ describe '/scim/v2/users' do
       specify { expect(json[:schemas]).to match_array([Scim::Kit::V2::Messages::LIST_RESPONSE]) }
       specify { expect(json[:totalResults]).to be(1) }
       specify { expect(json[:Resources]).not_to be_empty }
-      specify { expect(json[:Resources][0]).to eql({ id: user.to_param, displayName: user.email }) }
+      specify { expect(json[:Resources][0]).to eql(id: user.to_param, displayName: user.email) }
     end
   end
 

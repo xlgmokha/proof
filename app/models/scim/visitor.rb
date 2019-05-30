@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Scim
   class Visitor
     def self.result_for(tree)

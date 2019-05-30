@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Paginate < SimpleDelegator
   attr_reader :page, :page_size
 
