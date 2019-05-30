@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
-ruby '2.6.1'
+ruby '2.6.3'
 
 gem 'activerecord-session_store', '~> 1.1'
 gem 'audited', '~> 4.8'
@@ -25,7 +25,7 @@ gem 'saml-kit', '~> 1.0'
 gem 'scim-kit', github: 'mokhan/scim-kit'
 gem 'spank', '~> 1.0'
 gem 'turbolinks', '~> 5'
-gem 'webpacker', '~> 3.5'
+gem 'webpacker', '~> 4.0'
 group :doc do
   gem 'jekyll', '~> 3.8'
   gem "minima", "~> 2.0" # This is the default theme for new Jekyll sites.
