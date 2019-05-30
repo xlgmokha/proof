@@ -10,10 +10,10 @@ environment.loaders.get('sass').use.splice(-1, 0, {
     debug: false,
   }
 });
-environment.plugins.prepend('RailsTranslationsPlugin', new RailsTranslationsPlugin({
-  localesPath: path.resolve(__dirname, "../locales/"),
-  root: './app/javascript'
-}))
+//environment.plugins.prepend('RailsTranslationsPlugin', new RailsTranslationsPlugin({
+  //localesPath: path.resolve(__dirname, "../locales/"),
+  //root: './app/javascript'
+//}))
 environment.plugins.append('Provide', new webpack.ProvidePlugin({
   $: 'jquery',
   jQuery: 'jquery',
