@@ -11,7 +11,7 @@
     "test:watch": "yarn test --no-single-run"
   },
   "dependencies": {
-    "@rails/webpacker": "4.0",
+    "@rails/webpacker": "^4.0.0",
     "@stimulus/polyfills": "^1.1.0",
     "bourbon": "^5.1.0",
     "bulma": "^0.7.2",
@@ -19,15 +19,12 @@
     "json-loader": "^0.5.7",
     "local-time": "^2.1.0",
     "qrcode": "^1.2.0",
-    "rails-translations-webpack-plugin": "^1.1.0",
     "rails-ujs": "^5.2.1",
     "stimulus": "^1.1.0",
     "turbolinks": "^5.2.0",
     "validator": "^10.9.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.0.0",
-    "@babel/preset-env": "^7.0.0",
     "@fortawesome/fontawesome-free": "^5.6.1",
     "babel-eslint": "^9.0.0",
     "eslint": "^5.5.0",
@@ -35,7 +32,7 @@
     "eslint-plugin-import": "^2.14.0",
     "jasmine": "^3.1.0",
     "jasmine-core": "^3.1.0",
-    "karma": "^2.0.0",
+    "karma": "^4.0.0",
     "karma-chrome-launcher": "^2.2.0",
     "karma-fixture": "^0.2.6",
     "karma-html2js-preprocessor": "^1.1.0",
@@ -50,6 +47,8 @@
     "stylelint-config-standard": "^18.2.0",
     "testdouble": "^3.7.0",
     "testdouble-jasmine": "^0.2.1",
-    "webpack-dev-server": ">=3.1.11"
+    "virtual-module-webpack-plugin": "^0.4.1",
+    "webpack-dev-server": "^3.1.11",
+    "yaml-js": "^0.2.3"
   }
 }

@@ -1,4 +1,4 @@
-import translations from './translations.json'; /* eslint-disable-line import/no-unresolved */
+import translations from 'i18n.json'; /* eslint-disable-line import/no-unresolved */
 
 export default class {
   translate(key) {
