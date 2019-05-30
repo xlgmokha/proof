@@ -15,7 +15,6 @@ module Scim
         else
           @users = paginate(User.order(:created_at), page: page - 1, page_size: page_size)
         end
-
         render formats: :scim, status: :ok
       end
 

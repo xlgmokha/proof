@@ -227,12 +227,11 @@ describe '/scim/v2/users' do
         before { get "/scim/v2/users", params: { filter: filter  }, headers: headers }
 
         specify { expect(response).to have_http_status(:ok) }
-        pending { expect(json[:totalResults]).to be(2) }
+        specify { expect(json[:totalResults]).to be(2) }
         specify { expect(json[:startIndex]).to eql(1) }
         specify { expect(json[:itemsPerPage]).to eql(25) }
         specify { expect(json[:Resources]).to be_present }
-        pending { expect(json[:Resources][0][:id]).to eql(first_matching_user.to_param) }
-        pending { expect(json[:Resources][1][:id]).to eql(second_matching_user.to_param) }
+        specify { expect(json[:Resources].map { |x| x[:id] }).to match_array([first_matching_user.to_param, second_matching_user.to_param]) }
       end
     end
 
