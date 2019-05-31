@@ -2,7 +2,8 @@
 
 module Scim
   class Visitor
-    def initialize(attribute_mappings = {})
+    def initialize(clazz, attribute_mappings = {})
+      @clazz = clazz
       @attribute_mappings = attribute_mappings
     end
 
@@ -14,30 +15,30 @@ module Scim
       when 'or'
         visit(node[:left]).or(visit(node[:right]))
       when 'eq'
-        User.where(attr => value_from(node))
+        @clazz.where(attr => value_from(node))
       when 'ne'
-        User.where.not(attr => value_from(node))
+        @clazz.where.not(attr => value_from(node))
       when 'co'
-        User.where("#{attr} like ?", "%#{value_from(node)}%")
+        @clazz.where("#{attr} like ?", "%#{value_from(node)}%")
       when 'sw'
-        User.where("#{attr} like ?", "#{value_from(node)}%")
+        @clazz.where("#{attr} like ?", "#{value_from(node)}%")
       when 'ew'
-        User.where("#{attr} like ?", "%#{value_from(node)}")
+        @clazz.where("#{attr} like ?", "%#{value_from(node)}")
       when 'gt'
-        User.where("#{attr} > ?", cast_value_from(node))
+        @clazz.where("#{attr} > ?", cast_value_from(node))
       when 'ge'
-        User.where("#{attr} >= ?", cast_value_from(node))
+        @clazz.where("#{attr} >= ?", cast_value_from(node))
       when 'lt'
-        User.where("#{attr} < ?", cast_value_from(node))
+        @clazz.where("#{attr} < ?", cast_value_from(node))
       when 'le'
-        User.where("#{attr} <= ?", cast_value_from(node))
+        @clazz.where("#{attr} <= ?", cast_value_from(node))
       else
-        User.none
+        @clazz.none
       end
     end
 
     def self.result_for(node)
-      new(SCIM::User::ATTRIBUTES).visit(node)
+      new(User, SCIM::User::ATTRIBUTES).visit(node)
     end
 
     private
