@@ -10,11 +10,19 @@ module Scim
       end
 
       def index
-        if params[:filter].present?
-          @users = paginate(apply_filter_to(User.order(:created_at), params[:filter]), page: page - 1, page_size: page_size)
-        else
-          @users = paginate(User.order(:created_at), page: page - 1, page_size: page_size)
-        end
+        @users =
+          if params[:filter].present?
+            paginate(
+              apply_filter_to(User.order(:created_at), params[:filter]),
+              page: page - 1,
+              page_size: page_size
+            )
+          else
+            paginate(
+              User.order(:created_at),
+              page: page - 1, page_size: page_size
+            )
+          end
         render formats: :scim, status: :ok
       end
 
@@ -59,9 +67,9 @@ module Scim
         page_param(:count, default: 25, bottom: 0, top: 25)
       end
 
-      def apply_filter_to(scope, _raw_filter)
+      def apply_filter_to(scope, raw_filter)
         parser = Scim::Kit::V2::Filter.new
-        parse_tree = parser.parse(params[:filter])
+        parse_tree = parser.parse(raw_filter)
         scope.scim_filter_for(parse_tree)
       end
     end
