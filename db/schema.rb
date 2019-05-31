@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_10_20_161349) do
+ActiveRecord::Schema.define(version: 2019_05_31_042804) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -121,7 +121,7 @@ ActiveRecord::Schema.define(version: 2018_10_20_161349) do
   end
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "email"
+    t.string "email", null: false
     t.string "password_digest"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -129,6 +129,7 @@ ActiveRecord::Schema.define(version: 2018_10_20_161349) do
     t.string "mfa_secret"
     t.string "locale", default: "en", null: false
     t.string "timezone", default: "Etc/UTC", null: false
+    t.index ["email"], name: "index_users_on_email"
   end
 
   add_foreign_key "authorizations", "clients"
