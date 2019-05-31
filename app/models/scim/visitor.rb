@@ -2,15 +2,19 @@
 
 module Scim
   class Visitor
-    def self.result_for(tree)
+    def initialize(attribute_mappings = {})
+      @attribute_mappings = attribute_mappings
+    end
+
+    def visit(tree)
       attribute = tree[:attribute].to_s
-      attr = SCIM::User::ATTRIBUTES[attribute] || attribute
+      attr = @attribute_mappings[attribute] || attribute
 
       case tree[:operator].to_s
       when 'and'
-        result_for(tree[:left]).merge(result_for(tree[:right]))
+        visit(tree[:left]).merge(visit(tree[:right]))
       when 'or'
-        result_for(tree[:left]).or(result_for(tree[:right]))
+        visit(tree[:left]).or(visit(tree[:right]))
       when 'eq'
         User.where(attr => tree[:value].to_s[1..-2])
       when 'ne'
@@ -40,6 +44,10 @@ module Scim
       else
         User.none
       end
+    end
+
+    def self.result_for(tree)
+      new(SCIM::User::ATTRIBUTES).visit(tree)
     end
   end
 end
