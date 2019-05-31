@@ -2,36 +2,35 @@
 
 module Scim
   class Visitor
-    def initialize(clazz, attribute_mappings = {})
+    def initialize(clazz, mapper = {})
       @clazz = clazz
-      @attribute_mappings = attribute_mappings
+      @mapper = mapper
     end
 
     def visit(node)
-      attr = attr_from(node)
       case node[:operator].to_s
       when 'and'
         visit(node[:left]).merge(visit(node[:right]))
       when 'or'
         visit(node[:left]).or(visit(node[:right]))
       when 'eq'
-        @clazz.where(attr => value_from(node))
+        @clazz.where(attr_for(node) => value_from(node))
       when 'ne'
-        @clazz.where.not(attr => value_from(node))
+        @clazz.where.not(attr_for(node) => value_from(node))
       when 'co'
-        @clazz.where("#{attr} like ?", "%#{value_from(node)}%")
+        @clazz.where("#{attr_for(node)} like ?", "%#{value_from(node)}%")
       when 'sw'
-        @clazz.where("#{attr} like ?", "#{value_from(node)}%")
+        @clazz.where("#{attr_for(node)} like ?", "#{value_from(node)}%")
       when 'ew'
-        @clazz.where("#{attr} like ?", "%#{value_from(node)}")
+        @clazz.where("#{attr_for(node)} like ?", "%#{value_from(node)}")
       when 'gt'
-        @clazz.where("#{attr} > ?", cast_value_from(node))
+        @clazz.where("#{attr_for(node)} > ?", cast_value_from(node))
       when 'ge'
-        @clazz.where("#{attr} >= ?", cast_value_from(node))
+        @clazz.where("#{attr_for(node)} >= ?", cast_value_from(node))
       when 'lt'
-        @clazz.where("#{attr} < ?", cast_value_from(node))
+        @clazz.where("#{attr_for(node)} < ?", cast_value_from(node))
       when 'le'
-        @clazz.where("#{attr} <= ?", cast_value_from(node))
+        @clazz.where("#{attr_for(node)} <= ?", cast_value_from(node))
       else
         @clazz.none
       end
@@ -51,9 +50,9 @@ module Scim
       DateTime.parse(value_from(node))
     end
 
-    def attr_from(node)
+    def attr_for(node)
       attribute = node[:attribute].to_s
-      @attribute_mappings[attribute] || attribute
+      @mapper[attribute] || attribute
     end
   end
 end
