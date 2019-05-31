@@ -8,28 +8,28 @@ module Scim
     end
 
     def visit(node)
-      case node[:operator].to_s
-      when 'and'
+      case node[:operator].to_sym
+      when :and
         visit(node[:left]).merge(visit(node[:right]))
-      when 'or'
+      when :or
         visit(node[:left]).or(visit(node[:right]))
-      when 'eq'
+      when :eq
         @clazz.where(attr_for(node) => value_from(node))
-      when 'ne'
+      when :ne
         @clazz.where.not(attr_for(node) => value_from(node))
-      when 'co'
+      when :co
         @clazz.where("#{attr_for(node)} like ?", "%#{value_from(node)}%")
-      when 'sw'
+      when :sw
         @clazz.where("#{attr_for(node)} like ?", "#{value_from(node)}%")
-      when 'ew'
+      when :ew
         @clazz.where("#{attr_for(node)} like ?", "%#{value_from(node)}")
-      when 'gt'
+      when :gt
         @clazz.where("#{attr_for(node)} > ?", cast_value_from(node))
-      when 'ge'
+      when :ge
         @clazz.where("#{attr_for(node)} >= ?", cast_value_from(node))
-      when 'lt'
+      when :lt
         @clazz.where("#{attr_for(node)} < ?", cast_value_from(node))
-      when 'le'
+      when :le
         @clazz.where("#{attr_for(node)} <= ?", cast_value_from(node))
       else
         @clazz.none
