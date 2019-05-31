@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/mokhan/scim-kit.git
-  revision: 38f5077e882180aebeaeb3553bf196107561bc69
+  revision: 55ab23972bc21d8fe3823a8b081ac417949033db
   specs:
     scim-kit (0.3.2)
       activemodel (>= 5.2.0)

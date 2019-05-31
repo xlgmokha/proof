@@ -31,6 +31,8 @@ module Scim
         @clazz.where("#{attr_for(node)} < ?", cast_value_from(node))
       when :le
         @clazz.where("#{attr_for(node)} <= ?", cast_value_from(node))
+      when :pr
+        @clazz.where.not(attr_for(node) => nil)
       else
         @clazz.none
       end
