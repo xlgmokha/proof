@@ -27,6 +27,11 @@ RSpec.describe User do
       expect(results).to match_array(users)
     end
 
+    pending do
+      results = subject.scim_filter_for(tree_for("userName pr and not (userName eq \"#{random_user.email}\")"))
+      expect(results).to match_array(users - [random_user])
+    end
+
     specify do
       results = subject.scim_filter_for(tree_for("userName eq \"#{random_user.email}\""))
       expect(results).to match_array([random_user])
