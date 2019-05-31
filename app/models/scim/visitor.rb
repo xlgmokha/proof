@@ -16,30 +16,26 @@ module Scim
       when 'or'
         visit(tree[:left]).or(visit(tree[:right]))
       when 'eq'
-        User.where(attr => tree[:value].to_s[1..-2])
+        User.where(attr => value_from(tree))
       when 'ne'
-        User.where.not(attr => tree[:value].to_s[1..-2])
+        User.where.not(attr => value_from(tree))
       when 'co'
-        User.where("#{attr} like ?", "%#{tree[:value].to_s[1..-2]}%")
+        User.where("#{attr} like ?", "%#{value_from(tree)}%")
       when 'sw'
-        User.where("#{attr} like ?", "#{tree[:value].to_s[1..-2]}%")
+        User.where("#{attr} like ?", "#{value_from(tree)}%")
       when 'ew'
-        User.where("#{attr} like ?", "%#{tree[:value].to_s[1..-2]}")
+        User.where("#{attr} like ?", "%#{value_from(tree)}")
       when 'gt'
-        value = tree[:value].to_s[1..-2]
-        value = DateTime.parse(value)
+        value = DateTime.parse(value_from(tree))
         User.where("#{attr} > ?", value)
       when 'ge'
-        value = tree[:value].to_s[1..-2]
-        value = DateTime.parse(value)
+        value = DateTime.parse(value_from(tree))
         User.where("#{attr} >= ?", value)
       when 'lt'
-        value = tree[:value].to_s[1..-2]
-        value = DateTime.parse(value)
+        value = DateTime.parse(value_from(tree))
         User.where("#{attr} < ?", value)
       when 'le'
-        value = tree[:value].to_s[1..-2]
-        value = DateTime.parse(value)
+        value = DateTime.parse(value_from(tree))
         User.where("#{attr} <= ?", value)
       else
         User.none
@@ -48,6 +44,12 @@ module Scim
 
     def self.result_for(tree)
       new(SCIM::User::ATTRIBUTES).visit(tree)
+    end
+
+    private
+
+    def value_from(tree)
+      tree[:value].to_s[1..-2]
     end
   end
 end
