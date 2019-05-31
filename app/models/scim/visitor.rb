@@ -6,50 +6,53 @@ module Scim
       @attribute_mappings = attribute_mappings
     end
 
-    def visit(tree)
-      attribute = tree[:attribute].to_s
-      attr = @attribute_mappings[attribute] || attribute
-
-      case tree[:operator].to_s
+    def visit(node)
+      attr = attr_from(node)
+      case node[:operator].to_s
       when 'and'
-        visit(tree[:left]).merge(visit(tree[:right]))
+        visit(node[:left]).merge(visit(node[:right]))
       when 'or'
-        visit(tree[:left]).or(visit(tree[:right]))
+        visit(node[:left]).or(visit(node[:right]))
       when 'eq'
-        User.where(attr => value_from(tree))
+        User.where(attr => value_from(node))
       when 'ne'
-        User.where.not(attr => value_from(tree))
+        User.where.not(attr => value_from(node))
       when 'co'
-        User.where("#{attr} like ?", "%#{value_from(tree)}%")
+        User.where("#{attr} like ?", "%#{value_from(node)}%")
       when 'sw'
-        User.where("#{attr} like ?", "#{value_from(tree)}%")
+        User.where("#{attr} like ?", "#{value_from(node)}%")
       when 'ew'
-        User.where("#{attr} like ?", "%#{value_from(tree)}")
+        User.where("#{attr} like ?", "%#{value_from(node)}")
       when 'gt'
-        value = DateTime.parse(value_from(tree))
-        User.where("#{attr} > ?", value)
+        User.where("#{attr} > ?", cast_value_from(node))
       when 'ge'
-        value = DateTime.parse(value_from(tree))
-        User.where("#{attr} >= ?", value)
+        User.where("#{attr} >= ?", cast_value_from(node))
       when 'lt'
-        value = DateTime.parse(value_from(tree))
-        User.where("#{attr} < ?", value)
+        User.where("#{attr} < ?", cast_value_from(node))
       when 'le'
-        value = DateTime.parse(value_from(tree))
-        User.where("#{attr} <= ?", value)
+        User.where("#{attr} <= ?", cast_value_from(node))
       else
         User.none
       end
     end
 
-    def self.result_for(tree)
-      new(SCIM::User::ATTRIBUTES).visit(tree)
+    def self.result_for(node)
+      new(SCIM::User::ATTRIBUTES).visit(node)
     end
 
     private
 
-    def value_from(tree)
-      tree[:value].to_s[1..-2]
+    def value_from(node)
+      node[:value].to_s[1..-2]
+    end
+
+    def cast_value_from(node)
+      DateTime.parse(value_from(node))
+    end
+
+    def attr_from(node)
+      attribute = node[:attribute].to_s
+      @attribute_mappings[attribute] || attribute
     end
   end
 end
