@@ -47,7 +47,16 @@ module Scim
     end
 
     def cast_value_from(node)
-      DateTime.parse(value_from(node))
+      attr = attr_for(node)
+      value = value_from(node)
+      type = @clazz.columns_hash[attr.to_s].type
+
+      case type
+      when :datetime
+        DateTime.parse(value)
+      else
+        value.to_s
+      end
     end
 
     def attr_for(node)
