@@ -13,6 +13,7 @@ RSpec.describe User do
 
   describe ".scim_filter_for" do
     subject { described_class }
+
     let!(:users) { create_list(:user, 10) }
     let(:random_user) { users.sample }
     let(:parser) { Scim::Kit::V2::Filter.new }
