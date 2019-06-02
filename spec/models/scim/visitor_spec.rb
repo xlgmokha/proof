@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe ::Scim::Visitor do
@@ -13,7 +15,7 @@ RSpec.describe ::Scim::Visitor do
     end
 
     specify do
-      results = Scim::Node.parse("userName pr").accept(subject)
+      results = described_class.result_for("userName pr")
       expect(results.to_sql).to eql(User.where.not(email: nil).to_sql)
       expect(results).to match_array(users)
     end

@@ -78,8 +78,9 @@ module Scim
       end
     end
 
-    def self.result_for(node)
-      new(User, SCIM::User::ATTRIBUTES).visit(node)
+    def self.result_for(filter)
+      node = Scim::Node.parse(filter)
+      node.accept(new(User, SCIM::User::ATTRIBUTES))
     end
 
     private
