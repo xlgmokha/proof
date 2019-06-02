@@ -12,7 +12,7 @@ module Scim
       def index
         @users =
           if params[:filter].present?
-            User.order(:created_at).scim_filter_for(params[:filter])
+            User.order(:created_at).scim_search(params[:filter])
           else
             User.order(:created_at)
           end

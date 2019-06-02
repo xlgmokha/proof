@@ -1,46 +1,6 @@
 # frozen_string_literal: true
 
 module Scim
-  class Node
-    def initialize(node)
-      @node = node
-    end
-
-    def operator
-      @node[:operator].to_sym
-    end
-
-    def attribute
-      @node[:attribute].to_s
-    end
-
-    def value
-      @node[:value].to_s[1..-2]
-    end
-
-    def accept(visitor)
-      visitor.visit(self)
-    end
-
-    def left
-      self.class.new(self[:left])
-    end
-
-    def right
-      self.class.new(self[:right])
-    end
-
-    def self.parse(query)
-      new(Scim::Kit::V2::Filter.new.parse(query))
-    end
-
-    private
-
-    def [](key)
-      @node[key]
-    end
-  end
-
   class Visitor
     def initialize(clazz, mapper = {})
       @clazz = clazz
@@ -76,11 +36,6 @@ module Scim
       else
         @clazz.none
       end
-    end
-
-    def self.result_for(filter)
-      node = Scim::Node.parse(filter)
-      node.accept(new(User, SCIM::User::ATTRIBUTES))
     end
 
     private
