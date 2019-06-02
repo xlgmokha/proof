@@ -2,6 +2,8 @@
 
 module Scim
   class Visitor
+    include Varkon
+
     def initialize(clazz, mapper = {})
       @clazz = clazz
       @mapper = mapper
@@ -14,15 +16,15 @@ module Scim
       when :or
         visit(node.left).or(visit(node.right))
       when :eq
-        @clazz.where(attr_for(node) => value_from(node))
+        @clazz.where(attr_for(node) => node.value)
       when :ne
-        @clazz.where.not(attr_for(node) => value_from(node))
+        @clazz.where.not(attr_for(node) => node.value)
       when :co
-        @clazz.where("#{attr_for(node)} like ?", "%#{value_from(node)}%")
+        @clazz.where("#{attr_for(node)} LIKE ?", "%#{escape_sql_wildcards(node.value)}%")
       when :sw
-        @clazz.where("#{attr_for(node)} like ?", "#{value_from(node)}%")
+        @clazz.where("#{attr_for(node)} LIKE ?", "#{escape_sql_wildcards(node.value)}%")
       when :ew
-        @clazz.where("#{attr_for(node)} like ?", "%#{value_from(node)}")
+        @clazz.where("#{attr_for(node)} LIKE ?", "%#{escape_sql_wildcards(node.value)}")
       when :gt
         @clazz.where("#{attr_for(node)} > ?", cast_value_from(node))
       when :ge
@@ -40,20 +42,12 @@ module Scim
 
     private
 
-    def value_from(node)
-      node.value
-    end
-
     def cast_value_from(node)
-      attr = attr_for(node)
-      value = value_from(node)
-      type = @clazz.columns_hash[attr.to_s].type
-
-      case type
+      case @clazz.columns_hash[attr_for(node).to_s].type
       when :datetime
-        DateTime.parse(value)
+        DateTime.parse(node.value)
       else
-        value.to_s
+        node.value.to_s
       end
     end
 

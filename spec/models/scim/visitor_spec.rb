@@ -78,16 +78,16 @@ RSpec.describe ::Scim::Visitor do
     end
 
     context "when searching for condition a OR condition b" do
-      let(:first_user) { users.sample }
-      let(:second_user) { users.sample }
+      let(:first_user) { users.first }
+      let(:second_user) { users.last }
       let(:results) { Scim::Search::Node.parse(%(userName eq "#{first_user.email}" or userName eq "#{second_user.email}")).accept(subject) }
 
       specify { expect(results.pluck(:email)).to match_array([first_user.email, second_user.email]) }
     end
 
     context "when searching for condition a AND condition b" do
-      let(:first_user) { users.sample }
-      let(:second_user) { users.sample }
+      let(:first_user) { users.first }
+      let(:second_user) { users.last }
       let(:results) { Scim::Search::Node.parse(%(meta.lastModified gt "#{10.minutes.from_now.iso8601}" and meta.lastModified lt "#{15.minutes.from_now.iso8601}")).accept(subject) }
 
       before do
