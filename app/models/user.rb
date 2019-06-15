@@ -36,6 +36,10 @@ class User < ApplicationRecord
   end
 
   class << self
+    def scim_mapper
+      SCIM::User::ATTRIBUTES
+    end
+
     def login(email, password)
       return if email.blank? || password.blank?
 

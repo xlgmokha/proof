@@ -42,9 +42,9 @@ module Scim
       end
     end
 
-    def self.for(filter, clazz, mapper)
+    def self.for(filter, clazz)
       node = Scim::Search::Node.parse(filter)
-      node.accept(Scim::Visitor.new(clazz, mapper))
+      node.accept(Scim::Visitor.new(clazz, clazz.scim_mapper))
     end
   end
 end
