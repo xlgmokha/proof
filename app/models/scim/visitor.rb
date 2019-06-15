@@ -3,6 +3,20 @@
 module Scim
   class Visitor
     include Varkon
+    VISITORS = {
+      and: :visit_and,
+      co: :visit_contains,
+      eq: :visit_equals,
+      ew: :visit_ends_with,
+      ge: :visit_greater_than_equals,
+      gt: :visit_greater_than,
+      le: :visit_less_than_equals,
+      lt: :visit_less_than,
+      ne: :visit_not_equals,
+      or: :visit_or,
+      pr: :visit_presence,
+      sw: :visit_starts_with,
+    }
 
     def initialize(clazz, mapper = {})
       @clazz = clazz
@@ -16,24 +30,7 @@ module Scim
     private
 
     def visitor_for(node)
-      visitors[node.operator] || ->(x) { visit_unknown(x) }
-    end
-
-    def visitors
-      @visitors ||= {
-        and: ->(x) { visit_and(x) },
-        co: ->(x) { visit_contains(x) },
-        eq: ->(x) { visit_equals(x) },
-        ew: ->(x) { visit_ends_with(x) },
-        ge: ->(x) { visit_greater_than_equals(x) },
-        gt: ->(x) { visit_greater_than(x) },
-        le: ->(x) { visit_less_than_equals(x) },
-        lt: ->(x) { visit_less_than(x) },
-        ne: ->(x) { visit_not_equals(x) },
-        or: ->(x) { visit_or(x) },
-        pr: ->(x) { visit_presence(x) },
-        sw: ->(x) { visit_starts_with(x) },
-      }
+      method(VISITORS.fetch(node.operator, :visit_unknown))
     end
 
     def visit_and(node)
@@ -104,7 +101,7 @@ module Scim
     end
 
     def attr_for(node)
-      @mapper[node.attribute] || node.attribute
+      @mapper.fetch(node.attribute, node.attribute)
     end
   end
 end
