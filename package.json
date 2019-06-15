@@ -2,7 +2,7 @@
   "name": "proof",
   "private": true,
   "scripts": {
-    "lint": "yarn lint:js && yarn lint:scss",
+    "lint": "yarn lint:js && yarn lint:scss && yarn audit",
     "lint:autofix": "yarn lint:js --fix && yarn lint:scss --fix",
     "lint:js": "eslint app/javascript/",
     "lint:scss": "stylelint -f unix --color app/javascript/styles/*.scss",

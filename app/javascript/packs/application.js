@@ -10,9 +10,9 @@
 import LocalTime from 'local-time';
 import Rails from 'rails-ujs';
 import Turbolinks from 'turbolinks';
-import 'styles';
-import 'images';
-import 'controllers'
+import '../styles';
+import '../images';
+import '../controllers';
 
 LocalTime.start();
 Rails.start();
