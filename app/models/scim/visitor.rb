@@ -42,11 +42,7 @@ module Scim
     end
 
     def visit_equals(node)
-      if node.not?
-        @clazz.where.not(attr_for(node) => node.value)
-      else
-        @clazz.where(attr_for(node) => node.value)
-      end
+      query_for(node, attr_for(node) => node.value)
     end
 
     def visit_not_equals(node)
@@ -58,71 +54,43 @@ module Scim
     end
 
     def visit_contains(node)
-      if node.not?
-        @clazz.where.not(
-          "#{attr_for(node)} LIKE ?", "%#{escape_sql_wildcards(node.value)}%"
-        )
-      else
-        @clazz.where(
-          "#{attr_for(node)} LIKE ?", "%#{escape_sql_wildcards(node.value)}%"
-        )
-      end
+      query_for(
+        node,
+        "#{attr_for(node)} LIKE ?",
+        "%#{escape_sql_wildcards(node.value)}%"
+      )
     end
 
     def visit_starts_with(node)
-      if node.not?
-        @clazz.where.not(
-          "#{attr_for(node)} LIKE ?", "#{escape_sql_wildcards(node.value)}%"
-        )
-      else
-        @clazz.where(
-          "#{attr_for(node)} LIKE ?", "#{escape_sql_wildcards(node.value)}%"
-        )
-      end
+      query_for(
+        node,
+        "#{attr_for(node)} LIKE ?",
+        "#{escape_sql_wildcards(node.value)}%"
+      )
     end
 
     def visit_ends_with(node)
-      if node.not?
-        @clazz.where.not(
-          "#{attr_for(node)} LIKE ?", "%#{escape_sql_wildcards(node.value)}"
-        )
-      else
-        @clazz.where(
-          "#{attr_for(node)} LIKE ?", "%#{escape_sql_wildcards(node.value)}"
-        )
-      end
+      query_for(
+        node,
+        "#{attr_for(node)} LIKE ?",
+        "%#{escape_sql_wildcards(node.value)}"
+      )
     end
 
     def visit_greater_than(node)
-      if node.not?
-        @clazz.where.not("#{attr_for(node)} > ?", cast_value_from(node))
-      else
-        @clazz.where("#{attr_for(node)} > ?", cast_value_from(node))
-      end
+      query_for(node, "#{attr_for(node)} > ?", cast_value_from(node))
     end
 
     def visit_greater_than_equals(node)
-      if node.not?
-        @clazz.where.not("#{attr_for(node)} >= ?", cast_value_from(node))
-      else
-        @clazz.where("#{attr_for(node)} >= ?", cast_value_from(node))
-      end
+      query_for(node, "#{attr_for(node)} >= ?", cast_value_from(node))
     end
 
     def visit_less_than(node)
-      if node.not?
-        @clazz.where.not("#{attr_for(node)} < ?", cast_value_from(node))
-      else
-        @clazz.where("#{attr_for(node)} < ?", cast_value_from(node))
-      end
+      query_for(node, "#{attr_for(node)} < ?", cast_value_from(node))
     end
 
     def visit_less_than_equals(node)
-      if node.not?
-        @clazz.where.not("#{attr_for(node)} <= ?", cast_value_from(node))
-      else
-        @clazz.where("#{attr_for(node)} <= ?", cast_value_from(node))
-      end
+      query_for(node, "#{attr_for(node)} <= ?", cast_value_from(node))
     end
 
     def visit_presence(node)
@@ -148,6 +116,10 @@ module Scim
 
     def attr_for(node)
       @mapper.fetch(node.attribute, node.attribute)
+    end
+
+    def query_for(node, *conditions)
+      node.not? ? @clazz.where.not(*conditions) : @clazz.where(*conditions)
     end
   end
 end

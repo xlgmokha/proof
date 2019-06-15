@@ -8,15 +8,15 @@ module Scim
       end
 
       def operator
-        @hash[:operator].to_sym
+        self[:operator].to_sym
       end
 
       def attribute
-        @hash[:attribute].to_s
+        self[:attribute].to_s
       end
 
       def value
-        @hash[:value].to_s[1..-2]
+        self[:value].to_s[1..-2]
       end
 
       def not?
