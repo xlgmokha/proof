@@ -15,7 +15,7 @@ RSpec.describe ::Scim::Search do
       expect(results).to match_array(users)
     end
 
-    pending do
+    specify do
       results = subject.for("userName pr and not (userName eq \"#{random_user.email}\")")
       expect(results).to match_array(users - [random_user])
     end

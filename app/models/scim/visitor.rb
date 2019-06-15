@@ -42,7 +42,11 @@ module Scim
     end
 
     def visit_equals(node)
-      @clazz.where(attr_for(node) => node.value)
+      if node.not?
+        @clazz.where.not(attr_for(node) => node.value)
+      else
+        @clazz.where(attr_for(node) => node.value)
+      end
     end
 
     def visit_not_equals(node)

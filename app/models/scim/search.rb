@@ -19,6 +19,10 @@ module Scim
         @node[:value].to_s[1..-2]
       end
 
+      def not?
+        @node.key?(:not)
+      end
+
       def accept(visitor)
         visitor.visit(self)
       end
@@ -33,6 +37,10 @@ module Scim
 
       def self.parse(query)
         new(::Scim::Kit::V2::Filter.new.parse(query))
+      end
+
+      def inspect
+        @node.inspect
       end
 
       private
