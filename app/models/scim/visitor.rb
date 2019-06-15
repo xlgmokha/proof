@@ -16,7 +16,7 @@ module Scim
       or: :visit_or,
       pr: :visit_presence,
       sw: :visit_starts_with,
-    }
+    }.freeze
 
     def initialize(clazz, mapper = {})
       @clazz = clazz
