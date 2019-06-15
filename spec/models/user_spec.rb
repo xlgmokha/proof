@@ -24,6 +24,11 @@ RSpec.describe User do
     end
 
     specify do
+      results = subject.scim_search("emails.value eq \"#{random_user.email}\"")
+      expect(results).to match_array([random_user])
+    end
+
+    specify do
       results = subject.scim_search("userName eq \"#{random_user.email}\"")
       expect(results).to match_array([random_user])
     end
@@ -101,5 +106,15 @@ RSpec.describe User do
 
       specify { expect(results).to match_array([first_user, second_user]) }
     end
+  end
+
+  describe ".scim_mapper" do
+    subject { described_class }
+
+    specify { expect(subject.scim_mapper['emails.value']).to be(:email) }
+    specify { expect(subject.scim_mapper['meta.created']).to be(:created_at) }
+    specify { expect(subject.scim_mapper['meta.lastModified']).to be(:updated_at) }
+    specify { expect(subject.scim_mapper[:userName]).to be(:email) }
+    specify { expect(subject.scim_mapper[:user_name]).to be(:email) }
   end
 end

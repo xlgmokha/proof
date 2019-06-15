@@ -3,7 +3,7 @@ require: rubocop-rspec
 # https://github.com/bbatsov/rubocop/blob/master/config/default.yml
 AllCops:
   TargetRubyVersion:
-    2.5
+    2.6
   Exclude:
     - 'bin/**/*'
     - 'config/initializers/*.rb'

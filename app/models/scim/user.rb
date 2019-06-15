@@ -2,11 +2,14 @@
 
 module SCIM
   class User
-    ATTRIBUTES = {
-      userName: :email,
-      'meta.lastModified' => :updated_at
-    }.with_indifferent_access
     include ActiveModel::Model
+    ATTRIBUTES = {
+      'emails.value': :email,
+      'meta.created' => :created_at,
+      'meta.lastModified' => :updated_at,
+      userName: :email,
+      user_name: :email,
+    }.with_indifferent_access
     attr_accessor :id, :schemas, :userName, :name, :locale, :timezone, :password
 
     validate :must_be_user_schema
