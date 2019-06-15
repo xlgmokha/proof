@@ -21,6 +21,55 @@ RSpec.describe ::Scim::Search do
     end
 
     specify do
+      results = subject.for("userName pr and not (userName co \"#{random_user.email}\")")
+      expect(results).to match_array(users - [random_user])
+    end
+
+    specify do
+      results = subject.for("userName pr and not (userName ew \"#{random_user.email}\")")
+      expect(results).to match_array(users - [random_user])
+    end
+
+    specify do
+      random_user.update(updated_at: 10.minutes.from_now)
+      results = subject.for("userName pr and not (meta.lastModified ge \"#{5.minutes.from_now.iso8601}\")")
+      expect(results).to match_array(users - [random_user])
+    end
+
+    specify do
+      random_user.update(updated_at: 10.minutes.from_now)
+      results = subject.for("userName pr and not (meta.lastModified gt \"#{5.minutes.from_now.iso8601}\")")
+      expect(results).to match_array(users - [random_user])
+    end
+
+    specify do
+      random_user.update(updated_at: 10.minutes.from_now)
+      results = subject.for("userName pr and not (meta.lastModified le \"#{5.minutes.from_now.iso8601}\")")
+      expect(results).to match_array([random_user])
+    end
+
+    specify do
+      random_user.update(updated_at: 10.minutes.from_now)
+      results = subject.for("userName pr and not (meta.lastModified lt \"#{5.minutes.from_now.iso8601}\")")
+      expect(results).to match_array([random_user])
+    end
+
+    specify do
+      results = subject.for("userName pr and not (userName ne \"#{random_user.email}\")")
+      expect(results).to match_array([random_user])
+    end
+
+    specify do
+      results = subject.for("not (userName pr)")
+      expect(results).to match_array([])
+    end
+
+    specify do
+      results = subject.for("userName pr and not (userName sw \"#{random_user.email}\")")
+      expect(results).to match_array(users - [random_user])
+    end
+
+    specify do
       results = subject.for("userName eq \"#{random_user.email}\"")
       expect(results).to match_array([random_user])
     end
