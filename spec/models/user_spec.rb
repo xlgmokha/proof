@@ -90,7 +90,7 @@ RSpec.describe User do
       let(:second_user) { users.sample }
       let(:results) { described_class.scim_search(%(userName eq "#{first_user.email}" or userName eq "#{second_user.email}")) }
 
-      specify { expect(results.pluck(:email)).to match_array([first_user.email, second_user.email]) }
+      specify { expect(results.pluck(:email).uniq).to match_array([first_user.email, second_user.email].uniq) }
     end
 
     context "when searching for condition a AND condition b" do

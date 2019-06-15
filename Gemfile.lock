@@ -1,14 +1,3 @@
-GIT
-  remote: https://github.com/mokhan/scim-kit.git
-  revision: 1168b638d11b335127345f9754cec025b30dbeff
-  specs:
-    scim-kit (0.3.2)
-      activemodel (>= 5.2.0)
-      net-hippie (~> 0.2)
-      parslet (~> 1.8)
-      tilt (~> 2.0)
-      tilt-jbuilder (~> 0.7)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -302,6 +291,12 @@ GEM
     sass-listen (4.0.0)
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
+    scim-kit (0.4.0)
+      activemodel (>= 5.2.0)
+      net-hippie (~> 0.2)
+      parslet (~> 1.8)
+      tilt (~> 2.0)
+      tilt-jbuilder (~> 0.7)
     selenium-webdriver (3.142.3)
       childprocess (>= 0.5, < 2.0)
       rubyzip (~> 1.2, >= 1.2.2)
@@ -396,7 +391,7 @@ DEPENDENCIES
   rubocop-rails (~> 2.0)
   rubocop-rspec (~> 1.30)
   saml-kit (~> 1.0)
-  scim-kit!
+  scim-kit (~> 0.4)
   selenium-webdriver (~> 3.14)
   spank (~> 1.0)
   turbolinks (~> 5)
