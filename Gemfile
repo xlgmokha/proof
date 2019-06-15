@@ -25,8 +25,8 @@ gem 'saml-kit', '~> 1.0'
 gem 'scim-kit', github: 'mokhan/scim-kit'
 gem 'spank', '~> 1.0'
 gem 'turbolinks', '~> 5'
-gem 'webpacker', '~> 4.0'
 gem 'varkon', '~> 0.1'
+gem 'webpacker', '~> 4.0'
 group :doc do
   gem 'jekyll', '~> 3.8'
   gem "minima", "~> 2.0" # This is the default theme for new Jekyll sites.

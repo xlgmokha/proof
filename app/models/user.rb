@@ -13,7 +13,7 @@ class User < ApplicationRecord
   validates :timezone, inclusion: VALID_TIMEZONES
   validates :locale, inclusion: VALID_LOCALES
 
-  scope :scim_search, ->(filter) { Scim::Search.for(filter, User) }
+  scope :scim_search, ->(filter) { Scim::Search.new(User).for(filter) }
 
   def name_id_for(name_id_format)
     Saml::Kit::Namespaces::PERSISTENT == name_id_format ? id : email
