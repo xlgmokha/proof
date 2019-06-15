@@ -12,7 +12,7 @@ RSpec.describe Token, type: :model do
         subject.revoke!
       end
 
-      specify { expect(subject.reload.revoked_at.to_i).to eql(DateTime.now.to_i) }
+      specify { expect(subject.reload.revoked_at.to_i).to eql(Time.current.to_i) }
     end
 
     context "when a token associated with an authorization grant is revoked" do

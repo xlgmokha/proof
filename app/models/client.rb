@@ -4,7 +4,7 @@ class Client < ApplicationRecord
   RESPONSE_TYPES = %w[code token].freeze
   audited
   has_secure_password
-  has_many :authorizations
+  has_many :authorizations, dependent: :delete_all
   attribute :redirect_uris, :string, array: true
   enum token_endpoint_auth_method: {
     client_secret_basic: 0,
@@ -39,7 +39,7 @@ class Client < ApplicationRecord
     transaction do
       Token
         .active.where(subject: self, audience: self)
-        .update_all(revoked_at: Time.now)
+        .update_all(revoked_at: Time.current)
       Token.create!(subject: self, audience: self, token_type: :access)
     end
   end

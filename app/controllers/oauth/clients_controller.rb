@@ -42,7 +42,7 @@ module Oauth
 
         Token.find(claims[:jti])
       end
-      return request_http_token_authentication unless token.present?
+      return request_http_token_authentication if token.blank?
 
       unless Client.where(id: params[:id]).exists?
         token.revoke!

@@ -5,7 +5,11 @@ class User < ApplicationRecord
   VALID_LOCALES = I18n.available_locales.map(&:to_s)
   audited except: [:password_digest, :mfa_secret]
   has_secure_password
-  has_many :sessions, foreign_key: "user_id", class_name: UserSession.name
+  has_many :sessions,
+    foreign_key: "user_id",
+    class_name: 'UserSession',
+    inverse_of: :user,
+    dependent: :delete_all
 
   validates :email, presence: true, email: true, uniqueness: {
     case_sensitive: false

@@ -22,7 +22,7 @@ RSpec.describe UserSession do
       result
     end
 
-    specify { expect(subject.accessed_at).to eql(Time.now) }
+    specify { expect(subject.accessed_at).to eql(Time.current) }
     specify { expect(subject.ip).to eql(request.ip) }
     specify { expect(subject.user_agent).to eql(request.user_agent) }
     specify { expect(subject).to be_persisted }

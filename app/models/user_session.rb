@@ -23,7 +23,7 @@ class UserSession < ApplicationRecord
   end
 
   def revoke!
-    update!(revoked_at: Time.now)
+    update!(revoked_at: Time.current)
   end
 
   def sudo?
@@ -31,12 +31,12 @@ class UserSession < ApplicationRecord
   end
 
   def sudo!
-    update!(sudo_enabled_at: Time.now)
+    update!(sudo_enabled_at: Time.current)
   end
 
   def access(request)
     update(
-      accessed_at: Time.now,
+      accessed_at: Time.current,
       ip: request.ip,
       user_agent: request.user_agent,
     )

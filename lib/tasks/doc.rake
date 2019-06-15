@@ -7,13 +7,13 @@ namespace :doc do
     {
       config: Rails.root.join("config", "jekyll.yml").to_s,
       source: Rails.root.join('doc').to_s,
-      destination: Rails.root.join('public/doc').to_s
+      destination: Rails.root.join('public', 'doc').to_s
     }
   end
 
   desc 'Clean the API documentation'
   task :clean do
-    rm_rf Rails.root.join('public/doc')
+    rm_rf Rails.root.join('public', 'doc')
   end
 
   desc "Build static pages"

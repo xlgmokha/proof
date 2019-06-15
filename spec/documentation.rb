@@ -25,7 +25,7 @@ RSpec.configure do |config|
     puts "Booting"
     $server.boot
     print "." until $server.responsive?
-    FileUtils.rm_rf(Rails.root.join('tmp/_cassettes/'))
+    FileUtils.rm_rf(Rails.root.join('tmp', '_cassettes'))
     Net::Hippie.logger = Logger.new('/dev/null')
     VCR.configure do |x|
       x.cassette_library_dir = "tmp/_cassettes"

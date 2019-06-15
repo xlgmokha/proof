@@ -108,7 +108,7 @@ module Scim
     def cast_value_from(node)
       case @clazz.columns_hash[attr_for(node).to_s].type
       when :datetime
-        DateTime.parse(node.value)
+        DateTime.parse(node.value).utc
       else
         node.value.to_s
       end

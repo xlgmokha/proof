@@ -1,4 +1,6 @@
-require: rubocop-rspec
+require:
+  - rubocop-rails
+  - rubocop-rspec
 # For a list of available cops see:
 # https://github.com/bbatsov/rubocop/blob/master/config/default.yml
 AllCops:
@@ -14,6 +16,9 @@ AllCops:
     - 'pkg/**/*'
     - 'tmp/**/*'
     - 'vendor/**/*'
+
+Layout/AlignArguments:
+  EnforcedStyle: with_fixed_indentation
 
 Layout/IndentFirstArrayElement:
   EnforcedStyle: consistent
@@ -42,6 +47,13 @@ Metrics/PerceivedComplexity:
 
 Naming/RescuedExceptionsVariableName:
   PreferredName: error
+
+Rails/CreateTableWithTimestamps:
+  Exclude:
+    - 'db/migrate/20180923222720_install_audited.rb'
+
+Rails/SkipsModelValidations:
+  Enabled: false
 
 RSpec/DescribeClass:
   Enabled: false

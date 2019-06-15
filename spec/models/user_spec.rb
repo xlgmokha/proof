@@ -57,7 +57,7 @@ RSpec.describe User do
       freeze_time
       random_user.update!(updated_at: 10.minutes.from_now)
 
-      results = subject.scim_search("meta.lastModified gt \"#{Time.now.iso8601}\"")
+      results = subject.scim_search("meta.lastModified gt \"#{Time.current.iso8601}\"")
       expect(results).to match_array([random_user])
     end
 
@@ -73,7 +73,7 @@ RSpec.describe User do
       freeze_time
       random_user.update!(updated_at: 10.minutes.from_now)
 
-      results = subject.scim_search("meta.lastModified lt \"#{Time.now.iso8601}\"")
+      results = subject.scim_search("meta.lastModified lt \"#{Time.current.iso8601}\"")
       expect(results).to match_array(users - [random_user])
     end
 

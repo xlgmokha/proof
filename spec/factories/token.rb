@@ -15,7 +15,7 @@ FactoryBot.define do
     end
 
     trait :revoked do
-      revoked_at { Time.now }
+      revoked_at { Time.current }
     end
 
     trait :expired do

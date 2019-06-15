@@ -5,19 +5,19 @@ class Authorization < ApplicationRecord
   has_secure_token :code
   belongs_to :user
   belongs_to :client
-  has_many :tokens
+  has_many :tokens, dependent: :delete_all
   enum challenge_method: { plain: 0, sha256: 1 }
 
   scope :active, -> { where.not(id: revoked.or(where(id: expired))) }
-  scope :revoked, -> { where('revoked_at < ?', Time.now) }
-  scope :expired, -> { where('expired_at < ?', Time.now) }
+  scope :revoked, -> { where('revoked_at < ?', Time.current) }
+  scope :expired, -> { where('expired_at < ?', Time.current) }
 
   after_initialize do
-    self.expired_at = 10.minutes.from_now unless expired_at.present?
+    self.expired_at = 10.minutes.from_now if expired_at.blank?
   end
 
   def valid_verifier?(code_verifier)
-    return true unless challenge.present?
+    return true if challenge.blank?
 
     challenge ==
       if sha256?
@@ -39,7 +39,7 @@ class Authorization < ApplicationRecord
   def revoke!
     raise 'already revoked' if revoked?
 
-    now = Time.now
+    now = Time.current
     update!(revoked_at: now)
     tokens.update_all(revoked_at: now)
   end

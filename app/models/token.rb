@@ -8,8 +8,8 @@ class Token < ApplicationRecord
   belongs_to :audience, polymorphic: true
 
   scope :active, -> { where.not(id: revoked.or(where(id: expired))) }
-  scope :expired, -> { where('expired_at < ?', Time.now) }
-  scope :revoked, -> { where('revoked_at < ?', Time.now) }
+  scope :expired, -> { where('expired_at < ?', Time.current) }
+  scope :revoked, -> { where('revoked_at < ?', Time.current) }
 
   after_initialize do |x|
     if x.expired_at.nil?
@@ -22,7 +22,7 @@ class Token < ApplicationRecord
   end
 
   def revoke!
-    update!(revoked_at: Time.now)
+    update!(revoked_at: Time.current)
     authorization&.revoke!
   end
 

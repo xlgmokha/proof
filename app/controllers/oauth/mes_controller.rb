@@ -16,7 +16,7 @@ module Oauth
         claims = Token.claims_for(token)
         Token.revoked?(claims[:jti]) ? nil : claims
       end
-      request_http_token_authentication if @claims.nil? || @claims.empty?
+      request_http_token_authentication if @claims.blank?
     end
   end
 end
