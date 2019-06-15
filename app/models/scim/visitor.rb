@@ -10,37 +10,31 @@ module Scim
     end
 
     def visit(node)
-      case node.operator
-      when :and
-        visit_and(node)
-      when :or
-        visit_or(node)
-      when :eq
-        visit_equals(node)
-      when :ne
-        visit_not_equals(node)
-      when :co
-        visit_contains(node)
-      when :sw
-        visit_starts_with(node)
-      when :ew
-        visit_ends_with(node)
-      when :gt
-        visit_greater_than(node)
-      when :ge
-        visit_greater_than_equals(node)
-      when :lt
-        visit_less_than(node)
-      when :le
-        visit_less_than_equals(node)
-      when :pr
-        visit_presence(node)
-      else
-        visit_unknown(node)
-      end
+      visitor_for(node).call(node)
     end
 
     private
+
+    def visitor_for(node)
+      visitors[node.operator] || ->(x) { visit_unknown(x) }
+    end
+
+    def visitors
+      @visitors ||= {
+        and: ->(x) { visit_and(x) },
+        co: ->(x) { visit_contains(x) },
+        eq: ->(x) { visit_equals(x) },
+        ew: ->(x) { visit_ends_with(x) },
+        ge: ->(x) { visit_greater_than_equals(x) },
+        gt: ->(x) { visit_greater_than(x) },
+        le: ->(x) { visit_less_than_equals(x) },
+        lt: ->(x) { visit_less_than(x) },
+        ne: ->(x) { visit_not_equals(x) },
+        or: ->(x) { visit_or(x) },
+        pr: ->(x) { visit_presence(x) },
+        sw: ->(x) { visit_starts_with(x) },
+      }
+    end
 
     def visit_and(node)
       visit(node.left).merge(visit(node.right))
@@ -59,15 +53,21 @@ module Scim
     end
 
     def visit_contains(node)
-      @clazz.where("#{attr_for(node)} LIKE ?", "%#{escape_sql_wildcards(node.value)}%")
+      @clazz.where(
+        "#{attr_for(node)} LIKE ?", "%#{escape_sql_wildcards(node.value)}%"
+      )
     end
 
     def visit_starts_with(node)
-      @clazz.where("#{attr_for(node)} LIKE ?", "#{escape_sql_wildcards(node.value)}%")
+      @clazz.where(
+        "#{attr_for(node)} LIKE ?", "#{escape_sql_wildcards(node.value)}%"
+      )
     end
 
     def visit_ends_with(node)
-      @clazz.where("#{attr_for(node)} LIKE ?", "%#{escape_sql_wildcards(node.value)}")
+      @clazz.where(
+        "#{attr_for(node)} LIKE ?", "%#{escape_sql_wildcards(node.value)}"
+      )
     end
 
     def visit_greater_than(node)
