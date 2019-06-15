@@ -3,24 +3,24 @@
 module Scim
   class Search
     class Node
-      def initialize(node)
-        @node = node
+      def initialize(hash)
+        @hash = hash
       end
 
       def operator
-        @node[:operator].to_sym
+        @hash[:operator].to_sym
       end
 
       def attribute
-        @node[:attribute].to_s
+        @hash[:attribute].to_s
       end
 
       def value
-        @node[:value].to_s[1..-2]
+        @hash[:value].to_s[1..-2]
       end
 
       def not?
-        @node.key?(:not)
+        @hash.key?(:not)
       end
 
       def accept(visitor)
@@ -35,18 +35,14 @@ module Scim
         self.class.new(self[:right])
       end
 
-      def self.parse(query)
-        new(::Scim::Kit::V2::Filter.new.parse(query))
-      end
-
       def inspect
-        @node.inspect
+        @hash.inspect
       end
 
       private
 
       def [](key)
-        @node[key]
+        @hash[key]
       end
     end
 
@@ -55,7 +51,7 @@ module Scim
     end
 
     def for(filter)
-      node = Scim::Search::Node.parse(filter)
+      node = Scim::Search::Node.new(::Scim::Kit::V2::Filter.new.parse(filter))
       node.accept(Scim::Visitor.new(@clazz, @clazz.scim_mapper))
     end
   end
