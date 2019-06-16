@@ -18,7 +18,7 @@ describe '/scim/v1/.search' do
       {
         "schemas": [Scim::Kit::V2::Messages::SEARCH_REQUEST],
         "attributes": %w[displayName userName],
-        "filter": "displayName sw \"smith\"",
+        "filter": "userName sw \"#{user.email}\"",
         "startIndex": 1,
         "count": 10
       }
@@ -31,9 +31,10 @@ describe '/scim/v1/.search' do
     specify { expect(response.headers['Content-Type']).to eql('application/scim+json') }
     specify { expect(response.body).to be_present }
     specify { expect(json[:schemas]).to match_array([Scim::Kit::V2::Messages::LIST_RESPONSE]) }
-    specify { expect(json[:totalResults]).to be_zero }
-    specify { expect(json[:itemsPerPage]).to be_zero }
+    specify { expect(json[:totalResults]).to be(1) }
+    specify { expect(json[:itemsPerPage]).to be(10) }
     specify { expect(json[:startIndex]).to be(1) }
-    specify { expect(json[:Resources]).to be_empty }
+    specify { expect(json[:Resources].map { |x| x[:userName] }).to match_array([user.email]) }
+    specify { expect(json[:Resources].map { |x| x[:displayName] }).to match_array([user.email]) }
   end
 end

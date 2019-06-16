@@ -3,15 +3,22 @@
 module Scim
   module V2
     class SearchController < ::Scim::Controller
+      include Pageable
+
       def index
-        response.headers['Content-Type'] = 'application/scim+json'
-        render json: {
-          schemas: [Scim::Kit::V2::Messages::LIST_RESPONSE],
-          totalResults: 0,
-          itemsPerPage: 0,
-          startIndex: 1,
-          Resources: [],
-        }.to_json, status: :ok
+        @users = User.order(:created_at).scim_search(params[:filter])
+        @users = paginate(@users, page: page - 1, page_size: page_size)
+        render formats: :scim, status: :ok
+      end
+
+      private
+
+      def page
+        page_param(:startIndex, default: 0, bottom: 1, top: 100)
+      end
+
+      def page_size
+        page_param(:count, default: 25, bottom: 0, top: 25)
       end
     end
   end
