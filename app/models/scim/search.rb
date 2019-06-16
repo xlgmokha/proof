@@ -51,6 +51,8 @@ module Scim
     end
 
     def for(filter)
+      return @clazz.all if filter.blank?
+
       node = Scim::Search::Node.new(::Scim::Kit::V2::Filter.new.parse(filter))
       node.accept(Scim::Visitor.new(@clazz, @clazz.scim_mapper))
     end

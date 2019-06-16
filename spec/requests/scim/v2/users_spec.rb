@@ -231,7 +231,7 @@ describe '/scim/v2/users' do
         specify { expect(json[:startIndex]).to be(1) }
         specify { expect(json[:itemsPerPage]).to be(25) }
         specify { expect(json[:Resources]).to be_present }
-        specify { expect(json[:Resources].map { |x| x[:id] }).to match_array([first_matching_user.to_param, second_matching_user.to_param]) }
+        specify { expect(json[:Resources].map { |x| x[:id] }.uniq).to match_array([first_matching_user.to_param, second_matching_user.to_param].uniq) }
       end
     end
 

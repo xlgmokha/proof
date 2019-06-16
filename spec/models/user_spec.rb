@@ -17,6 +17,9 @@ RSpec.describe User do
     let!(:users) { create_list(:user, 10) }
     let(:random_user) { users.sample }
 
+    specify { expect(subject.scim_search("")).to match_array(users) }
+    specify { expect(subject.scim_search(nil)).to match_array(users) }
+
     specify do
       results = subject.scim_search("userName pr")
       expect(results.to_sql).to eql(subject.where.not(email: nil).to_sql)

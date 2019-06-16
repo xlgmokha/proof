@@ -10,12 +10,7 @@ module Scim
       end
 
       def index
-        @users =
-          if params[:filter].present?
-            User.order(:created_at).scim_search(params[:filter])
-          else
-            User.order(:created_at)
-          end
+        @users = User.order(:created_at).scim_search(params[:filter])
         @users = paginate(@users, page: page - 1, page_size: page_size)
         render formats: :scim, status: :ok
       end
