@@ -9,6 +9,6 @@ describe '/metadata' do
     specify { expect(Saml::Kit::Metadata.from(response.body)).to be_valid }
     specify { expect(Saml::Kit::Metadata.from(response.body).entity_id).to eql(Saml::Kit.configuration.entity_id) }
     specify { expect(response).to have_http_status(:ok) }
-    specify { expect(response.content_type).to eq("application/samlmetadata+xml") }
+    specify { expect(response.content_type).to start_with("application/samlmetadata+xml;") }
   end
 end

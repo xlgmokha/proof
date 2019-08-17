@@ -24,7 +24,7 @@ RSpec.describe "/oauth/clients" do
 
       specify { expect(response).to have_http_status(:created) }
       specify { expect(response.headers['Set-Cookie']).to be_nil }
-      specify { expect(response.content_type).to eql("application/json") }
+      specify { expect(response.content_type).to start_with("application/json") }
       specify { expect(response.headers['Cache-Control']).to include("no-store") }
       specify { expect(response.headers['Pragma']).to eql("no-cache") }
       specify { expect(json[:client_id]).to eql(last_client.to_param) }
@@ -82,7 +82,7 @@ RSpec.describe "/oauth/clients" do
       before { get "/oauth/clients/#{client.to_param}", headers: headers }
 
       specify { expect(response).to have_http_status(:ok) }
-      specify { expect(response.content_type).to eql('application/json') }
+      specify { expect(response.content_type).to start_with('application/json') }
       specify { expect(response.headers['Set-Cookie']).to be_nil }
       specify { expect(json[:client_id]).to eql(client.to_param) }
       pending { expect(json[:client_secret]).to eql(client.password) }
@@ -152,7 +152,7 @@ RSpec.describe "/oauth/clients" do
         before { put "/oauth/clients/#{client.to_param}", params: request_body, headers: headers }
 
         specify { expect(response).to have_http_status(:ok) }
-        specify { expect(response.content_type).to eql('application/json') }
+        specify { expect(response.content_type).to start_with('application/json') }
         specify { expect(json[:client_id]).to eql(client.to_param) }
         pending { expect(json[:client_secret]).to eql(client.password) }
         specify { expect(json[:client_id_issued_at]).to eql(client.created_at.to_i) }
@@ -185,7 +185,7 @@ RSpec.describe "/oauth/clients" do
         before { put "/oauth/clients/#{client.to_param}", params: request_body, headers: headers }
 
         specify { expect(response).to have_http_status(:bad_request) }
-        specify { expect(response.content_type).to eql('application/json') }
+        specify { expect(response.content_type).to start_with('application/json') }
         specify { expect(json[:error]).to eql("invalid_client_metadata") }
         specify { expect(json[:error_description]).to eql("Name can't be blank") }
       end
