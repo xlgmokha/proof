@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class MetadataController < ApplicationController
-  force_ssl if: :ssl_configured?
   skip_before_action :authenticate!
 
   def show
@@ -14,9 +13,5 @@ class MetadataController < ApplicationController
     Rails.cache.fetch(metadata_url, expires_in: 1.hour) do
       Idp.default(request).to_xml
     end
-  end
-
-  def ssl_configured?
-    Rails.env.production?
   end
 end
