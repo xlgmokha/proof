@@ -32,14 +32,14 @@ RSpec.describe Token, type: :model do
     let!(:active_token) { create(:access_token) }
     let!(:expired_token) { create(:access_token, expired_at: 1.second.ago) }
 
-    specify { expect(Token.expired).to match_array([expired_token]) }
+    specify { expect(described_class.expired).to match_array([expired_token]) }
   end
 
   describe ".revoked" do
     let!(:revoked_token) { create(:access_token, revoked_at: 1.second.ago) }
     let!(:active_token) { create(:access_token) }
 
-    specify { expect(Token.revoked).to match_array([revoked_token]) }
+    specify { expect(described_class.revoked).to match_array([revoked_token]) }
   end
 
   describe ".claims_for" do

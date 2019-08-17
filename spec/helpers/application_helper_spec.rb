@@ -24,23 +24,25 @@ RSpec.describe ApplicationHelper do
       end
 
       context "when the item is an instance of ActiveModel::Errors" do
-        class TestUser
-          extend ActiveModel::Naming
-          attr_reader :email, :password
+        let(:user_class) do
+          Class.new do
+            extend ActiveModel::Naming
+            attr_reader :email, :password
 
-          def read_attribute_for_validation(attr)
-            send(attr)
-          end
+            def read_attribute_for_validation(attr)
+              send(attr)
+            end
 
-          def self.human_attribute_name(attr, _options = {})
-            attr.to_s.titleize
-          end
+            def self.human_attribute_name(attr, _options = {})
+              attr.to_s.titleize
+            end
 
-          def self.lookup_ancestors
-            [self]
+            def self.lookup_ancestors
+              [self]
+            end
           end
         end
-        let(:user) { TestUser.new }
+        let(:user) { user_class.new }
         let(:errors) do
           errors = ActiveModel::Errors.new(user)
           errors.add(:email, 'has already been taken.')
