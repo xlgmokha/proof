@@ -1,6 +1,7 @@
 GIT
   remote: https://github.com/mokhan/flipper.git
-  revision: 171457dd3d3fdc469b568f01f171609a2d89c53f
+  revision: 09358caf7abb135550e6b4378b98c41efff0f8ce
+  branch: rails-6
   specs:
     flipper (0.16.2)
     flipper-active_record (0.16.2)
