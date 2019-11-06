@@ -285,6 +285,7 @@ describe '/scim/v2/users' do
       before { delete "/scim/v2/users/#{other_user.to_param}", headers: headers }
 
       specify { expect(response).to have_http_status(:no_content) }
+
       specify do
         get "/scim/v2/users/#{other_user.to_param}", headers: headers
         expect(response).to have_http_status(:not_found)

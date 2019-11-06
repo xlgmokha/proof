@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
-ruby '2.6.3'
+ruby '2.6.5'
 
 gem 'activerecord-session_store', '~> 1.1'
 gem 'audited', '~> 4.8'
@@ -12,7 +12,7 @@ gem 'browser', '~> 2.5'
 gem 'dotenv', '~> 2.5'
 gem 'email_validator', '~> 1.6'
 gem 'flipper', '~> 0.16'
-gem 'flipper-active_record', '~> 0.16', github: 'mokhan/flipper', branch: 'rails-6'
+gem 'flipper-active_record', '~> 0.16'
 gem 'flutie', '~> 2.1'
 gem 'jbuilder', '~> 2.5'
 gem 'jwt', '~> 2.1'
