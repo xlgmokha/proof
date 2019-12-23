@@ -218,8 +218,8 @@ describe '/scim/v2/users' do
       end
 
       context "when searhing for a match using a logical or condition" do
-        let(:first_matching_user) { users.sample }
-        let(:second_matching_user) { users.sample }
+        let(:first_matching_user) { users.first }
+        let(:second_matching_user) { users.last }
         let(:filter) do
           %(userName eq "#{first_matching_user.email}" or userName eq "#{second_matching_user.email}")
         end
