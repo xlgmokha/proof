@@ -32,7 +32,7 @@ group :doc do
   gem "minima", "~> 2.0" # This is the default theme for new Jekyll sites.
 end
 group :development do
-  gem 'brakeman', '~> 4.3'
+  gem 'brakeman', '~> 4.8'
   gem 'bundler-audit', '~> 0.6'
   gem 'erb_lint', require: false
   gem 'listen', '>= 3.0.5', '< 3.2'
