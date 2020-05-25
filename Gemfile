@@ -37,7 +37,7 @@ group :development do
   gem 'erb_lint', require: false
   gem 'listen', '>= 3.0.5', '< 3.2'
   gem 'rubocop', '~> 0.59', require: false
-  gem 'rubocop-rails', '~> 2.0', require: false
+  gem 'rubocop-rails', '~> 2.5', require: false
   gem 'web-console', '>= 3.3.0'
 end
 group :development, :test do
