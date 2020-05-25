@@ -80,7 +80,7 @@ GEM
     bootsnap (1.4.5)
       msgpack (~> 1.0)
     brakeman (4.7.1)
-    browser (2.6.1)
+    browser (4.1.0)
     builder (3.2.3)
     bundler-audit (0.6.1)
       bundler (>= 1.2.0, < 3)
@@ -376,7 +376,7 @@ DEPENDENCIES
   bcrypt (~> 3.1)
   bootsnap (>= 1.4.4)
   brakeman (~> 4.3)
-  browser (~> 2.5)
+  browser (~> 4.1)
   bundler-audit (~> 0.6)
   byebug
   capybara (~> 3.6)
