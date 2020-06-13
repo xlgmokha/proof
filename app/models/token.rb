@@ -22,8 +22,10 @@ class Token < ApplicationRecord
   end
 
   def revoke!
-    update!(revoked_at: Time.current)
-    authorization&.revoke!
+    ActiveRecord::Base.transaction do
+      update!(revoked_at: Time.current)
+      authorization&.revoke!
+    end
   end
 
   def revoked?
