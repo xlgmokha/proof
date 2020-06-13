@@ -17,10 +17,10 @@ AllCops:
     - 'tmp/**/*'
     - 'vendor/**/*'
 
-Layout/AlignArguments:
+Layout/ArgumentAlignment:
   EnforcedStyle: with_fixed_indentation
 
-Layout/IndentFirstArrayElement:
+Layout/FirstArrayElementIndentation:
   EnforcedStyle: consistent
 
 Metrics/AbcSize:
@@ -30,7 +30,7 @@ Metrics/BlockLength:
   Exclude:
     - 'spec/**/*'
 
-Metrics/LineLength:
+Layout/LineLength:
   Exclude:
     - 'db/migrate/*'
     - 'spec/**/*'
