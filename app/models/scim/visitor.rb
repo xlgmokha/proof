@@ -1,37 +1,15 @@
 # frozen_string_literal: true
 
 module Scim
-  class Visitor
+  class Visitor < Scim::Kit::V2::Filter::Visitor
     include Varkon
-    VISITORS = {
-      and: :visit_and,
-      co: :visit_contains,
-      eq: :visit_equals,
-      ew: :visit_ends_with,
-      ge: :visit_greater_than_equals,
-      gt: :visit_greater_than,
-      le: :visit_less_than_equals,
-      lt: :visit_less_than,
-      ne: :visit_not_equals,
-      or: :visit_or,
-      pr: :visit_presence,
-      sw: :visit_starts_with,
-    }.freeze
 
     def initialize(clazz, mapper = {})
       @clazz = clazz
       @mapper = mapper
     end
 
-    def visit(node)
-      visitor_for(node).call(node)
-    end
-
-    private
-
-    def visitor_for(node)
-      method(VISITORS.fetch(node.operator, :visit_unknown))
-    end
+    protected
 
     def visit_and(node)
       visit(node.left).merge(visit(node.right))
