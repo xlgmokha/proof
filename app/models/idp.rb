@@ -30,6 +30,8 @@ class Idp
               x.attributes << :id
               x.attributes << :email
               x.attributes << :created_at
+              x.attributes << :MemberOf
+              x.attributes << :Username
             end
           end
         end

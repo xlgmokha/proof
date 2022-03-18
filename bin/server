@@ -13,5 +13,5 @@ export PORT
 test -z "$RACK_ENV" && RACK_ENV='development'
 bin/update
 
-gem install foreman
+gem install foreman --conservative
 foreman start -e /dev/null -f $PROCFILE

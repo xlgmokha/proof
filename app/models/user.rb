@@ -24,7 +24,8 @@ class User < ApplicationRecord
   end
 
   def assertion_attributes_for(request)
-    request.trusted? ? trusted_attributes_for(request) : {}
+    # request.trusted? ? trusted_attributes_for(request) : {}
+    trusted_attributes_for(request)
   end
 
   def issue_tokens_to(client, token_types: [:access, :refresh])
@@ -57,6 +58,12 @@ class User < ApplicationRecord
   private
 
   def trusted_attributes_for(_request)
-    { id: id, email: email, created_at: created_at }
+    {
+      id: id,
+      email: email,
+      created_at: created_at,
+      Username: email,
+      MemberOf: "deadbeef"
+    }
   end
 end
