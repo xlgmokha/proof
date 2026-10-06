@@ -10,6 +10,12 @@ specifications as known, cross-checked against the OAuth 2.1 draft and then
 audited by independent reviewers. Treat the specs as the proof of the
 interpretation, and correct a spec if the RFC says otherwise.
 
+## Running the tests
+
+`bundle exec rspec` runs everything except the browser specs, which need Chrome. Headless:
+`HEADLESS=1 CHROME_BIN=/path/to/chrome bundle exec rspec spec/system` (the chromedriver
+on `PATH` must match the Chrome version).
+
 ## Implemented
 
 | RFC | Subject | Code | Tests |

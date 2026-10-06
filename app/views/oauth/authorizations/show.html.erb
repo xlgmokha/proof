@@ -5,7 +5,7 @@
 
       <p><%= t('.authorize_prompt_html', name: @client.name) %></p>
       <% if @scopes.present? %>
-        <p><%= t('.scope', scope: @scopes.join(', ')) %></p>
+        <p><%= t('.requested_access', list: @scopes.join(', ')) %></p>
       <% end %>
       <p><%= t('.lifetime', minutes: (Token::ACCESS_LIFETIME / 60).to_i) %></p>
       <% Array(@details).each do |detail| %>
