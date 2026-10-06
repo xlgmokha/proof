@@ -80,7 +80,9 @@ class AuthorizationRequest
   private
 
   def response_type_error
-    return if client.valid_response_type?(self[:response_type])
+    value = self[:response_type]
+    return [:invalid_request, 'response_type is required.'] if value.blank?
+    return if client.valid_response_type?(value)
 
     [:unsupported_response_type, nil]
   end
@@ -90,8 +92,10 @@ class AuthorizationRequest
   def pkce_error
     challenge = self[:code_challenge]
     return [:invalid_request, 'code_challenge is required.'] if challenge.blank?
+    return [:invalid_request, 'code_challenge is not valid.'] unless challenge.is_a?(String)
     return [:invalid_request, 'code_challenge_method must be S256.'] unless self[:code_challenge_method] == 'S256'
-    return if Authorization::PKCE_VERIFIER.match?(challenge)
+    # RFC 7636 Section 4.2: the S256 challenge is a 43 character base64url digest.
+    return if challenge.is_a?(String) && challenge.match?(/\A[A-Za-z0-9\-_]{43}\z/)
 
     [:invalid_request, 'code_challenge is not valid.']
   end

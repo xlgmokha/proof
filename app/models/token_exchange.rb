@@ -24,7 +24,7 @@ class TokenExchange
   end
 
   def initialize(client, subject_token:, subject_token_type:, actor_token: nil, actor_token_type: nil,
-                 requested_token_type: nil, scope: nil, audience: nil, resource: nil)
+                 requested_token_type: nil, scope: nil, audience: nil, resource: nil, dpop_jkt: nil)
     @client = client
     @subject_token = subject_token
     @subject_token_type = subject_token_type
@@ -34,6 +34,7 @@ class TokenExchange
     @scope = scope
     @audience = audience
     @resource = resource
+    @dpop_jkt = dpop_jkt
   end
 
   # The new access token.
@@ -45,7 +46,7 @@ class TokenExchange
 
     Token.create!(
       subject: subject.subject, audience: client, token_type: :access,
-      scope: narrowed_scope(subject), resource: resource.presence || audience.presence || subject.resource,
+      scope: narrowed_scope(subject), resource: target(subject), dpop_jkt: subject.dpop_jkt,
       act: delegation(subject, actor), family_id: subject.family_id,
       # The new token does not outlive the one it came from.
       expired_at: [1.hour.from_now, subject.expired_at].min
@@ -55,7 +56,7 @@ class TokenExchange
   private
 
   attr_reader :client, :subject_token, :subject_token_type, :actor_token, :actor_token_type,
-    :requested_token_type, :scope, :audience, :resource
+    :requested_token_type, :scope, :audience, :resource, :dpop_jkt
 
   # Section 2.1: only access tokens are issued.
   def ensure_requested_token_type!
@@ -71,9 +72,31 @@ class TokenExchange
     raise Invalid.new('invalid_request', "#{name}_type is not supported.") unless TOKEN_TYPES.key?(type)
 
     token = Token.from_jwt(jwt, token_type: TOKEN_TYPES.fetch(type))
-    return token if token&.issued_to?(client) && !token.revoked? && !token.expired?
+    if token&.issued_to?(client) && !token.revoked? && !token.expired?
+      ensure_possession!(token, name)
+      return token
+    end
 
-    raise Invalid.new('invalid_grant', "The #{name} is not valid.")
+    # Section 2.2.2: any unacceptable subject or actor token is invalid_request.
+    raise Invalid.new('invalid_request', "The #{name} is not valid.")
+  end
+
+  # RFC 9449 Section 8: a bound token is only good with a proof from its key.
+  def ensure_possession!(token, name)
+    return if token.dpop_jkt.blank? || token.dpop_jkt == dpop_jkt
+
+    raise Invalid.new('invalid_dpop_proof', "The #{name} is bound to a different key.")
+  end
+
+  # Section 2.1: the target may not widen what the subject token was limited to.
+  def target(subject)
+    return subject.resource if resource.blank? && audience.blank?
+    raise Invalid.new('invalid_target', 'audience must be a string.') unless audience.is_a?(String) || audience.nil?
+
+    requested = resource.presence || audience
+    raise Invalid.new('invalid_target', 'The target exceeds that of the subject_token.') if subject.resource.present? && requested != subject.resource
+
+    requested
   end
 
   def narrowed_scope(subject)

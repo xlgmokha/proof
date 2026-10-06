@@ -244,7 +244,7 @@ RSpec.describe 'device authorization grant' do
     context 'when the device code is missing' do
       before { poll!(poll.except(:device_code)) }
 
-      specify { expect(json[:error]).to eql('invalid_grant') }
+      specify { expect(json[:error]).to eql('invalid_request') }
     end
 
     context 'when another client presents the device code' do

@@ -75,7 +75,7 @@ RSpec.describe "/oauth/clients" do
   describe "GET /oauth/clients/:id" do
     context "when the credentials are valid" do
       let(:client) { create(:client) }
-      let(:access_token) { create(:access_token, subject: client) }
+      let(:access_token) { create(:access_token, subject: client, resource: "#{Oauth::Issuer.identifier}/oauth/clients") }
       let(:headers) { { 'Authorization' => "Bearer #{access_token.to_jwt}" } }
       let(:json) { JSON.parse(response.body, symbolize_names: true) }
 
@@ -101,7 +101,7 @@ RSpec.describe "/oauth/clients" do
     context "when one client tries to read another client" do
       let(:client) { create(:client) }
       let(:other_client) { create(:client) }
-      let(:access_token) { create(:access_token, subject: client) }
+      let(:access_token) { create(:access_token, subject: client, resource: "#{Oauth::Issuer.identifier}/oauth/clients") }
       let(:headers) { { 'Authorization' => "Bearer #{access_token.to_jwt}" } }
       let(:json) { JSON.parse(response.body, symbolize_names: true) }
 
@@ -112,7 +112,7 @@ RSpec.describe "/oauth/clients" do
 
     context "when the client id does not exist" do
       let(:client) { create(:client) }
-      let(:access_token) { create(:access_token, subject: client) }
+      let(:access_token) { create(:access_token, subject: client, resource: "#{Oauth::Issuer.identifier}/oauth/clients") }
       let(:headers) { { 'Authorization' => "Bearer #{access_token.to_jwt}" } }
 
       before { get "/oauth/clients/#{SecureRandom.uuid}", headers: headers }
@@ -134,7 +134,7 @@ RSpec.describe "/oauth/clients" do
     context "when the credentials are valid" do
       let(:headers) { { 'Authorization' => "Bearer #{access_token.to_jwt}" } }
       let(:client) { create(:client) }
-      let(:access_token) { create(:access_token, subject: client) }
+      let(:access_token) { create(:access_token, subject: client, resource: "#{Oauth::Issuer.identifier}/oauth/clients") }
 
       context "when the request body is valid" do
         let(:request_body) do
@@ -316,7 +316,7 @@ RSpec.describe "/oauth/clients" do
 
   describe "DELETE /oauth/clients/:id" do
     let(:client) { create(:client) }
-    let(:access_token) { create(:access_token, subject: client, audience: client) }
+    let(:access_token) { create(:access_token, subject: client, audience: client, resource: "#{Oauth::Issuer.identifier}/oauth/clients") }
     let(:headers) { { 'Authorization' => "Bearer #{access_token.to_jwt}" } }
 
     context "when the credentials are valid" do

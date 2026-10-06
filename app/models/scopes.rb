@@ -13,7 +13,7 @@ module Scopes
   module_function
 
   def parse(value)
-    value.to_s.split(' ')
+    value.to_s.split(' ').reject(&:empty?)
   end
 
   def format(scopes)

@@ -75,6 +75,39 @@ SCIM (RFC 7643/7644) is documented with the SCIM API and is not repeated here.
 - **Housekeeping.** `rake oauth:purge` removes expired replay records, proofs,
   pushed requests and device authorizations. Run it periodically.
 
+## Audit findings
+
+Independent reviewers audited the code against the RFCs. Fixed: resource
+servers verify `aud` (default audience is the issuer, RFC 9068/8707); the
+`resource_metadata` challenge names the resource accessed and SCIM sends it
+(RFC 9728/6750); public clients cannot introspect (RFC 7662); revocation and
+introspection advertise their signing algorithms (RFC 8414); a missing
+`response_type` is `invalid_request`, `code_challenge` arrays no longer raise
+and must be 43 characters (RFC 6749/7636); loopback redirects reject fragments
+and userinfo; `state` is echoed exactly; assertion grants cannot be enabled by
+open dynamic registration (RFC 7523); registration access tokens are scoped to
+`/oauth/clients` and are no longer revoked by `client_credentials` (RFC 7592);
+`redirect_uris` is only required for the authorization code grant; token
+exchange returns `invalid_request` for bad subject/actor tokens, keeps DPoP
+binding, and cannot widen the target (RFC 8693/9449); a missing `device_code`
+is `invalid_request` (RFC 8628); `jwks_uri` fetching refuses mapped, NAT64,
+6to4, CGNAT and reserved addresses and non-object key sets.
+
+Known and left open:
+
+- Any absolute URI is accepted as a `resource` (there is no per-client
+  allow-list); resource servers here only accept tokens meant for them.
+- Token endpoint parameters are also read from the query string and
+  duplicates are not rejected (RFC 6749 Section 3.2 says body only).
+- `ISSUER` is not validated at boot and metadata is served at the root
+  well-known path only, so an issuer with a path is not discoverable (RFC 8414
+  Section 3).
+- Unexpected errors at the token endpoint are reported as `invalid_grant`.
+- User-code entry is rate limited per user/IP, with no global lockout.
+- `token_endpoint_auth_method` is registered as `client_secret_none`, not
+  `none` (RFC 7591).
+- The `htu` comparison does not normalise default ports or percent-encoding.
+
 ## Not implemented
 
 | RFC | Why |

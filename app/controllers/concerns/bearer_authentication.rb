@@ -69,11 +69,17 @@ module BearerAuthentication
     head status
   end
 
+  # RFC 9728 Section 5.1: the metadata of the resource being accessed.
+  def resource_metadata_url_for_request
+    path = Oauth::Issuer::RESOURCES.keys.reject(&:empty?).find { |x| request.path == x || request.path.start_with?("#{x}/") }
+    "#{Oauth::Issuer.identifier}/.well-known/oauth-protected-resource#{path}"
+  end
+
   def challenge_for(scheme, error, description, scope)
     # RFC 9728 Section 5.1: point the client at the resource's metadata.
     attributes = {
       realm: REALM, error: error, error_description: description, scope: scope,
-      resource_metadata: "#{request.base_url}/.well-known/oauth-protected-resource"
+      resource_metadata: resource_metadata_url_for_request
     }
     attributes[:algs] = DpopProof::ALGORITHMS.join(' ') if scheme == 'DPoP'
     "#{scheme} #{attributes.compact.map { |k, v| %(#{k}="#{v.to_s.gsub('"', '')}") }.join(', ')}"

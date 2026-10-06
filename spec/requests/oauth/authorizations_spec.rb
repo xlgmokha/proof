@@ -96,7 +96,8 @@ RSpec.describe '/oauth/authorizations' do
       context "when the response_type is missing" do
         before { get "/oauth/authorizations", params: params.except(:response_type) }
 
-        specify { expect(query_of(response.location)['error']).to eql('unsupported_response_type') }
+        # RFC 6749 Section 4.1.2.1: a missing parameter is invalid_request.
+        specify { expect(query_of(response.location)['error']).to eql('invalid_request') }
       end
 
       context "when the code_challenge is missing" do
@@ -130,6 +131,29 @@ RSpec.describe '/oauth/authorizations' do
         before { get "/oauth/authorizations", params: params.merge(code_challenge: 'abc') }
 
         specify { expect(query_of(response.location)['error']).to eql('invalid_request') }
+      end
+
+      context "when the code_challenge is sent as an array" do
+        before { get "/oauth/authorizations", params: params.merge(code_challenge: ['x']) }
+
+        specify { expect(query_of(response.location)['error']).to eql('invalid_request') }
+      end
+
+      context "when the code_challenge is not 43 characters" do
+        before { get "/oauth/authorizations", params: params.merge(code_challenge: 'a' * 100) }
+
+        specify { expect(query_of(response.location)['error']).to eql('invalid_request') }
+      end
+
+      context "when a loopback redirect carries a fragment or userinfo" do
+        let(:client) { create(:client, redirect_uris: ['http://127.0.0.1/callback']) }
+
+        ['http://127.0.0.1:99/callback#frag', 'http://u:p@127.0.0.1:99/callback'].each do |uri|
+          it "rejects #{uri}" do
+            get "/oauth/authorizations", params: params.merge(redirect_uri: uri)
+            expect(response).to have_http_status(:bad_request)
+          end
+        end
       end
 
       context "when the scope is not supported" do

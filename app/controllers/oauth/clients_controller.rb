@@ -4,6 +4,8 @@ module Oauth
   class ClientsController < ActionController::API
     include BearerAuthentication
     before_action :apply_cache_headers
+    # The audience of the registration access token (RFC 7592).
+    REGISTRATION_RESOURCE = -> { "#{Oauth::Issuer.identifier}/oauth/clients" }
     before_action :authenticate!, except: [:create]
 
     def show
@@ -12,8 +14,11 @@ module Oauth
 
     # RFC 7591 Section 3
     def create
+      error = assertion_grant_error
+      return render json: { error: 'invalid_client_metadata', error_description: error }, status: :bad_request if error
+
       @client = Client.create!(transform(secure_params))
-      @registration_access_token = @client.access_token.to_jwt
+      @registration_access_token = @client.access_token(resource: REGISTRATION_RESOURCE.call).to_jwt
       render status: :created, formats: :json
     rescue ActiveRecord::RecordInvalid => error
       render_registration_error(error.record.errors)
@@ -21,7 +26,7 @@ module Oauth
 
     # RFC 7592 Section 2.2: the request replaces the client's metadata.
     def update
-      error = update_request_error
+      error = update_request_error || assertion_grant_error
       return render json: { error: 'invalid_client_metadata', error_description: error }, status: :bad_request if error
 
       @client.update!(transform(secure_params))
@@ -48,10 +53,20 @@ module Oauth
         @access_token.revoke!
         return render json: {}, status: :unauthorized
       end
-      return render json: {}, status: :forbidden unless @access_token.subject.to_param == params[:id]
+      return render json: {}, status: :forbidden unless @access_token.subject.to_param == params[:id] && @access_token.resource == REGISTRATION_RESOURCE.call
 
       @client = @access_token.subject
       @registration_access_token = presented_bearer_tokens.first
+    end
+
+    # RFC 7523 Section 3: an assertion names the user it is for, so only a
+    # party the operator trusts may use these grants; open registration cannot.
+    ASSERTION_GRANTS = [AssertionGrants::SAML_BEARER_GRANT, AssertionGrants::JWT_BEARER_GRANT].freeze
+
+    def assertion_grant_error
+      return unless (Array(params[:grant_types]) & ASSERTION_GRANTS).any?
+
+      'The assertion grant types cannot be registered dynamically.'
     end
 
     # Fields the server owns (RFC 7592 Section 2.2) and the identity checks.
@@ -81,7 +96,7 @@ module Oauth
       grant_types = params[:grant_types].presence || %w[authorization_code]
       {
         name: params[:client_name],
-        redirect_uris: params[:redirect_uris],
+        redirect_uris: params[:redirect_uris] || [],
         token_endpoint_auth_method: params.fetch(:token_endpoint_auth_method, 'client_secret_basic'),
         grant_types: grant_types,
         response_types: params[:response_types] || (grant_types.include?('authorization_code') ? %w[code] : []),

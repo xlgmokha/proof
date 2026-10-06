@@ -113,7 +113,7 @@ RSpec.describe 'token exchange' do
   context 'when the actor token is not valid' do
     before { exchange(actor_token: 'nope', actor_token_type: access_type) }
 
-    specify { expect(json[:error]).to eql('invalid_grant') }
+    specify { expect(json[:error]).to eql('invalid_request') }
   end
 
   context 'when the exchanged token would outlive the subject token' do
@@ -137,7 +137,7 @@ RSpec.describe 'token exchange' do
 
     before { exchange }
 
-    specify { expect(json[:error]).to eql('invalid_grant') }
+    specify { expect(json[:error]).to eql('invalid_request') }
   end
 
   context 'when the subject token was issued to another client' do
@@ -145,7 +145,7 @@ RSpec.describe 'token exchange' do
 
     before { exchange }
 
-    specify { expect(json[:error]).to eql('invalid_grant') }
+    specify { expect(json[:error]).to eql('invalid_request') }
   end
 
   context 'when the subject token is revoked' do
@@ -153,7 +153,7 @@ RSpec.describe 'token exchange' do
 
     before { exchange }
 
-    specify { expect(json[:error]).to eql('invalid_grant') }
+    specify { expect(json[:error]).to eql('invalid_request') }
   end
 
   context 'when the subject token is expired' do
@@ -161,7 +161,7 @@ RSpec.describe 'token exchange' do
 
     before { exchange }
 
-    specify { expect(json[:error]).to eql('invalid_grant') }
+    specify { expect(json[:error]).to eql('invalid_request') }
   end
 
   context 'when the subject token is missing' do

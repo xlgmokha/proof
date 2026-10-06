@@ -55,7 +55,7 @@ class Token < ApplicationRecord
 
   def claims(custom_claims = {})
     {
-      aud: resource.presence || audience.to_param,
+      aud: resource.presence || Oauth::Issuer.identifier,
       client_id: audience.to_param,
       exp: expired_at.to_i,
       iat: created_at.to_i,
@@ -115,6 +115,7 @@ class Token < ApplicationRecord
       token = from_jwt(jwt, token_type: :access)
       return if token.nil? || token.revoked? || token.expired?
       return if token.dpop_jkt.present? && !allow_bound
+      return unless Oauth::Issuer.resource?(token.resource.presence || Oauth::Issuer.identifier)
 
       token
     end

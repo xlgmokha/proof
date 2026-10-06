@@ -20,7 +20,7 @@ RSpec.describe JwksFetcher do
     end
 
     context 'when the host resolves to a private address' do
-      %w[127.0.0.1 10.0.0.5 192.168.1.1 172.16.0.1 169.254.169.254 ::1].each do |address|
+      %w[127.0.0.1 10.0.0.5 192.168.1.1 172.16.0.1 169.254.169.254 ::1 ::ffff:127.0.0.1 ::ffff:169.254.169.254 100.64.0.1 64:ff9b::7f00:1 2002:7f00:1:: 224.0.0.1 198.18.0.1].each do |address|
         it "refuses #{address}" do
           allow(Resolv).to receive(:getaddresses).and_return([address])
           expect { subject.fetch('https://internal.example.com/jwks') }.to raise_error(described_class::Error, /private/)

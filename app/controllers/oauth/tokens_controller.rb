@@ -35,6 +35,9 @@ module Oauth
 
     # RFC 7662
     def introspect
+      # Section 2.1: only confidential clients may learn about tokens.
+      raise GrantError.new('invalid_client', 'Public clients cannot introspect tokens.', status: :unauthorized) if current_client.public_client?
+
       token = find_token(params[:token], params[:token_type_hint])
       if token.nil? || token.revoked? || token.expired?
         render json: { active: false }, status: :ok
@@ -203,6 +206,8 @@ module Oauth
     # RFC 8628 Section 3.4 and 3.5. The outcome is decided inside the lock and
     # raised outside of it, so the bookkeeping of a poll is not rolled back.
     def device_code_grant
+      raise GrantError.new('invalid_request', 'device_code is required.') if params[:device_code].blank?
+
       request = DeviceAuthorization.find_by_device_code(params[:device_code], current_client)
       raise GrantError.new('invalid_grant', 'The device_code is not valid.') if request.nil?
 
@@ -233,7 +238,7 @@ module Oauth
         subject_token: params[:subject_token], subject_token_type: params[:subject_token_type],
         actor_token: params[:actor_token], actor_token_type: params[:actor_token_type],
         requested_token_type: params[:requested_token_type],
-        scope: params[:scope], audience: params[:audience], resource: requested_resource
+        scope: params[:scope], audience: params[:audience], resource: requested_resource, dpop_jkt: @dpop_jkt
       )
       @issued_token_type = TokenExchange::ACCESS_TOKEN_TYPE
       [exchange.call, nil]

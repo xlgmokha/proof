@@ -9,9 +9,11 @@ json.userinfo_endpoint oauth_me_url
 json.jwks_uri jwks_url
 json.registration_endpoint oauth_clients_url
 json.revocation_endpoint revoke_oauth_tokens_url
-json.revocation_endpoint_auth_methods_supported %i[client_secret_basic client_secret_post private_key_jwt]
+json.revocation_endpoint_auth_methods_supported %i[client_secret_basic client_secret_post private_key_jwt none]
+json.revocation_endpoint_auth_signing_alg_values_supported JwtBearerAssertion::ALGORITHMS
 json.introspection_endpoint introspect_oauth_tokens_url
 json.introspection_endpoint_auth_methods_supported %i[client_secret_basic client_secret_post private_key_jwt]
+json.introspection_endpoint_auth_signing_alg_values_supported JwtBearerAssertion::ALGORITHMS
 json.scopes_supported Scopes::SUPPORTED
 json.response_types_supported Client::RESPONSE_TYPES
 json.response_modes_supported %w[query]

@@ -18,7 +18,7 @@ class Client < ApplicationRecord
     private_key_jwt: 3,
   }, validate: true
 
-  validates :redirect_uris, presence: true
+  validates :redirect_uris, presence: true, if: -> { grant_types.include?('authorization_code') }
   validates :client_uri, :tos_uri, :policy_uri, format: { with: URI_REGEX }, allow_blank: true
   validate :grant_and_response_types_are_supported
   validate :scope_is_supported
@@ -58,12 +58,7 @@ class Client < ApplicationRecord
   end
 
   def access_token(scope: Scopes.format(Scopes::DEFAULT), resource: nil)
-    transaction do
-      Token
-        .active.where(subject: self, audience: self)
-        .update_all(revoked_at: Time.current)
-      Token.create!(subject: self, audience: self, token_type: :access, scope: scope, resource: resource)
-    end
+    Token.create!(subject: self, audience: self, token_type: :access, scope: scope, resource: resource)
   end
 
   def revoke(token)
@@ -116,7 +111,7 @@ class Client < ApplicationRecord
 
     uri = URI.parse(redirect_uri)
     query = URI.decode_www_form(uri.query.to_s)
-    parameters.each { |key, value| query << [key.to_s, value.to_s] if value.present? }
+    parameters.each { |key, value| query << [key.to_s, value.to_s] unless value.nil? || value == '' }
     uri.query = URI.encode_www_form(query)
     uri.to_s
   end
@@ -149,7 +144,8 @@ class Client < ApplicationRecord
 
     redirect_uris.any? do |registered|
       other = URI.parse(registered)
-      other.scheme == 'http' && other.host == uri.host && other.path == uri.path && other.query == uri.query
+      other.scheme == 'http' && other.host == uri.host && other.path == uri.path && other.query == uri.query &&
+        uri.fragment.nil? && uri.userinfo.nil?
     end
   rescue URI::InvalidURIError
     false

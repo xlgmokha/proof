@@ -104,7 +104,7 @@ RSpec.describe 'resource indicators' do
 
       before { post '/oauth/tokens', params: grant, headers: headers }
 
-      specify { expect(Token.claims_for(json[:access_token])[:aud]).to eql(client.to_param) }
+      specify { expect(Token.claims_for(json[:access_token])[:aud]).to eql(Oauth::Issuer.identifier) }
     end
 
     context 'when refreshing a token for a resource' do

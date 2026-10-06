@@ -22,6 +22,7 @@ class JwksFetcher
   def key_set_for(client)
     set = client.jwks.presence || (client.jwks_uri.present? && fetch(client.jwks_uri))
     raise Error.new('client has no registered keys') if set.blank?
+    raise Error.new('the key set is not a JSON object') unless set.is_a?(Hash)
 
     JWT::JWK::Set.new(set.with_indifferent_access)
   rescue JWT::JWKError => error
@@ -72,7 +73,15 @@ class JwksFetcher
     addresses.first
   end
 
+  # IPv4 carried inside IPv6 (mapped, NAT64, 6to4) is judged by the IPv4 address.
+  EMBEDDED = [IPAddr.new('64:ff9b::/96'), IPAddr.new('2002::/16')].freeze
+  RESERVED = %w[100.64.0.0/10 192.0.0.0/24 198.18.0.0/15 224.0.0.0/4 240.0.0.0/4 ff00::/8].map { |x| IPAddr.new(x) }.freeze
+
   def private?(address)
+    address = address.native if address.ipv6? && address.ipv4_mapped?
+    return true if EMBEDDED.any? { |x| x.include?(address) }
+    return true if RESERVED.any? { |x| x.include?(address) }
+
     address.private? || address.loopback? || address.link_local? ||
       IPAddr.new('0.0.0.0/8').include?(address) || IPAddr.new('::/128').include?(address)
   rescue IPAddr::InvalidAddressError

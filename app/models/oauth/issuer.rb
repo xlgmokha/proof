@@ -7,8 +7,23 @@ module Oauth
   module Issuer
     module_function
 
+    # The protected resources of this server, relative to its identifier
+    # (RFC 9728), and the audience a token carries when none was requested.
+    RESOURCES = {
+      '' => 'Proof',
+      '/oauth/me' => 'User info',
+      '/oauth/clients' => 'Client registration',
+      '/scim/v2' => 'SCIM'
+    }.freeze
+
     def identifier
       Saml::Kit.configuration.entity_id
+    end
+
+    # RFC 9068 Section 4: a resource server only accepts tokens whose audience
+    # names it.
+    def resource?(value)
+      RESOURCES.keys.any? { |path| value.to_s == "#{identifier}#{path}" }
     end
   end
 end

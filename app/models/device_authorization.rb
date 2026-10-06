@@ -21,11 +21,15 @@ class DeviceAuthorization < ApplicationRecord
   # now: it is stored hashed.
   def self.issue!(client, scope:, resource: nil)
     device_code = SecureRandom.urlsafe_base64(32)
-    request = create!(
-      client: client, scope: scope, resource: resource,
-      device_code_digest: digest(device_code), user_code: generate_user_code,
-      interval: INTERVAL, expires_at: LIFETIME.from_now
-    )
+    request = begin
+      create!(
+        client: client, scope: scope, resource: resource,
+        device_code_digest: digest(device_code), user_code: generate_user_code,
+        interval: INTERVAL, expires_at: LIFETIME.from_now
+      )
+    rescue ActiveRecord::RecordNotUnique
+      retry
+    end
     [request, device_code]
   end
 

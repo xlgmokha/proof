@@ -3,6 +3,7 @@
 module Scim
   class Controller < ActionController::API
     include ActionController::HttpAuthentication::Token::ControllerMethods
+    include BearerAuthentication
     before_action :apply_scim_content_type
     before_action :ensure_correct_content_type!
     before_action :authenticate!
@@ -48,8 +49,11 @@ module Scim
       Current.token = authenticate_with_http_token do |token|
         Token.authenticate(token)
       end
-      options = { status: :unauthorized, formats: :scim }
-      render "scim/unauthorized", options unless Current.user?
+      return if Current.user?
+
+      # RFC 6750 Section 3: say how to authenticate.
+      response.headers['WWW-Authenticate'] = challenge_for('Bearer', nil, nil, nil)
+      render "scim/unauthorized", status: :unauthorized, formats: :scim
     end
 
     def apply_scim_content_type
