@@ -27,12 +27,12 @@ RSpec.describe 'DPoP code binding and nonces' do
     it 'is refused with another key' do
       exchange(dpop_proof(url: token_url, key: OpenSSL::PKey::EC.generate('prime256v1')))
       expect(response).to have_http_status(:bad_request)
-      expect(json[:error]).to eql('invalid_dpop_proof')
+      expect(json[:error]).to eql('invalid_grant')
     end
 
     it 'is refused without a proof' do
       exchange(nil)
-      expect(json[:error]).to eql('invalid_dpop_proof')
+      expect(json[:error]).to eql('invalid_grant')
     end
   end
 
@@ -72,6 +72,13 @@ RSpec.describe 'DPoP code binding and nonces' do
       post '/oauth/par', params: params, headers: { 'Authorization' => credentials, 'DPoP' => dpop_proof(url: par_url) }
       expect(response).to have_http_status(:created)
       expect(PushedAuthorizationRequest.last.parameters['dpop_jkt']).to eql(dpop_thumbprint)
+    end
+
+    it 'asks for a nonce when they are required (Section 8)' do
+      allow(DpopNonce).to receive(:required?).and_return(true)
+      post '/oauth/par', params: params, headers: { 'Authorization' => credentials, 'DPoP' => dpop_proof(url: par_url) }
+      expect(json[:error]).to eql('use_dpop_nonce')
+      expect(response.headers['DPoP-Nonce']).to eql(DpopNonce.current)
     end
 
     it 'refuses a dpop_jkt that is not the key of the proof' do

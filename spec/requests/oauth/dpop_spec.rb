@@ -128,13 +128,13 @@ RSpec.describe 'DPoP' do
       context 'with a proof from another key' do
         before { exchange(dpop_proof(url: token_url, key: OpenSSL::PKey::EC.generate('prime256v1')), refresh) }
 
-        specify { expect(json[:error]).to eql('invalid_dpop_proof') }
+        specify { expect(json[:error]).to eql('invalid_grant') }
       end
 
       context 'without a proof' do
         before { exchange(nil, refresh) }
 
-        specify { expect(json[:error]).to eql('invalid_dpop_proof') }
+        specify { expect(json[:error]).to eql('invalid_grant') }
       end
     end
   end

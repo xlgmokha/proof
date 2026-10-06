@@ -27,6 +27,9 @@ class AuthorizationRequest
   # opposed to being used at the authorization endpoint.
   def self.load(client, raw, audiences:, pushing: false)
     raw = raw.to_h.with_indifferent_access
+    # RFC 9101 Section 4 and RFC 9126 Section 3: the two are never sent together.
+    raise Invalid.new('invalid_request', 'request and request_uri must not be used together.') if raw[:request].present? && raw[:request_uri].present?
+
     parameters =
       if raw[:request_uri].present?
         raise Invalid.new('invalid_request', 'request_uri must not be pushed.') if pushing

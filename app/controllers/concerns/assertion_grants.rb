@@ -30,6 +30,8 @@ module AssertionGrants
 
   # RFC 7523 Section 2.1
   def jwt_bearer_grant(raw, scope, resource = nil)
+    raise GrantError.new('invalid_request', 'assertion is required.') if raw.blank?
+
     assertion = JwtBearerAssertion.new(
       current_client, audiences: assertion_audiences
     )

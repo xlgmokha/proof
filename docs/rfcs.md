@@ -124,6 +124,10 @@ Fifth round, from an audit against the OAuth 2.1 draft, the RFC 9470 and RFC 972
 
 Not changed: the new refresh token keeps the narrowed scope of the request (it can only differ once more than one scope exists), and resource metadata for sub-paths such as `/scim/v2/Users` is the metadata of the resource `/scim/v2`.
 
+Sixth round, comparing against independent certified implementations because the RFC texts cannot be fetched here (`oidc-provider` 9.12, `oauth4webapi`, `dpop`, `zitadel/oidc` 3.51, `fosite` 0.49): `request` with `request_uri` is refused and a request object's `aud` is the issuer only (RFC 9101); PAR honours DPoP nonces (RFC 9449); a code or refresh token bound to a key and presented without it is `invalid_grant`; `jti` must be a string; revoking another client's token is refused as RFC 7009 Section 2.1 says; the registration access token is long lived and PUT gives a new secret to a client that becomes confidential; registration answers a bad bearer with a challenge, refuses metadata of the wrong type and accepts private-use scheme redirect URIs (RFC 8252); a missing jwt-bearer `assertion` is `invalid_request`; a repeated `resource` is `invalid_target`; the device endpoint carries `resource`.
+
+Still differing, deliberately: one `resource`/`audience` per request (RFC 8693 and 8707 allow several); refresh does not compare the certificate of a certificate-bound refresh token; `WWW-Authenticate: Basic` is sent on every `invalid_client`; a stale DPoP `iat` is not turned into a nonce challenge.
+
 ## Not implemented
 
 | RFC | Why |

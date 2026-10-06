@@ -20,6 +20,13 @@ module ClientAuthentication
   def ensure_form_parameters!
     return if request.query_parameters.blank? && !repeated_form_parameters? && form_content?
 
+    # RFC 8707 and RFC 8693 allow these to repeat; only one target is supported here.
+    if request.query_parameters.blank? && form_content? && (repeated_keys - %w[resource audience]).empty? && repeated_keys.any?
+      response.headers['Cache-Control'] = 'no-store'
+      response.headers['Pragma'] = 'no-cache'
+      return render_oauth_error GrantError.new('invalid_target', 'Only one resource or audience may be requested.')
+    end
+
     response.headers['Cache-Control'] = 'no-store'
     response.headers['Pragma'] = 'no-cache'
     render_oauth_error GrantError.new('invalid_request', 'Parameters must be sent once, in a form-urlencoded request body.')
@@ -30,10 +37,14 @@ module ClientAuthentication
   end
 
   def repeated_form_parameters?
-    keys = URI.decode_www_form(request.raw_post.to_s).map(&:first).reject { |x| x.end_with?('[]') }
-    keys.uniq.size != keys.size
+    repeated_keys.any?
   rescue ArgumentError
     true
+  end
+
+  def repeated_keys
+    keys = URI.decode_www_form(request.raw_post.to_s).map(&:first).reject { |x| x.end_with?('[]') }
+    keys.tally.select { |_, count| count > 1 }.keys
   end
 
   def authenticate_client!

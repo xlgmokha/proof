@@ -90,12 +90,24 @@ RSpec.describe 'signed authorization requests' do
     end
   end
 
-  context 'when the object is the right audience as the endpoint url' do
+  # RFC 9101 Section 4: the audience is the issuer identifier, not an endpoint URL.
+  context 'when the audience is the endpoint url' do
     let(:claims) { super().merge(aud: oauth_authorizations_url) }
 
-    before { get '/oauth/authorizations', params: { client_id: client.to_param, request: request_object } }
+    before { get '/oauth/authorizations', params: { client_id: client.to_param, request: request_object, redirect_uri: client.redirect_uris[0] } }
 
-    specify { expect(response).to have_http_status(:ok) }
+    specify { expect(query['error']).to eql('invalid_request_object') }
+  end
+
+  context 'when request and request_uri are both sent' do
+    before do
+      get '/oauth/authorizations', params: {
+        client_id: client.to_param, request: request_object, request_uri: 'urn:ietf:params:oauth:request_uri:x',
+        redirect_uri: client.redirect_uris[0]
+      }
+    end
+
+    specify { expect(query['error']).to eql('invalid_request') }
   end
 
   context 'when the object has a request that fails the usual validation' do

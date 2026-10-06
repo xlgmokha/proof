@@ -101,7 +101,8 @@ module Oauth
     end
 
     def audiences
-      [Oauth::Issuer.identifier, oauth_authorizations_url, root_url].uniq
+      # RFC 9101 Section 4: the issuer identifier of the authorization server.
+      [Oauth::Issuer.identifier]
     end
 
     def redirect_with_error(type, description = nil)

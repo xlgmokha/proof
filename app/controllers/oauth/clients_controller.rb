@@ -14,11 +14,12 @@ module Oauth
 
     # RFC 7591 Section 3
     def create
-      error = assertion_grant_error
+      error = metadata_type_error || assertion_grant_error
       return render json: { error: 'invalid_client_metadata', error_description: error }, status: :bad_request if error
 
       @client = Client.create!(transform(secure_params))
-      @registration_access_token = @client.access_token(resource: REGISTRATION_RESOURCE.call).to_jwt
+      # RFC 7592 Section 1: a long-lived credential for managing the client.
+      @registration_access_token = @client.access_token(resource: REGISTRATION_RESOURCE.call, expired_at: 10.years.from_now).to_jwt
       render status: :created, formats: :json
     rescue ActiveRecord::RecordInvalid => error
       render_registration_error(error.record.errors)
@@ -26,10 +27,14 @@ module Oauth
 
     # RFC 7592 Section 2.2: the request replaces the client's metadata.
     def update
-      error = update_request_error || assertion_grant_error
+      error = update_request_error || metadata_type_error || assertion_grant_error
       return render json: { error: 'invalid_client_metadata', error_description: error }, status: :bad_request if error
 
-      @client.update!(transform(secure_params))
+      attributes = transform(secure_params)
+      # Section 2.2: a client that becomes confidential is given a secret, which
+      # is in the response because it is not known anywhere else.
+      @client.password = SecureRandom.base58(32) if @client.client_secret_none? && attributes[:token_endpoint_auth_method] != 'client_secret_none'
+      @client.update!(attributes)
       render status: :ok, formats: :json
     rescue ActiveRecord::RecordInvalid => error
       render_registration_error(error.record.errors)
@@ -50,13 +55,38 @@ module Oauth
       return if performed?
 
       unless Client.where(id: params[:id]).exists?
-        @access_token.revoke!
-        return render json: {}, status: :unauthorized
+        @access_token.revoke! if @access_token.resource == REGISTRATION_RESOURCE.call
+        return challenge('invalid_token', 'The client does not exist.', status: :unauthorized)
       end
-      return render json: {}, status: :forbidden unless @access_token.subject.to_param == params[:id] && @access_token.resource == REGISTRATION_RESOURCE.call
+      unless @access_token.subject.to_param == params[:id] && @access_token.resource == REGISTRATION_RESOURCE.call
+        return render json: { error: 'access_denied', error_description: 'The token is not for this client.' }, status: :forbidden
+      end
 
       @client = @access_token.subject
       @registration_access_token = presented_bearer_tokens.first
+    end
+
+    ARRAY_METADATA = %w[redirect_uris grant_types response_types contacts authorization_details_types request_uris].freeze
+    STRING_METADATA = %w[
+      client_name token_endpoint_auth_method logo_uri client_uri tos_uri policy_uri jwks_uri scope software_id
+      software_version tls_client_auth_subject_dn tls_client_auth_san_dns tls_client_auth_san_uri
+      tls_client_auth_san_ip tls_client_auth_san_email
+    ].freeze
+
+    # RFC 7591 Section 3.2.2: members of the wrong type are refused, not dropped.
+    def metadata_type_error
+      ARRAY_METADATA.each do |key|
+        next unless params.key?(key)
+
+        value = params[key]
+        return "#{key} must be an array of strings." unless value.is_a?(Array) && value.all?(String)
+      end
+      STRING_METADATA.each do |key|
+        return "#{key} must be a string." if params.key?(key) && !params[key].is_a?(String)
+      end
+      return 'jwks must be an object.' if params.key?(:jwks) && !params[:jwks].respond_to?(:to_unsafe_h)
+
+      nil
     end
 
     # RFC 7523 Section 3: an assertion names the user it is for, so only a

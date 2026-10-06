@@ -27,10 +27,13 @@ module Oauth
       proof = request.headers['DPoP']
       return pushed_request[:dpop_jkt] if proof.blank?
 
-      jkt = DpopProof.new(proof, method: 'POST', url: oauth_par_url).verify!
+      jkt = DpopProof.new(proof, method: 'POST', url: oauth_par_url, nonce_required: DpopNonce.required?).verify!
       raise GrantError.new('invalid_dpop_proof', 'dpop_jkt does not match the DPoP proof.') if pushed_request[:dpop_jkt].present? && pushed_request[:dpop_jkt] != jkt
 
       jkt
+    rescue DpopProof::UseNonce => error
+      response.headers['DPoP-Nonce'] = DpopNonce.current
+      raise GrantError.new('use_dpop_nonce', error.message)
     rescue DpopProof::Invalid => error
       raise GrantError.new('invalid_dpop_proof', error.message)
     end
@@ -46,7 +49,7 @@ module Oauth
         raise GrantError.new('invalid_request', 'client_id does not match the authenticated client.')
       end
 
-      AuthorizationRequest.load(current_client, params.permit(*AuthorizationRequest::PARAMETERS, :request, :request_uri), audiences: assertion_audiences, pushing: true)
+      AuthorizationRequest.load(current_client, params.permit(*AuthorizationRequest::PARAMETERS, :request, :request_uri), audiences: [Oauth::Issuer.identifier], pushing: true)
     rescue AuthorizationRequest::Invalid => error
       raise GrantError.new(error.error, error.description)
     end

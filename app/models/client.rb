@@ -2,6 +2,8 @@
 
 class Client < ApplicationRecord
   RESPONSE_TYPES = %w[code].freeze
+  # RFC 8252 Section 7.1: a private-use scheme is a reverse domain name, with a path.
+  PRIVATE_USE_SCHEME = %r{\A[a-z][a-z0-9+\-]*(\.[a-z0-9+\-]+)+:/[^#\s]*\z}i
   LOOPBACK_HOSTS = %w[127.0.0.1 [::1]].freeze
   GRANT_TYPES = GrantTypes::ALL
   audited
@@ -32,7 +34,7 @@ class Client < ApplicationRecord
   validate :jwks_uri_and_jwks_are_exclusive
   validates :jwks, jwks: true
   validates_each :redirect_uris do |record, _attr, value|
-    invalid_uri = Array(value).find { |x| !x.match?(URI_REGEX) }
+    invalid_uri = Array(value).find { |x| !x.match?(URI_REGEX) && !x.match?(PRIVATE_USE_SCHEME) }
     record.errors.add(:redirect_uris, 'is invalid.') if invalid_uri
     # RFC 6749 Section 3.1.2: the redirect endpoint must not have a fragment.
     record.errors.add(:redirect_uris, 'must not include a fragment.') if Array(value).any? { |x| x.include?('#') }
@@ -69,10 +71,10 @@ class Client < ApplicationRecord
     client_secret_none?
   end
 
-  def access_token(scope: Scopes.format(Scopes::DEFAULT), resource: nil, authorization_details: nil)
+  def access_token(scope: Scopes.format(Scopes::DEFAULT), resource: nil, authorization_details: nil, expired_at: nil)
     Token.create!(
       subject: self, audience: self, token_type: :access, scope: scope, resource: resource,
-      authorization_details: authorization_details
+      authorization_details: authorization_details, expired_at: expired_at
     )
   end
 

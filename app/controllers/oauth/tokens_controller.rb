@@ -51,9 +51,13 @@ module Oauth
     # RFC 7009
     def revoke
       token = find_token(params[:token], params[:token_type_hint])
-      # Section 2.1: only the client the token was issued to may revoke it. Anything
-      # else is answered as an unknown token, so it does not reveal that it exists.
-      token.revoke! if token&.issued_to?(current_client)
+      # Section 2.1: the token must have been issued to the client; if not, the
+      # request is refused and the client is told.
+      if token && !token.issued_to?(current_client)
+        raise GrantError.new('invalid_request', 'The token was not issued to this client.')
+      end
+
+      token&.revoke!
       render plain: '', status: :ok
     end
 
@@ -220,7 +224,7 @@ module Oauth
       end
       # RFC 9449 Section 10: a code bound to a key is only good with a proof from it.
       if authorization.dpop_jkt.present? && authorization.dpop_jkt != @dpop_jkt
-        raise GrantError.new('invalid_dpop_proof', 'The authorization code is bound to a different key.')
+        raise GrantError.new('invalid_grant', 'The authorization code is bound to a different key.')
       end
       return if authorization.challenge.present? && authorization.valid_verifier?(params[:code_verifier])
 
@@ -243,7 +247,7 @@ module Oauth
         raise GrantError.new('invalid_grant', 'The refresh token has expired.') if token.expired?
         # RFC 9449 Section 5: a bound refresh token needs a proof from the same key.
         if token.dpop_jkt.present? && token.dpop_jkt != @dpop_jkt
-          raise GrantError.new('invalid_dpop_proof', 'The refresh token is bound to a different key.')
+          raise GrantError.new('invalid_grant', 'The refresh token is bound to a different key.')
         end
 
         token.issue_tokens_to(

@@ -640,7 +640,7 @@ RSpec.describe '/oauth/tokens' do
     context "when the assertion is missing" do
       before { post '/oauth/tokens', params: { grant_type: grant_type }, headers: headers }
 
-      specify { expect(json[:error]).to eql('invalid_grant') }
+      specify { expect(json[:error]).to eql('invalid_request') }
     end
   end
 
@@ -719,8 +719,8 @@ RSpec.describe '/oauth/tokens' do
 
         before { post '/oauth/tokens/revoke', params: { token: token.to_jwt, token_type_hint: :access_token }, headers: headers }
 
-        # RFC 7009 Section 2.1: it is not revoked, and the answer is the same as for an unknown token.
-        specify { expect(response).to have_http_status(:ok) }
+        # RFC 7009 Section 2.1: the request is refused and the client is informed.
+        specify { expect_error('invalid_request') }
         specify { expect(token.reload).not_to be_revoked }
       end
 

@@ -51,7 +51,7 @@ class DpopProof
   end
 
   def ensure_claims!(claims)
-    raise Invalid.new('jti is required.') if claims['jti'].blank?
+    raise Invalid.new('jti is required.') unless claims['jti'].is_a?(String) && claims['jti'].present?
     raise Invalid.new('htm does not match the request.') unless claims['htm'] == method
     raise Invalid.new('htu does not match the request.') unless normalize(claims['htu']) == normalize(url)
     raise Invalid.new('iat is outside the acceptable window.') unless fresh?(claims['iat'])

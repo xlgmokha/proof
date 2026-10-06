@@ -180,14 +180,14 @@ RSpec.describe 'conformance hardening' do
     end
   end
 
-  # RFC 7009 Section 2.1: no oracle for the existence of other clients' tokens.
+  # RFC 7009 Section 2.1: the token must have been issued to the client.
   describe 'revoking a token of another client' do
-    it 'looks like revoking an unknown token' do
+    it 'is refused and the token stays' do
       mine = create(:client)
       token = create(:access_token, audience: create(:client))
       headers = { 'Authorization' => ActionController::HttpAuthentication::Basic.encode_credentials(mine.to_param, mine.password) }
       post '/oauth/tokens/revoke', params: { token: token.to_jwt }, headers: headers
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(:bad_request)
       expect(token.reload).not_to be_revoked
     end
   end
@@ -346,6 +346,102 @@ RSpec.describe 'conformance audit' do
     it 'is what the challenge points at' do
       get '/oauth/me'
       expect(response.headers['WWW-Authenticate']).to include('resource_metadata="http://www.example.com/.well-known/oauth-protected-resource/t1/oauth/me"')
+    end
+  end
+end
+
+# Findings of the comparison with independent reference implementations
+RSpec.describe 'reference comparison' do
+  let(:json) { JSON.parse(response.body, symbolize_names: true) }
+  let(:client) { create(:client, grant_types: GrantTypes::ALL - [AssertionGrants::SAML_BEARER_GRANT], resources: ['https://api.example.com/v1']) }
+  let(:credentials) { ActionController::HttpAuthentication::Basic.encode_credentials(client.to_param, client.password) }
+  let(:headers) { { 'Authorization' => credentials } }
+
+  describe 'registration (RFC 7591, 7592)' do
+    def register(extra = {})
+      post '/oauth/clients', params: { client_name: 'App', redirect_uris: ['https://a.example.com/cb'] }.merge(extra), as: :json
+    end
+
+    it 'issues a registration token that outlives a day' do
+      register
+      claims = Token.claims_for(json[:registration_access_token])
+      expect(claims[:exp]).to be > 1.year.from_now.to_i
+    end
+
+    it 'accepts private-use scheme redirect URIs (RFC 8252 Section 7.1)' do
+      register(redirect_uris: ['com.example.app:/oauth2redirect'])
+      expect(response).to have_http_status(:created)
+    end
+
+    it 'refuses schemes that could run code' do
+      register(redirect_uris: ['javascript:alert(1)'])
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    {
+      'a scalar grant_types' => { grant_types: 'authorization_code' },
+      'a number for client_name' => { client_name: 5 },
+      'a string for jwks' => { jwks: 'abc' },
+      'non strings in redirect_uris' => { redirect_uris: [1] }
+    }.each do |name, extra|
+      it "refuses #{name}" do
+        register(extra)
+        expect(response).to have_http_status(:bad_request)
+        expect(json[:error]).to eql('invalid_client_metadata')
+      end
+    end
+
+    it 'gives a secret to a public client that becomes confidential' do
+      register(token_endpoint_auth_method: 'none')
+      token = json[:registration_access_token]
+      id = json[:client_id]
+      @json = nil
+      put "/oauth/clients/#{id}", params: { client_id: id, client_name: 'App', redirect_uris: ['https://a.example.com/cb'], token_endpoint_auth_method: 'client_secret_basic' },
+        headers: { 'Authorization' => "Bearer #{token}" }, as: :json
+      expect(response).to have_http_status(:ok)
+      expect(JSON.parse(response.body)['client_secret']).to be_present
+    end
+
+    it 'challenges when the client does not exist' do
+      register
+      token = json[:registration_access_token]
+      get "/oauth/clients/#{SecureRandom.uuid}", headers: { 'Authorization' => "Bearer #{token}" }
+      expect(response).to have_http_status(:unauthorized)
+      expect(response.headers['WWW-Authenticate']).to include('invalid_token')
+    end
+
+    it 'does not revoke an unrelated token for an unknown client' do
+      user_token = create(:access_token)
+      get "/oauth/clients/#{SecureRandom.uuid}", headers: { 'Authorization' => "Bearer #{user_token.to_jwt}" }
+      expect(user_token.reload).not_to be_revoked
+    end
+  end
+
+  describe 'the jwt bearer grant without an assertion' do
+    it 'is an invalid_request' do
+      post '/oauth/tokens', params: { grant_type: AssertionGrants::JWT_BEARER_GRANT }, headers: headers
+      expect(json[:error]).to eql('invalid_request')
+    end
+  end
+
+  describe 'repeated resource parameters (RFC 8707)' do
+    it 'are an invalid_target, not an invalid_request' do
+      post '/oauth/tokens', params: 'grant_type=client_credentials&resource=https://api.example.com/v1&resource=https://b.example.com',
+        headers: headers.merge('Content-Type' => 'application/x-www-form-urlencoded')
+      expect(json[:error]).to eql('invalid_target')
+    end
+  end
+
+  describe 'the device authorization endpoint with a resource' do
+    it 'carries the resource to the request' do
+      post '/oauth/device_authorization', params: { resource: 'https://api.example.com/v1' }, headers: headers
+      expect(response).to have_http_status(:ok)
+      expect(DeviceAuthorization.last.resource).to eql('https://api.example.com/v1')
+    end
+
+    it 'refuses a resource the client may not use' do
+      post '/oauth/device_authorization', params: { resource: 'https://evil.example.com' }, headers: headers
+      expect(json[:error]).to eql('invalid_target')
     end
   end
 end

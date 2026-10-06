@@ -15,7 +15,7 @@ module Oauth
       scope = Scopes.resolve(params[:scope], allowed: current_client.allowed_scopes)
       raise GrantError.new('invalid_scope') unless scope
 
-      request, device_code = DeviceAuthorization.issue!(current_client, scope: Scopes.format(scope))
+      request, device_code = DeviceAuthorization.issue!(current_client, scope: Scopes.format(scope), resource: requested_resource)
       verification_uri = oauth_device_url
       render json: {
         device_code: device_code,
@@ -28,6 +28,17 @@ module Oauth
     end
 
     private
+
+    # RFC 8707 Section 2: the resource the tokens are for, if one is named.
+    def requested_resource
+      value = params[:resource]
+      return if value.blank?
+      raise GrantError.new('invalid_target', 'Only one resource may be requested.') unless value.is_a?(String)
+      raise GrantError.new('invalid_target', 'resource must be an absolute URI without a fragment.') unless ResourceIndicator.valid?(value)
+      raise GrantError.new('invalid_target', 'The client may not request this resource.') unless ResourceIndicator.permitted?(current_client, value)
+
+      value
+    end
 
     def apply_cache_headers
       response.headers['Cache-Control'] = 'no-store'
