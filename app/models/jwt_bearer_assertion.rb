@@ -12,6 +12,13 @@ class JwtBearerAssertion
   LEEWAY = 1.minute
   MAX_LIFETIME = 1.hour
 
+  # The unverified `iss` of an assertion, used to find the key to verify it with.
+  def self.issuer_of(assertion)
+    JWT.decode(assertion.to_s, nil, false)[0]['iss']
+  rescue JWT::DecodeError
+    nil
+  end
+
   def initialize(client, audiences:)
     @client = client
     @audiences = Array(audiences)

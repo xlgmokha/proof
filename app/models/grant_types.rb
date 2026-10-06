@@ -6,7 +6,6 @@ module GrantTypes
     authorization_code
     refresh_token
     client_credentials
-    password
     urn:ietf:params:oauth:grant-type:saml2-bearer
     urn:ietf:params:oauth:grant-type:jwt-bearer
   ].freeze

@@ -105,6 +105,7 @@ en:
       show:
         authorize: Authorize
         authorize_prompt_html: Do you authorize <strong>%{name}</strong> to access your data?
+        deny: Deny
         title: Authorize
   registrations:
     new:

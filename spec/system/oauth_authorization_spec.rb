@@ -17,10 +17,11 @@ describe "authorizing an OAuth client in a browser", :js do
     expect(page).to have_content('Dashboard')
 
     visit oauth_authorizations_path(
-      client_id: client.to_param, response_type: 'code', redirect_uri: callback, state: state
+      client_id: client.to_param, response_type: 'code', redirect_uri: callback, state: state,
+      code_challenge: PkceHelpers::PKCE_CHALLENGE, code_challenge_method: 'S256'
     )
     click_button I18n.t('oauth.authorizations.show.authorize')
 
-    expect(page).to have_current_path(%r{/my/dashboard\#code=.+&state=#{state}\z}, url: true)
+    expect(page).to have_current_path(%r{/my/dashboard\?code=.+&state=#{state}&iss=}, url: true)
   end
 end

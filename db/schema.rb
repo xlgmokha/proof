@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_06_070000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_06_080000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -48,6 +48,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_070000) do
     t.datetime "revoked_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "redirect_uri"
+    t.string "scope"
+    t.string "resource"
     t.index ["client_id"], name: "index_authorizations_on_client_id"
     t.index ["code"], name: "index_authorizations_on_code"
     t.index ["user_id"], name: "index_authorizations_on_user_id"
@@ -119,8 +122,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_070000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "authorization_id"
+    t.string "scope"
+    t.string "resource"
+    t.string "dpop_jkt"
+    t.uuid "family_id"
     t.index ["audience_type", "audience_id"], name: "index_tokens_on_audience_type_and_audience_id"
     t.index ["authorization_id"], name: "index_tokens_on_authorization_id"
+    t.index ["family_id"], name: "index_tokens_on_family_id"
     t.index ["subject_type", "subject_id"], name: "index_tokens_on_subject_type_and_subject_id"
   end
 

@@ -2,21 +2,18 @@
 
 module Oauth
   class MesController < ActionController::API
-    include ActionController::HttpAuthentication::Token::ControllerMethods
-    before_action :authenticate!
+    include BearerAuthentication
+    before_action { authenticate_bearer!(scope: required_scope) }
 
     def show
-      render json: @claims
+      render json: @access_token.claims
     end
+    alias create show
 
     private
 
-    def authenticate!
-      @claims = authenticate_with_http_token do |token, _options|
-        claims = Token.claims_for(token)
-        Token.revoked?(claims[:jti]) ? nil : claims
-      end
-      request_http_token_authentication if @claims.blank?
+    def required_scope
+      nil
     end
   end
 end

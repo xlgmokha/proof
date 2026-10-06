@@ -222,7 +222,7 @@ RSpec.describe "/oauth/clients" do
     end
 
     context "when the token_endpoint_auth_method is not supported" do
-      before { post "/oauth/clients", params: params.merge(token_endpoint_auth_method: 'private_key_jwt'), as: :json }
+      before { post "/oauth/clients", params: params.merge(token_endpoint_auth_method: 'tls_client_auth'), as: :json }
 
       specify { expect(response).to have_http_status(:bad_request) }
       specify { expect(json[:error]).to eql("invalid_client_metadata") }

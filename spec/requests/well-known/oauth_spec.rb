@@ -11,21 +11,25 @@ RSpec.describe "/.well-known/oauth-authorization-server" do
     specify { expect(response).to have_http_status(:ok) }
     specify { expect(response.content_type).to start_with("application/json") }
     specify { expect(response.headers['Set-Cookie']).to be_nil }
-    specify { expect(json[:issuer]).to eql(root_url) }
+    specify { expect(json[:issuer]).to eql(Oauth::Issuer.identifier) }
     specify { expect(json[:authorization_endpoint]).to eql(oauth_authorizations_url) }
     specify { expect(json[:token_endpoint]).to eql(oauth_tokens_url) }
-    specify { expect(json[:token_endpoint_auth_methods_supported]).to match_array(%w[client_secret_basic client_secret_post]) }
-    specify { expect(json[:token_endpoint_auth_signing_alg_values_supported]).to match_array(['RS256']) }
+    specify { expect(json[:token_endpoint_auth_methods_supported]).to match_array(%w[client_secret_basic client_secret_post private_key_jwt none]) }
+    specify { expect(json[:token_endpoint_auth_signing_alg_values_supported]).to include('RS256', 'ES256', 'PS256').and(satisfy { |x| x.none? { |alg| alg.start_with?('HS') || alg == 'none' } }) }
     specify { expect(json[:userinfo_endpoint]).to eql(oauth_me_url) }
     specify { expect(json[:jwks_uri]).to eql(jwks_url) }
     specify { expect(json[:revocation_endpoint]).to eql(revoke_oauth_tokens_url) }
     specify { expect(json[:introspection_endpoint]).to eql(introspect_oauth_tokens_url) }
     specify { expect(json[:grant_types_supported]).to match_array(Client::GRANT_TYPES) }
-    specify { expect(json[:code_challenge_methods_supported]).to match_array(%w[plain S256]) }
+    specify { expect(json[:code_challenge_methods_supported]).to match_array(%w[S256]) }
     specify { expect(json[:registration_endpoint]).to eql(oauth_clients_url) }
-    specify { expect(json[:scopes_supported]).to be_empty }
+    specify { expect(json[:scopes_supported]).to match_array(Scopes::SUPPORTED) }
     specify { expect(json[:response_types_supported]).to match_array(Client::RESPONSE_TYPES) }
     specify { expect(json[:service_documentation]).to eql(root_url + 'doc') }
+    specify { expect(json[:response_modes_supported]).to eql(%w[query]) }
+    specify { expect(json[:authorization_response_iss_parameter_supported]).to be(true) }
+    specify { expect(json[:response_types_supported]).to eql(%w[code]) }
+    specify { expect(json[:grant_types_supported]).not_to include('password', 'implicit') }
     specify { expect(json[:ui_locales_supported]).to eql(I18n.available_locales.map(&:to_s)) }
   end
 

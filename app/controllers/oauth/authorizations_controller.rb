@@ -1,28 +1,17 @@
 # frozen_string_literal: true
 
 module Oauth
+  # RFC 6749 Section 3.1, the authorization code flow of Section 4.1 and the
+  # PKCE extension (RFC 7636), which this server requires of every client
+  # (RFC 9700 Section 2.1.1).
   class AuthorizationsController < ApplicationController
-    VALID_RESPONSE_TYPES = %w[code token].freeze
+    before_action :load_client_and_redirect_uri, only: :show
 
     def show
-      @client = Client.find(secure_params[:client_id])
+      return redirect_with_error(:unsupported_response_type) unless @client.valid_response_type?(secure_params[:response_type])
 
-      unless @client.valid_redirect_uri?(secure_params[:redirect_uri])
-        state = secure_params[:state]
-        type = :invalid_request
-        return redirect_to error_url_for(@client, type, state), allow_other_host: true
-      end
-
-      unless @client.valid_response_type?(secure_params[:response_type])
-        state = secure_params[:state]
-        type = :unsupported_response_type
-        return redirect_to error_url_for(@client, type, state), allow_other_host: true
-      end
-
-      unless valid_code_challenge?
-        return redirect_to(error_url_for(@client, :invalid_request, secure_params[:state]),
-          allow_other_host: true)
-      end
+      error = pkce_error || scope_error
+      return redirect_with_error(*error) if error
 
       session[:oauth] = secure_params.to_h
     end
@@ -31,37 +20,70 @@ module Oauth
       return render_error(:bad_request) if oauth.nil?
 
       client = Client.find(oauth[:client_id])
-      redirect_to redirect_url_for(client, oauth), allow_other_host: true
+      session.delete(:oauth)
+      return redirect_to denied_url_for(client, oauth), allow_other_host: true if params[:deny].present?
+
+      redirect_to client.redirect_url_for(current_user, oauth), allow_other_host: true
     rescue StandardError => error
       logger.error(error)
-      url = error_url_for(client, :invalid_request)
-      redirect_to url, allow_other_host: true if url
+      url = client&.redirect_url(**authorization_error('server_error', oauth[:state]), to: oauth[:redirect_uri].presence)
+      return render_error(:bad_request) unless url
+
+      redirect_to url, allow_other_host: true
     end
 
     private
 
-    # RFC 7636 Section 4.3: the method is only meaningful with a challenge, and
-    # only plain and S256 are defined.
-    def valid_code_challenge?
-      method = secure_params[:code_challenge_method]
-      return true if method.blank?
+    # RFC 6749 Section 4.1.2.1: when the client or redirect URI cannot be
+    # trusted, the user is told and nothing is redirected.
+    def load_client_and_redirect_uri
+      @client = Client.find_by(id: secure_params[:client_id])
+      @redirect_uri = @client&.resolve_redirect_uri(secure_params[:redirect_uri])
+      return if @redirect_uri
 
-      %w[plain S256].include?(method) && secure_params[:code_challenge].present?
+      render plain: 'The client or its redirect_uri is not valid.', status: :bad_request
+    end
+
+    # RFC 7636 Section 4.3 (the method defaults to plain, which is not
+    # accepted here).
+    def pkce_error
+      challenge = secure_params[:code_challenge]
+      return [:invalid_request, 'code_challenge is required.'] if challenge.blank?
+      return [:invalid_request, 'code_challenge_method must be S256.'] unless secure_params[:code_challenge_method] == 'S256'
+      return if Authorization::PKCE_VERIFIER.match?(challenge)
+
+      [:invalid_request, 'code_challenge is not valid.']
+    end
+
+    def scope_error
+      [:invalid_scope, 'The requested scope is not supported.'] unless Scopes.resolve(secure_params[:scope])
     end
 
     def secure_params
       params.permit(
-        :client_id, :response_type, :redirect_uri,
+        :client_id, :response_type, :redirect_uri, :scope, :resource,
         :state, :code_challenge, :code_challenge_method
       )
     end
 
-    def redirect_url_for(client, oauth)
-      client.redirect_url_for(current_user, oauth)
+    def redirect_with_error(type, description = nil)
+      redirect_to(
+        @client.redirect_url(
+          **authorization_error(type, secure_params[:state], description), to: secure_params[:redirect_uri].presence
+        ),
+        allow_other_host: true
+      )
     end
 
-    def error_url_for(client, type, state = nil)
-      client&.redirect_url(error: type, state: state)
+    def denied_url_for(client, oauth)
+      client.redirect_url(
+        **authorization_error('access_denied', oauth[:state]), to: oauth[:redirect_uri].presence
+      )
+    end
+
+    # RFC 6749 Section 4.1.2.1 and RFC 9207 (the issuer is always identified).
+    def authorization_error(type, state, description = nil)
+      { error: type, error_description: description, state: state, iss: Oauth::Issuer.identifier }
     end
   end
 end

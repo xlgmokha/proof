@@ -2,7 +2,7 @@
 
 module Oauth
   class ClientsController < ActionController::API
-    include ActionController::HttpAuthentication::Token::ControllerMethods
+    include BearerAuthentication
     before_action :apply_cache_headers
     before_action :authenticate!, except: [:create]
 
@@ -42,23 +42,20 @@ module Oauth
 
     private
 
+    # RFC 7592 Section 2: the registration access token that was issued with
+    # the client authorizes reading, updating and deleting that client.
     def authenticate!
-      token = authenticate_with_http_token do |jwt, _options|
-        claims = Token.claims_for(jwt)
-        next if claims.empty? || Token.revoked?(claims[:jti])
-
-        @registration_access_token = jwt
-        Token.find(claims[:jti])
-      end
-      return request_http_token_authentication if token.blank?
+      authenticate_bearer!
+      return if performed?
 
       unless Client.where(id: params[:id]).exists?
-        token.revoke!
+        @access_token.revoke!
         return render json: {}, status: :unauthorized
       end
-      return render json: {}, status: :forbidden unless token.subject.to_param == params[:id]
+      return render json: {}, status: :forbidden unless @access_token.subject.to_param == params[:id]
 
-      @client = token.subject
+      @client = @access_token.subject
+      @registration_access_token = presented_bearer_tokens.first
     end
 
     def secure_params

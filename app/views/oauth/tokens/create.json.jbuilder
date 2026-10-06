@@ -2,5 +2,6 @@
 
 json.access_token @access_token.to_jwt
 json.token_type 'Bearer'
-json.expires_in 1.hour.to_i
+json.expires_in [(@access_token.expired_at - Time.current).ceil, 0].max
+json.scope @access_token.scope if @access_token.scope.present?
 json.refresh_token(@refresh_token.to_jwt) if @refresh_token.present?
