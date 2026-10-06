@@ -59,6 +59,13 @@ describe 'PATCH /scim/v2/Users/:id' do
     specify { expect(target.reload.email).to eql(new_email) }
   end
 
+  context 'when the emails filter matches no email' do
+    before { patch path, headers: headers, params: patch_body({ op: 'replace', path: 'emails[primary eq false].value', value: 'new@example.com' }) }
+
+    specify { expect(response).to have_http_status(:bad_request) }
+    specify { expect(target.reload.email).not_to eql('new@example.com') }
+  end
+
   context 'when replacing emails.value' do
     before { patch path, headers: headers, params: patch_body({ op: 'replace', path: 'emails[primary eq true].value', value: 'new@example.com' }) }
 

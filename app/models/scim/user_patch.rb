@@ -79,10 +79,15 @@ module Scim
     end
 
     def ensure_whole_emails_path!(path)
-      raise Scim::Error.invalid_path('Filtered emails paths are not supported') if path.filter?
+      raise Scim::Error.no_target('No email matches the filter') unless path.matches?(current_email)
       return if path.sub_attribute.nil? || path.sub_attribute == 'value'
 
       raise Scim::Error.invalid_path('Unsupported path')
+    end
+
+    # The only email the user has, as it is represented in SCIM.
+    def current_email
+      { 'value' => @user.email, 'primary' => true }
     end
 
     def unsupported!(path)
