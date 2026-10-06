@@ -23,6 +23,7 @@ class Client < ApplicationRecord
   validate :grant_and_response_types_are_supported
   validate :scope_is_supported
   validates :jwks_uri, format: { with: URI_REGEX }, allow_blank: true
+  validate :request_uris_are_https
   validates :logo_uri, format: { with: URI_REGEX }, allow_blank: true
   validates :name, presence: true
   validate :jwks_uri_and_jwks_are_exclusive
@@ -57,8 +58,11 @@ class Client < ApplicationRecord
     client_secret_none?
   end
 
-  def access_token(scope: Scopes.format(Scopes::DEFAULT), resource: nil)
-    Token.create!(subject: self, audience: self, token_type: :access, scope: scope, resource: resource)
+  def access_token(scope: Scopes.format(Scopes::DEFAULT), resource: nil, authorization_details: nil)
+    Token.create!(
+      subject: self, audience: self, token_type: :access, scope: scope, resource: resource,
+      authorization_details: authorization_details
+    )
   end
 
   def revoke(token)
@@ -95,7 +99,9 @@ class Client < ApplicationRecord
       challenge_method: :sha256,
       redirect_uri: oauth[:redirect_uri].presence,
       scope: Scopes.format(Scopes.resolve(oauth[:scope], allowed: allowed_scopes)),
-      resource: oauth[:resource].presence
+      resource: oauth[:resource].presence,
+      dpop_jkt: oauth[:dpop_jkt].presence,
+      authorization_details: AuthorizationDetails.parse(oauth[:authorization_details], client: self)
     )
     redirect_url(
       code: authorization.code, state: oauth[:state], iss: Oauth::Issuer.identifier,
@@ -149,6 +155,12 @@ class Client < ApplicationRecord
     end
   rescue URI::InvalidURIError
     false
+  end
+
+  def request_uris_are_https
+    return if request_uris.all? { |x| x.start_with?('https://') && x.exclude?('#') }
+
+    errors.add(:request_uris, 'must be https URLs without a fragment.')
   end
 
   def jwks_uri_and_jwks_are_exclusive

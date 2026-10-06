@@ -67,6 +67,7 @@ class Token < ApplicationRecord
     }.merge(scope.present? ? { scope: scope } : {})
       .merge(dpop_jkt.present? ? { cnf: { jkt: dpop_jkt } } : {})
       .merge(act.present? ? { act: act } : {})
+      .merge(authorization_details.present? ? { authorization_details: authorization_details } : {})
       .merge(custom_claims)
   end
 
@@ -74,13 +75,13 @@ class Token < ApplicationRecord
     @to_jwt ||= BearerToken.new.encode(claims(custom_claims), typ: access? ? ACCESS_TYP : REFRESH_TYP)
   end
 
-  def issue_tokens_to(client, token_types: [:access, :refresh], scope: self.scope, resource: self.resource)
+  def issue_tokens_to(client, token_types: [:access, :refresh], scope: self.scope, resource: self.resource, authorization_details: self.authorization_details)
     transaction do
       revoke!
       token_types.map do |x|
         Token.create!(
           subject: subject, audience: client, token_type: x, scope: scope,
-          resource: resource, dpop_jkt: dpop_jkt, family_id: family_id
+          resource: resource, dpop_jkt: dpop_jkt, family_id: family_id, authorization_details: authorization_details
         )
       end
     end

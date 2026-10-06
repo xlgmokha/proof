@@ -37,10 +37,17 @@ module BearerAuthentication
     end
     return true unless bound
 
-    proof = DpopProof.new(request.headers['DPoP'], method: request.method, url: "#{request.base_url}#{request.path}", access_token: jwt)
+    proof = DpopProof.new(
+      request.headers['DPoP'], method: request.method, url: "#{request.base_url}#{request.path}",
+      access_token: jwt, nonce_required: DpopNonce.required?
+    )
     return true if proof.verify! == @access_token.dpop_jkt
 
     challenge('invalid_token', 'The DPoP proof was not made with the key the token is bound to.', status: :unauthorized, schemes: ['DPoP'])
+    false
+  rescue DpopProof::UseNonce => error
+    response.headers['DPoP-Nonce'] = DpopNonce.current
+    challenge('use_dpop_nonce', error.message, status: :unauthorized, schemes: ['DPoP'])
     false
   rescue DpopProof::Invalid => error
     challenge('invalid_dpop_proof', error.message, status: :unauthorized, schemes: ['DPoP'])

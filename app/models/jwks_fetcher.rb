@@ -38,9 +38,17 @@ class JwksFetcher
     raise Error.new(error.message)
   end
 
+  # The body served at an https URL a client registered, as text (RFC 9101
+  # Section 6.2). The same address restrictions as for key sets apply.
+  def fetch_text(uri)
+    download(URI.parse(uri), parse: false)
+  rescue URI::InvalidURIError, SocketError, SystemCallError, Timeout::Error, OpenSSL::SSL::SSLError => error
+    raise Error.new(error.message)
+  end
+
   private
 
-  def download(uri)
+  def download(uri, parse: true)
     raise Error.new('jwks_uri must use https') unless uri.is_a?(URI::HTTPS)
 
     address = safe_address_for(uri.host)
@@ -51,7 +59,8 @@ class JwksFetcher
     http.request(Net::HTTP::Get.new(uri.request_uri, 'Accept' => 'application/json')) do |response|
       raise Error.new("unexpected response #{response.code}") unless response.is_a?(Net::HTTPSuccess)
 
-      return JSON.parse(read_limited(response))
+      body = read_limited(response)
+      return parse ? JSON.parse(body) : body
     end
   end
 

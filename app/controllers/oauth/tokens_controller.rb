@@ -66,7 +66,14 @@ module Oauth
       proof = request.headers['DPoP']
       return if proof.blank?
 
-      @dpop_jkt = DpopProof.new(proof, method: request.method, url: "#{request.base_url}#{request.path}").verify!
+      @dpop_jkt = DpopProof.new(
+        proof, method: request.method, url: "#{request.base_url}#{request.path}", nonce_required: DpopNonce.required?
+      ).verify!
+      response.headers['DPoP-Nonce'] = DpopNonce.current if DpopNonce.required?
+    rescue DpopProof::UseNonce => error
+      # Section 8: hand out a nonce and let the client try again.
+      response.headers['DPoP-Nonce'] = DpopNonce.current
+      render_oauth_error(GrantError.new('use_dpop_nonce', error.message))
     rescue DpopProof::Invalid => error
       render_oauth_error(GrantError.new('invalid_dpop_proof', error.message))
     end
@@ -97,7 +104,7 @@ module Oauth
 
     # RFC 7662 Section 2.2
     def introspection_for(token)
-      claims = token.claims.slice(:scope, :client_id, :exp, :iat, :nbf, :sub, :aud, :iss, :jti, :cnf, :act)
+      claims = token.claims.slice(:scope, :client_id, :exp, :iat, :nbf, :sub, :aud, :iss, :jti, :cnf, :act, :authorization_details)
       claims[:token_type] = token.dpop_jkt.present? ? 'DPoP' : 'Bearer' if token.access?
       claims[:username] = token.subject.email if token.subject.respond_to?(:email)
       claims.merge(active: true)
@@ -119,6 +126,22 @@ module Oauth
       value
     end
 
+    # RFC 9396 Section 7: details sent to the token endpoint may only narrow
+    # what was granted. With no grant to narrow (client credentials), they
+    # are checked as they are.
+    def authorization_details_for(granted)
+      requested = AuthorizationDetails.parse(params[:authorization_details], client: current_client)
+      return granted if requested.nil?
+
+      if granted.present? && !AuthorizationDetails.subset?(requested, granted)
+        raise GrantError.new('invalid_authorization_details', 'authorization_details exceeds the grant.')
+      end
+
+      requested
+    rescue AuthorizationDetails::Invalid => error
+      raise GrantError.new('invalid_authorization_details', error.message)
+    end
+
     # RFC 6749 Section 3.3
     def requested_scope
       Scopes.resolve(params[:scope], allowed: current_client.allowed_scopes) || raise(GrantError.new('invalid_scope'))
@@ -138,7 +161,10 @@ module Oauth
         next if replayed
 
         verify_code!(authorization)
-        authorization.issue_tokens_to(current_client, resource: resource_for(authorization.resource))
+        authorization.issue_tokens_to(
+          current_client, resource: resource_for(authorization.resource),
+          authorization_details: authorization_details_for(authorization.authorization_details)
+        )
       end
       return tokens unless replayed
 
@@ -153,6 +179,10 @@ module Oauth
       end
       unless authorization.redirect_uri_matches?(params[:redirect_uri])
         raise GrantError.new('invalid_grant', 'redirect_uri does not match the authorization request.')
+      end
+      # RFC 9449 Section 10: a code bound to a key is only good with a proof from it.
+      if authorization.dpop_jkt.present? && authorization.dpop_jkt != @dpop_jkt
+        raise GrantError.new('invalid_dpop_proof', 'The authorization code is bound to a different key.')
       end
       return if authorization.challenge.present? && authorization.valid_verifier?(params[:code_verifier])
 
@@ -178,7 +208,10 @@ module Oauth
           raise GrantError.new('invalid_dpop_proof', 'The refresh token is bound to a different key.')
         end
 
-        token.issue_tokens_to(current_client, scope: narrowed_scope(token), resource: resource_for(token.resource))
+        token.issue_tokens_to(
+          current_client, scope: narrowed_scope(token), resource: resource_for(token.resource),
+          authorization_details: authorization_details_for(token.authorization_details)
+        )
       end
       return tokens unless replayed
 
@@ -252,7 +285,13 @@ module Oauth
     def client_credentials_grant
       raise GrantError.new('unauthorized_client') if current_client.public_client?
 
-      [current_client.access_token(scope: Scopes.format(requested_scope), resource: requested_resource), nil]
+      [
+        current_client.access_token(
+          scope: Scopes.format(requested_scope), resource: requested_resource,
+          authorization_details: authorization_details_for(nil)
+        ),
+        nil
+      ]
     end
 
     def tokens_for(grant_type = params[:grant_type])

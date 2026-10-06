@@ -16,11 +16,24 @@ module Oauth
       error, description = request.error
       raise GrantError.new(error.to_s, description) if error
 
-      pushed = current_client.pushed_authorization_requests.create!(parameters: request.parameters)
+      pushed = current_client.pushed_authorization_requests.create!(parameters: request.parameters.merge(dpop_jkt: dpop_jkt_for(request).presence).compact)
       render json: { request_uri: pushed.request_uri, expires_in: PushedAuthorizationRequest::LIFETIME.to_i }, status: :created
     end
 
     private
+
+    # RFC 9449 Section 10.1: a proof sent with the push binds the code to its key.
+    def dpop_jkt_for(pushed_request)
+      proof = request.headers['DPoP']
+      return pushed_request[:dpop_jkt] if proof.blank?
+
+      jkt = DpopProof.new(proof, method: 'POST', url: oauth_par_url).verify!
+      raise GrantError.new('invalid_dpop_proof', 'dpop_jkt does not match the DPoP proof.') if pushed_request[:dpop_jkt].present? && pushed_request[:dpop_jkt] != jkt
+
+      jkt
+    rescue DpopProof::Invalid => error
+      raise GrantError.new('invalid_dpop_proof', error.message)
+    end
 
     def apply_cache_headers
       response.headers['Cache-Control'] = 'no-store'

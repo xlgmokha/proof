@@ -14,6 +14,7 @@ module Oauth
       return redirect_with_error(*error) if error
 
       session[:oauth] = @authorization_request.parameters
+      @details = AuthorizationDetails.parse(@authorization_request[:authorization_details], client: @client)
     end
 
     def create(oauth = session[:oauth])

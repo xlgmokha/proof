@@ -4,6 +4,8 @@
 # a request holds the private key an access token is bound to.
 class DpopProof
   class Invalid < StandardError; end
+  # Section 8: the proof must carry a nonce the server provided.
+  class UseNonce < Invalid; end
 
   ALGORITHMS = %w[RS256 RS384 RS512 PS256 PS384 PS512 ES256 ES384 ES512].freeze
   TYP = 'dpop+jwt'
@@ -12,7 +14,8 @@ class DpopProof
   PRIVATE_KEY_MEMBERS = %w[d p q dp dq qi oth k].freeze
 
   # `url` is the request URL; its query and fragment are ignored (htu).
-  def initialize(proof, method:, url:, access_token: nil)
+  def initialize(proof, method:, url:, access_token: nil, nonce_required: false)
+    @nonce_required = nonce_required
     @proof = proof
     @method = method
     @url = url
@@ -36,7 +39,7 @@ class DpopProof
 
   private
 
-  attr_reader :proof, :method, :url, :access_token
+  attr_reader :proof, :method, :url, :access_token, :nonce_required
 
   def ensure_header!(header)
     raise Invalid.new('typ must be dpop+jwt.') unless header['typ'] == TYP
@@ -52,6 +55,7 @@ class DpopProof
     raise Invalid.new('htm does not match the request.') unless claims['htm'] == method
     raise Invalid.new('htu does not match the request.') unless normalize(claims['htu']) == normalize(url)
     raise Invalid.new('iat is outside the acceptable window.') unless fresh?(claims['iat'])
+    raise UseNonce.new('The proof must include a nonce provided by the server.') if nonce_required && !DpopNonce.valid?(claims['nonce'])
     return if access_token.nil? || claims['ath'] == self.class.hash_of(access_token)
 
     raise Invalid.new('ath does not match the access token.')

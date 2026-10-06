@@ -25,8 +25,10 @@ json.pushed_authorization_request_endpoint oauth_par_url
 json.require_pushed_authorization_requests false
 json.request_parameter_supported true
 json.request_uri_parameter_supported true
+json.require_request_uri_registration true
 json.require_signed_request_object false
 json.request_object_signing_alg_values_supported RequestObject::ALGORITHMS
+json.authorization_details_types_supported AuthorizationDetails.supported_types
 json.dpop_signing_alg_values_supported DpopProof::ALGORITHMS
 json.service_documentation root_url + 'doc'
 json.ui_locales_supported I18n.available_locales

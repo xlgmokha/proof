@@ -18,6 +18,8 @@ json.contacts @client.contacts if @client.contacts.present?
   software_version: @client.software_version, jwks_uri: @client.jwks_uri
 }.each { |name, value| json.set!(name, value) if value.present? }
 json.jwks @client.jwks if @client.jwks.present?
+json.authorization_details_types @client.authorization_details_types if @client.authorization_details_types.present?
+json.request_uris @client.request_uris if @client.request_uris.present?
 json.require_pushed_authorization_requests @client.require_pushed_authorization_requests
 json.require_signed_request_object @client.require_signed_request_object
 json.registration_client_uri oauth_client_url(@client)

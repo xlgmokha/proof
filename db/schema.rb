@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_06_150000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_06_180000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -51,6 +51,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_150000) do
     t.string "redirect_uri"
     t.string "scope"
     t.string "resource"
+    t.string "dpop_jkt"
+    t.jsonb "authorization_details"
     t.index ["client_id"], name: "index_authorizations_on_client_id"
     t.index ["code"], name: "index_authorizations_on_code"
     t.index ["user_id"], name: "index_authorizations_on_user_id"
@@ -78,6 +80,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_150000) do
     t.boolean "require_pushed_authorization_requests", default: false, null: false
     t.boolean "require_signed_request_object", default: false, null: false
     t.string "resources", default: [], null: false, array: true
+    t.string "authorization_details_types", default: [], null: false, array: true
+    t.string "request_uris", default: [], null: false, array: true
   end
 
   create_table "device_authorizations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -176,6 +180,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_150000) do
     t.string "dpop_jkt"
     t.uuid "family_id"
     t.jsonb "act"
+    t.jsonb "authorization_details"
     t.index ["audience_type", "audience_id"], name: "index_tokens_on_audience_type_and_audience_id"
     t.index ["authorization_id"], name: "index_tokens_on_authorization_id"
     t.index ["family_id"], name: "index_tokens_on_family_id"

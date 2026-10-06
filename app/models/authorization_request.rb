@@ -15,7 +15,7 @@ class AuthorizationRequest
   end
 
   PARAMETERS = %w[
-    client_id response_type redirect_uri scope resource state code_challenge code_challenge_method
+    client_id response_type redirect_uri scope resource state code_challenge code_challenge_method dpop_jkt authorization_details
   ].freeze
 
   attr_reader :client, :parameters
@@ -30,7 +30,7 @@ class AuthorizationRequest
       if raw[:request_uri].present?
         raise Invalid.new('invalid_request', 'request_uri must not be pushed.') if pushing
 
-        pushed(client, raw[:request_uri])
+        raw[:request_uri].to_s.start_with?(PushedAuthorizationRequest::URN) ? pushed(client, raw[:request_uri]) : referenced(client, raw[:request_uri], audiences)
       elsif raw[:request].present?
         signed(client, raw[:request], audiences, pushing: pushing)
       else
@@ -40,6 +40,18 @@ class AuthorizationRequest
         raw.slice(*PARAMETERS)
       end
     new(client, parameters)
+  end
+
+  # RFC 9101 Section 6.2: a request object the client hosts. Only URLs it
+  # registered are fetched (Section 10.4).
+  def self.referenced(client, request_uri, audiences)
+    raise Invalid.new('invalid_request_uri', 'The request_uri is not registered.') unless client.request_uris.include?(request_uri.to_s)
+    raise Invalid.new('invalid_request', 'The request must be pushed.') if client.require_pushed_authorization_requests?
+
+    jwt = JwksFetcher.new.fetch_text(request_uri.to_s).strip
+    signed(client, jwt, audiences, pushing: false)
+  rescue JwksFetcher::Error => error
+    raise Invalid.new('invalid_request_uri', error.message)
   end
 
   def self.pushed(client, request_uri)
@@ -74,7 +86,7 @@ class AuthorizationRequest
 
   # The error to report for a request whose client and redirect URI are fine.
   def error
-    response_type_error || pkce_error || scope_error || resource_error
+    response_type_error || pkce_error || scope_error || resource_error || dpop_jkt_error || authorization_details_error
   end
 
   private
@@ -98,6 +110,22 @@ class AuthorizationRequest
     return if challenge.is_a?(String) && challenge.match?(/\A[A-Za-z0-9\-_]{43}\z/)
 
     [:invalid_request, 'code_challenge is not valid.']
+  end
+
+  # RFC 9396 Section 5
+  def authorization_details_error
+    AuthorizationDetails.parse(self[:authorization_details], client: client)
+    nil
+  rescue AuthorizationDetails::Invalid => error
+    [:invalid_authorization_details, error.message]
+  end
+
+  # RFC 9449 Section 10: the base64url SHA-256 thumbprint of the key.
+  def dpop_jkt_error
+    value = self[:dpop_jkt]
+    return if value.nil? || (value.is_a?(String) && value.match?(/\A[A-Za-z0-9\-_]{43}\z/))
+
+    [:invalid_request, 'dpop_jkt is not valid.']
   end
 
   def scope_error
