@@ -89,16 +89,16 @@ RSpec.describe User do
     end
 
     context "when searching for condition a OR condition b" do
-      let(:first_user) { users.sample }
-      let(:second_user) { users.sample }
+      let(:first_user) { users.first }
+      let(:second_user) { users.second }
       let(:results) { described_class.scim_search(%(userName eq "#{first_user.email}" or userName eq "#{second_user.email}")) }
 
       specify { expect(results.pluck(:email).uniq).to match_array([first_user.email, second_user.email].uniq) }
     end
 
     context "when searching for condition a AND condition b" do
-      let(:first_user) { users.sample }
-      let(:second_user) { users.sample }
+      let(:first_user) { users.first }
+      let(:second_user) { users.second }
       let(:results) { described_class.scim_search(%(meta.lastModified gt "#{10.minutes.from_now.iso8601}" and meta.lastModified lt "#{15.minutes.from_now.iso8601}")) }
 
       before do
