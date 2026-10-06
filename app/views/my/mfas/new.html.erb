@@ -13,12 +13,12 @@
       <div class="box content">
         <h2><%= t('.step_2') %></h2>
         <div data-controller="mfa--setup">
-          <canvas id="canvas" data-target="mfa--setup.canvas"></canvas>
+          <canvas id="canvas" data-mfa--setup-target="canvas"></canvas>
           <%= form_with model: current_user, url: '#' do |form| %>
             <div class="field" data-controller="clipboard">
               <%= form.label :mfa_secret %>
               <div class="control">
-                <%= form.text_field :mfa_secret, class: 'input', readonly: :readonly, data: { target: 'mfa--setup.secret clipboard.source' } %>
+                <%= form.text_field :mfa_secret, class: 'input', readonly: :readonly, data: { 'mfa--setup-target': 'secret', 'clipboard-target': 'source' } %>
               </div>
               <div class="control">
                 <button type="button" data-action="clipboard#copy" class="button clipboard-button"><%= t('.copy') %></button>
@@ -27,7 +27,7 @@
             <div class="field" data-controller="clipboard">
               <%= form.label :provisioning_uri %>
               <div class="control">
-                <%= form.text_field :provisioning_uri, value: current_user.mfa.provisioning_uri, class: 'input', readonly: :readonly, data: { target: 'clipboard.source' } %>
+                <%= form.text_field :provisioning_uri, value: current_user.mfa.provisioning_uri, class: 'input', readonly: :readonly, data: { 'clipboard-target': 'source' } %>
               </div>
               <div class="control">
                 <button type="button" data-action="clipboard#copy" class="button clipboard-button"><%= t('.copy') %></button>
@@ -65,7 +65,7 @@
           <%#</ul>%>
         <%#</div>%>
       <%= form_for current_user, url: my_mfa_path, method: :post do |form| %>
-        <%= form.hidden_field :mfa_secret, data: { target: 'mfa--setup.secret' } %>
+        <%= form.hidden_field :mfa_secret, data: { 'mfa--setup-target': 'secret' } %>
         <div class="field is-grouped is-grouped-right">
           <div class="control">
             <%= form.submit t(".enable"), class: 'button is-primary', data: { turbo_submits_with: t('saving') } %>

@@ -68,14 +68,21 @@ module Scim
 
     # The user's single email is exposed as both userName and emails[0].value.
     def email_from(path, value)
+      ensure_whole_emails_path!(path)
       return string_from(value, path) if path.sub_attribute == 'value'
-      raise Scim::Error.invalid_path('Unsupported path') if path.sub_attribute
 
       emails = Array.wrap(value)
       raise Scim::Error.invalid_value('emails must be a list of objects') unless emails.all?(Hash)
 
       primary = emails.find { |x| x['primary'] } || emails.first
       string_from(primary&.dig('value'), path)
+    end
+
+    def ensure_whole_emails_path!(path)
+      raise Scim::Error.invalid_path('Filtered emails paths are not supported') if path.filter?
+      return if path.sub_attribute.nil? || path.sub_attribute == 'value'
+
+      raise Scim::Error.invalid_path('Unsupported path')
     end
 
     def unsupported!(path)

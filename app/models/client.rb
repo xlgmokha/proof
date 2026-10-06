@@ -35,12 +35,7 @@ class Client < ApplicationRecord
 
   # RFC 7591 Section 2: the client's public keys, by value or by reference.
   def jwk_set
-    set = jwks.presence || (jwks_uri.present? && JwksFetcher.new.fetch(jwks_uri))
-    raise JwksFetcher::Error.new('client has no registered keys') if set.blank?
-
-    JWT::JWK::Set.new(set.with_indifferent_access)
-  rescue JWT::JWKError => error
-    raise JwksFetcher::Error.new(error.message)
+    JwksFetcher.new.key_set_for(self)
   end
 
   def access_token

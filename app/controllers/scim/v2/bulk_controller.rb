@@ -13,7 +13,9 @@ module Scim
       private
 
       def ensure_payload_is_small_enough
-        return if request.content_length.to_i <= Scim::Bulk::MAX_PAYLOAD_SIZE
+        # content_length is missing for chunked requests, so measure the body.
+        size = [request.content_length.to_i, request.body.size].max
+        return if size <= Scim::Bulk::MAX_PAYLOAD_SIZE
 
         raise Scim::Error.new(
           "The payload exceeds the maximum of #{Scim::Bulk::MAX_PAYLOAD_SIZE} bytes",

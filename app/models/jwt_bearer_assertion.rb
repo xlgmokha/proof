@@ -53,7 +53,7 @@ class JwtBearerAssertion
       algorithm: algorithm,
       iss: client.to_param, verify_iss: true,
       aud: audiences, verify_aud: true,
-      required_claims: %w[iss sub aud exp],
+      required_claims: %w[iss sub aud exp jti],
       exp_leeway: LEEWAY.to_i, nbf_leeway: LEEWAY.to_i
     }
     JWT.decode(assertion, key.verify_key, true, options)[0].with_indifferent_access
@@ -72,7 +72,7 @@ class JwtBearerAssertion
   end
 
   def ensure_unused!(claims)
-    return if claims[:jti].blank?
+    raise Invalid.new('jti is required') if claims[:jti].blank?
 
     ttl = [claims[:exp].to_i - Time.current.to_i, 0].max + LEEWAY.to_i
     fresh = cache.write("jwt-bearer:#{client.to_param}:#{claims[:jti]}", true, expires_in: ttl, unless_exist: true)

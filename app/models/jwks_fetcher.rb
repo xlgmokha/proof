@@ -47,11 +47,21 @@ class JwksFetcher
     http.use_ssl = true
     http.ipaddr = address.to_s
     http.open_timeout = http.read_timeout = TIMEOUT
-    response = http.request(Net::HTTP::Get.new(uri.request_uri, 'Accept' => 'application/json'))
-    raise Error.new("unexpected response #{response.code}") unless response.is_a?(Net::HTTPSuccess)
-    raise Error.new('jwks response is too large') if response.body.to_s.bytesize > MAX_BYTES
+    http.request(Net::HTTP::Get.new(uri.request_uri, 'Accept' => 'application/json')) do |response|
+      raise Error.new("unexpected response #{response.code}") unless response.is_a?(Net::HTTPSuccess)
 
-    JSON.parse(response.body)
+      return JSON.parse(read_limited(response))
+    end
+  end
+
+  # Stops reading as soon as the limit is exceeded instead of buffering it all.
+  def read_limited(response)
+    body = +''
+    response.read_body do |chunk|
+      body << chunk
+      raise Error.new('jwks response is too large') if body.bytesize > MAX_BYTES
+    end
+    body
   end
 
   def safe_address_for(host)

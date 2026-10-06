@@ -29,14 +29,24 @@ module Scim
         scim_type: 'invalidValue'))
     end
 
-    # Resolves every reference found in a parsed JSON structure.
-    def resolve_all(value)
+    REFERENCE_KEYS = %w[value $ref].freeze
+
+    # Resolves references in a parsed JSON structure. Only reference fields
+    # (such as members[].value) are rewritten so that free text, for example a
+    # password or displayName that happens to start with "bulkId:", is kept.
+    def resolve_all(value, key = nil)
       case value
-      when Hash then value.transform_values { |x| resolve_all(x) }
-      when Array then value.map { |x| resolve_all(x) }
-      when String then resolve(value)
+      when Hash then value.to_h { |k, v| [k, resolve_all(v, k.to_s)] }
+      when Array then value.map { |x| resolve_all(x, key) }
+      when String then reference_key?(key) ? resolve(value) : value
       else value
       end
+    end
+
+    private
+
+    def reference_key?(key)
+      REFERENCE_KEYS.include?(key&.downcase)
     end
   end
 end
