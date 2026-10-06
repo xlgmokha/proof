@@ -290,13 +290,17 @@ GEM
     minitest (6.0.6)
       drb (~> 2.0)
       prism (~> 1.5)
+    monitor (0.2.0)
     msgpack (1.8.5)
-    net-hippie (1.4.0)
+    net-hippie (1.5.1)
       base64 (~> 0.1)
       json (~> 2.0)
       logger (~> 1.0)
-      net-http (~> 0.6)
-      openssl (~> 3.0)
+      monitor (~> 0.1)
+      net-http (~> 0.1)
+      openssl (~> 4.0)
+      resolv (~> 0.1)
+      timeout (~> 0.1)
     net-http (0.9.1)
       uri (>= 0.11.1)
     net-imap (0.6.7)
@@ -325,7 +329,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.19.4-x86_64-linux-musl)
       racc (~> 1.4)
-    openssl (3.3.3)
+    openssl (4.0.2)
     package_json (0.2.0)
     parallel (2.3.0)
     parser (3.3.12.0)
@@ -409,6 +413,7 @@ GEM
     regexp_parser (2.13.1)
     reline (0.7.0)
       io-console (~> 0.5)
+    resolv (0.8.0)
     rexml (3.4.4)
     rotp (6.3.0)
     rouge (4.7.0)
@@ -712,8 +717,9 @@ CHECKSUMS
   mini_mime (1.1.5) sha256=8681b7e2e4215f2a159f9400b5816d85e9d8c6c6b491e96a12797e798f8bccef
   minima (2.5.2) sha256=9c434e3b7bc4a0f0ab488910438ed3757a0502ff1060d172f361907fc38aa45a
   minitest (6.0.6) sha256=153ea36d1d987a62942382b61075745042a2b3123b1cd48f4c3675af9cc7d6f1
+  monitor (0.2.0) sha256=18698584f161ca6611d73130663990ca7dc439d9d88095226e683035d66f1f0f
   msgpack (1.8.5) sha256=97419eaa7b35dfe3e462c0e6c1a3dfdcbfc8756605c09e46e4c6daef127517ba
-  net-hippie (1.4.0) sha256=e9cb7ceda75ea40e99429390fd038ef21fde7abeee1735f6a92cf412ed0bb806
+  net-hippie (1.5.1) sha256=76ecfc7d8df7866c3ed4f2e25fe963d87537451a1fb0d318b58eca161127fbcc
   net-http (0.9.1) sha256=25ba0b67c63e89df626ed8fac771d0ad24ad151a858af2cc8e6a716ca4336996
   net-imap (0.6.7) sha256=b5c9573be975d856de252ee851871724da66aa2d449b2482d5690bd12bc23660
   net-pop (0.1.2) sha256=848b4e982013c15b2f0382792268763b748cce91c9e91e36b0f27ed26420dff3
@@ -728,7 +734,7 @@ CHECKSUMS
   nokogiri (1.19.4-x86_64-darwin) sha256=7fd17057d3e1f00e9954a74b3cd76595d3d4a5ef233b7ed9599047c204f70551
   nokogiri (1.19.4-x86_64-linux-gnu) sha256=379fae440b28915e3f19d752ce2dcf8465ed2b2fbefd2a7ca0dd497bc981a06a
   nokogiri (1.19.4-x86_64-linux-musl) sha256=17dfb7c1fa194ae02fbf7c51a7afc8d278045ab3fdacfd86f91d02d7b274470b
-  openssl (3.3.3) sha256=d46902138f2987c13122fab826030a11c2bb9b8a16394215cbfc5062c5e2d335
+  openssl (4.0.2) sha256=1037ad2868ae58df9ad917891c0c0f9815a1172f6846d4bcdd508e4c2ee747c2
   package_json (0.2.0) sha256=92c022dc2999a9e57e835f1ec1a84c9a6c2be08e0fd68886c6f86d94101b6b4d
   parallel (2.3.0) sha256=f75a3e904101ce6a1ccb6b8dc800cbafd42166d83330192438dcf29395167a6f
   parser (3.3.12.0) sha256=21a6d7f755d5a24dfbdc6e6b772e4e879a52e7631a88bc5a3a134606052c9828
@@ -765,6 +771,7 @@ CHECKSUMS
   rdoc (8.1.0) sha256=befc37880a5cfd36dcb176c748b5fd5ee39dd3536a75e81824e4972ce230f60a
   regexp_parser (2.13.1) sha256=5aedb6b7c35688f51e86eef17a15374dfd287c83f4ca644b2c5f3ec50a33b44b
   reline (0.7.0) sha256=5b012d8e55dbf9d450f12bde2cf7d15ff546ae80b3f8f3b30e570d431815583d
+  resolv (0.8.0) sha256=733a3483c1510942dae9c60c873fa7153b63d5830eba230827775a50703d90d0
   rexml (3.4.4) sha256=19e0a2c3425dfbf2d4fc1189747bdb2f849b6c5e74180401b15734bc97b5d142
   rotp (6.3.0) sha256=75d40087e65ed0d8022c33055a6306c1c400d1c12261932533b5d6cbcd868854
   rouge (4.7.0) sha256=dba5896715c0325c362e895460a6d350803dbf6427454f49a47500f3193ea739
