@@ -22,7 +22,8 @@ class BearerToken
     decoded, header = JWT.decode(
       token, public_key, true, algorithm: 'RS256', iss: Oauth::Issuer.identifier, verify_iss: true
     )
-    return {} if typ && header['typ'] != typ
+    # RFC 9068 Section 4: the media type name is case insensitive and may carry the application/ prefix.
+    return {} if typ && header['typ'].to_s.downcase.delete_prefix('application/') != typ
 
     decoded.with_indifferent_access
   rescue StandardError => error

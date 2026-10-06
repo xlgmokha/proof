@@ -100,7 +100,13 @@ user-code entry has a global ceiling as well as a per-user/IP one.
 
 Third round: client assertions use the issuer identifier as their only audience (the RFC 7523bis draft text, read from its source), clients may only name resources they were granted (`Client#resources`, operator set), and device user-code entry is locked out after repeated failures (`FailedDeviceAttempt`). The RFC 9728 and 7523bis drafts were read from their WG sources and agree with the implemented behaviour; the other RFC texts were still unreachable.
 
-Known and left open: none of the reviewer findings remain open.
+Known and left open (reviewer findings judged to be hardening or deliberate):
+revocation of another client's token answers 400 rather than 200 (permitted by
+RFC 7009 Section 2.2.1, but a token-existence oracle); registered redirect
+URIs may be plain `http` for any host; a malformed `Authorization: Bearer`
+header is treated as no credentials; client authentication has a timing
+difference between known and unknown client ids; a request object need not
+repeat `client_id`.
 
 ## Not implemented
 

@@ -102,6 +102,6 @@ module BearerAuthentication
       resource_metadata: resource_metadata_url_for_request
     }
     attributes[:algs] = DpopProof::ALGORITHMS.join(' ') if scheme == 'DPoP'
-    "#{scheme} #{attributes.compact.map { |k, v| %(#{k}="#{v.to_s.gsub('"', '')}") }.join(', ')}"
+    "#{scheme} #{attributes.compact.map { |k, v| %(#{k}="#{v.to_s.gsub(/[^\x20\x21\x23-\x5B\x5D-\x7E]/, '')}") }.join(', ')}"
   end
 end
