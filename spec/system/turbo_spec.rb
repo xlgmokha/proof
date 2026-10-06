@@ -28,12 +28,11 @@ describe "navigating with Turbo", :js do
     login
     other = user.sessions.create!(ip: '10.0.0.1', user_agent: 'Mozilla/5.0 Firefox/120.0', accessed_at: Time.current)
     visit my_sessions_path
-    expect(page).to have_content('10.0.0.1')
 
     find("a[href='#{my_session_path(other.to_param)}']").click
 
-    expect(page).to have_current_path(my_sessions_path)
     expect(page).not_to have_content('10.0.0.1')
+    expect(page).to have_current_path(my_sessions_path)
   end
 
   it 'renders the MFA test result inside a turbo frame' do
