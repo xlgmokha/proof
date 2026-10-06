@@ -1,23 +1,25 @@
 
-#### GET http://localhost:5000/scim/v2/ServiceProviderConfig
+#### GET http://127.0.0.1:37541/scim/v2/ServiceProviderConfig
 
 Example curl request:
 
 ```bash
-$ curl http://localhost:5000/scim/v2/ServiceProviderConfig \
+$ curl http://127.0.0.1:37541/scim/v2/ServiceProviderConfig \
   -X GET \
   -d '' \
   -H "Accept: application/json" \
   -H "Content-Type: application/json" \
-  -H "User-Agent: net/hippie 0.1.9" \
-  -H "Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3"
+  -H "User-Agent: net/hippie 1.4.0" \
+  -H "Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3" \
+  -H "Host: 127.0.0.1:37541"
 ```
 Request:
 ```text
 Accept: application/json
 Content-Type: application/json
-User-Agent: net/hippie 0.1.9
+User-Agent: net/hippie 1.4.0
 Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+Host: 127.0.0.1:37541
 ```
 ```json
 
@@ -26,29 +28,42 @@ Response:
 ```text
 200 OK
 
+X-Frame-Options: SAMEORIGIN
+X-Xss-Protection: 1; mode=block
+X-Content-Type-Options: nosniff
+X-Download-Options: noopen
+X-Permitted-Cross-Domain-Policies: none
+Referrer-Policy: strict-origin-when-cross-origin
 Content-Type: application/scim+json
-Etag: W/"9dca6148d7e4fc9b26b5997355d0d962"
+Etag: W/"38a3a2d97bcf2470b7b38021bd15b1bf"
 Cache-Control: max-age=0, private, must-revalidate
-X-Request-Id: c718be94-7780-4e6c-b0ea-c189152cac61
-Transfer-Encoding: chunked
+X-Request-Id: c2f1d497-7d01-49d2-a8e0-53c368f7016c
+Content-Length: 852
 ```
 ```json
 {
+  "meta": {
+    "location": "http://www.example.com/scim/v2/ServiceProviderConfig",
+    "resourceType": "ServiceProviderConfig",
+    "created": "2026-10-06T05:09:39+00:00",
+    "lastModified": "2026-10-06T05:09:39+00:00",
+    "version": 1791263379
+  },
   "schemas": [
     "urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig"
   ],
-  "documentationUri": "http://localhost:5000/doc",
+  "documentationUri": "http://www.example.com/doc",
   "patch": {
-    "supported": false
+    "supported": true
   },
   "bulk": {
-    "supported": false,
-    "maxOperations": null,
-    "maxPayloadSize": null
+    "supported": true,
+    "maxOperations": 100,
+    "maxPayloadSize": 1048576
   },
   "filter": {
-    "supported": false,
-    "maxResults": null
+    "supported": true,
+    "maxResults": 25
   },
   "changePassword": {
     "supported": false
@@ -68,14 +83,7 @@ Transfer-Encoding: chunked
       "type": "oauthbearertoken",
       "primary": true
     }
-  ],
-  "meta": {
-    "resourceType": "ServiceProviderConfig",
-    "created": "2018-10-29T17:34:27Z",
-    "lastModified": "2018-10-29T17:34:27Z",
-    "location": "http://localhost:5000/scim/v2/ServiceProviderConfig",
-    "version": 1
-  }
+  ]
 }
 ```
 

@@ -49,7 +49,7 @@ Rails.application.routes.draw do
       resources :resource_types, only: [:index, :show]
 
       get :Schemas, to: 'schemas#index'
-      get 'Schemas/:id', to: "schemas#show"
+      get 'Schemas/:id', to: "schemas#show", constraints: { id: /.+/ }
       resources :schemas, only: [:index, :show], constraints: { id: /.+/ }
 
       get :ServiceProviderConfig, to: "service_providers#show"

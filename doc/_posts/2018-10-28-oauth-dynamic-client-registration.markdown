@@ -23,4 +23,8 @@ The Dynamic Client Registration endpoint adheres to [RFC-7591](https://tools.iet
 ```
 [Section 1.3](https://tools.ietf.org/html/rfc7591#section-1.3)
 
+Public keys can be registered by value with `jwks` or by reference with `jwks_uri`, but not both.
+Keys must not contain private key material. `jwks_uri` must be an `https` URL that resolves to a
+public address. `token_endpoint_auth_method` defaults to `client_secret_basic`.
+
 {% include oauth-dynamic-client-registration.html %}

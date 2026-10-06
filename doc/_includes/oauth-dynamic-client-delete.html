@@ -1,0 +1,46 @@
+
+#### DELETE http://127.0.0.1:37541/oauth/clients/:id
+
+Example curl request:
+
+```bash
+$ curl http://127.0.0.1:37541/oauth/clients/48b31bbd-7842-4c91-904e-9765610dbeea \
+  -X DELETE \
+  -d '' \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "User-Agent: net/hippie 1.4.0" \
+  -H "Authorization: Bearer eyJraWQiOiJiYTYyOTNlYWEyNjg4MzkzOTkzMWMxYmI5MTQxNDhmM2YyMTNmOGJmNmU3ZDFkNTQ3ODEwMzk3ZjRkNTBlNGUzIiwiYWxnIjoiUlMyNTYifQ.eyJleHAiOjE3OTEyNjY5ODEsImlhdCI6MTc5MTI2MzM4MSwiaXNzIjoidGVzdCIsIm5iZiI6MTc5MTI2MzM4MSwiYXVkIjoiNDhiMzFiYmQtNzg0Mi00YzkxLTkwNGUtOTc2NTYxMGRiZWVhIiwianRpIjoiMDg3Yjg4NDgtMzU1ZC00MmZhLTgyYzItNjFjYWUwNWMyNTNkIiwic3ViIjoiNDhiMzFiYmQtNzg0Mi00YzkxLTkwNGUtOTc2NTYxMGRiZWVhIiwidG9rZW5fdHlwZSI6ImFjY2VzcyJ9.UOKiob0LgqfQUUM8qC9D_6jqL_w_ZvR6djjGnbJTy1xYEV7HVeLMa1jjLyY64RFzX8gdzv5AQKK1H6G9DWZ2CEiJ-chviuwXSRjt-XoeUDdLoVGfDW9_54cN48acvVHw8HclOfsgpHBnfkH9zfeLS3D4Rx2OCh6YA4Xb6UnV4IjBNQ6nAmJaKd6ohooQdIuC4B7rgvOFYg1ELpnEtIUwMIKNbzjXgSh55qXfU_ZdhKghqsfWY10kZGiZWUH0G5XIQ7DPeEz31S0gtQ_mcfFuHHtwmEzE1UcpLb5QIGXf40zuC_77aEKMSE-0qjoz5SCq2jEOxVNk4us5Ejhomofgli0gwrCftCL6XgyZXw7pvP1yEwOXMrQW9epsRXB2h6HUidfJK4KJve_TPLBnpoWr1Qrl8N278-P6-cRG4aA3BHU-fVdBbEpwYWqImcqpIMy7-rmW9CRb0HIrFANXWAkdk2bbWt140mnJ-6wLVMZ49v0pyYO8aJI0Vkz1rWQ8m68HdlzOYakheEPZZ26jcuHLc4Mr0PEs4XL-aK7UrPlvH8f-gFDwLdnxuwnRwiL9Qd54-myoprTxUea9vCg_j4jgZdsx3uj38Fkk3OuvUMS0mF3XIzcJI7kmRbiBqbrare3AfVo4sgKJvdH0vOvNXNpr8Y8PtFuu5xpe9bVZRMpn7Vw" \
+  -H "Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3" \
+  -H "Host: 127.0.0.1:37541"
+```
+Request:
+```text
+Accept: application/json
+Content-Type: application/json
+User-Agent: net/hippie 1.4.0
+Authorization: Bearer eyJraWQiOiJiYTYyOTNlYWEyNjg4MzkzOTkzMWMxYmI5MTQxNDhmM2YyMTNmOGJmNmU3ZDFkNTQ3ODEwMzk3ZjRkNTBlNGUzIiwiYWxnIjoiUlMyNTYifQ.eyJleHAiOjE3OTEyNjY5ODEsImlhdCI6MTc5MTI2MzM4MSwiaXNzIjoidGVzdCIsIm5iZiI6MTc5MTI2MzM4MSwiYXVkIjoiNDhiMzFiYmQtNzg0Mi00YzkxLTkwNGUtOTc2NTYxMGRiZWVhIiwianRpIjoiMDg3Yjg4NDgtMzU1ZC00MmZhLTgyYzItNjFjYWUwNWMyNTNkIiwic3ViIjoiNDhiMzFiYmQtNzg0Mi00YzkxLTkwNGUtOTc2NTYxMGRiZWVhIiwidG9rZW5fdHlwZSI6ImFjY2VzcyJ9.UOKiob0LgqfQUUM8qC9D_6jqL_w_ZvR6djjGnbJTy1xYEV7HVeLMa1jjLyY64RFzX8gdzv5AQKK1H6G9DWZ2CEiJ-chviuwXSRjt-XoeUDdLoVGfDW9_54cN48acvVHw8HclOfsgpHBnfkH9zfeLS3D4Rx2OCh6YA4Xb6UnV4IjBNQ6nAmJaKd6ohooQdIuC4B7rgvOFYg1ELpnEtIUwMIKNbzjXgSh55qXfU_ZdhKghqsfWY10kZGiZWUH0G5XIQ7DPeEz31S0gtQ_mcfFuHHtwmEzE1UcpLb5QIGXf40zuC_77aEKMSE-0qjoz5SCq2jEOxVNk4us5Ejhomofgli0gwrCftCL6XgyZXw7pvP1yEwOXMrQW9epsRXB2h6HUidfJK4KJve_TPLBnpoWr1Qrl8N278-P6-cRG4aA3BHU-fVdBbEpwYWqImcqpIMy7-rmW9CRb0HIrFANXWAkdk2bbWt140mnJ-6wLVMZ49v0pyYO8aJI0Vkz1rWQ8m68HdlzOYakheEPZZ26jcuHLc4Mr0PEs4XL-aK7UrPlvH8f-gFDwLdnxuwnRwiL9Qd54-myoprTxUea9vCg_j4jgZdsx3uj38Fkk3OuvUMS0mF3XIzcJI7kmRbiBqbrare3AfVo4sgKJvdH0vOvNXNpr8Y8PtFuu5xpe9bVZRMpn7Vw
+Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+Host: 127.0.0.1:37541
+```
+```json
+
+```
+Response:
+```text
+204 No Content
+
+X-Frame-Options: SAMEORIGIN
+X-Xss-Protection: 1; mode=block
+X-Content-Type-Options: nosniff
+X-Download-Options: noopen
+X-Permitted-Cross-Domain-Policies: none
+Referrer-Policy: strict-origin-when-cross-origin
+Cache-Control: no-store
+Pragma: no-cache
+X-Request-Id: 0bc48c31-4e7f-46ad-8806-71f41320f683
+```
+```json
+
+```
+

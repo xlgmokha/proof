@@ -1,23 +1,25 @@
 
-#### GET http://localhost:5000/.well-known/oauth-authorization-server
+#### GET http://127.0.0.1:37541/.well-known/oauth-authorization-server
 
 Example curl request:
 
 ```bash
-$ curl http://localhost:5000/.well-known/oauth-authorization-server \
+$ curl http://127.0.0.1:37541/.well-known/oauth-authorization-server \
   -X GET \
   -d '' \
   -H "Accept: application/json" \
   -H "Content-Type: application/json" \
-  -H "User-Agent: net/hippie 0.1.9" \
-  -H "Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3"
+  -H "User-Agent: net/hippie 1.4.0" \
+  -H "Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3" \
+  -H "Host: 127.0.0.1:37541"
 ```
 Request:
 ```text
 Accept: application/json
 Content-Type: application/json
-User-Agent: net/hippie 0.1.9
+User-Agent: net/hippie 1.4.0
 Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+Host: 127.0.0.1:37541
 ```
 ```json
 
@@ -26,34 +28,60 @@ Response:
 ```text
 200 OK
 
+X-Frame-Options: SAMEORIGIN
+X-Xss-Protection: 1; mode=block
+X-Content-Type-Options: nosniff
+X-Download-Options: noopen
+X-Permitted-Cross-Domain-Policies: none
+Referrer-Policy: strict-origin-when-cross-origin
 Content-Type: application/json; charset=utf-8
-Etag: W/"7f1eee6ebfc3008c58d630548ed1707c"
+Vary: Accept
+Etag: W/"37ba97595093a5c6e5afc777bb9ac3d1"
 Cache-Control: max-age=0, private, must-revalidate
-X-Request-Id: 54c2fecc-7fc7-47b9-880e-a2953ad1e4c3
-Transfer-Encoding: chunked
+X-Request-Id: e39bb1b5-14f9-4f2b-b772-f41969b4587b
+Content-Length: 1175
 ```
 ```json
 {
-  "issuer": "http://localhost:5000/",
-  "authorization_endpoint": "http://localhost:5000/oauth/authorizations",
-  "token_endpoint": "http://localhost:5000/oauth/tokens",
+  "issuer": "http://127.0.0.1:37541/",
+  "authorization_endpoint": "http://127.0.0.1:37541/oauth/authorizations",
+  "token_endpoint": "http://127.0.0.1:37541/oauth/tokens",
   "token_endpoint_auth_methods_supported": [
-    "client_secret_basic"
+    "client_secret_basic",
+    "client_secret_post"
   ],
   "token_endpoint_auth_signing_alg_values_supported": [
     "RS256"
   ],
-  "userinfo_endpoint": "http://localhost:5000/oauth/me",
-  "jwks_uri": "",
-  "registration_endpoint": "http://localhost:5000/oauth/clients",
-  "scopes_supported": [
-
+  "userinfo_endpoint": "http://127.0.0.1:37541/oauth/me",
+  "jwks_uri": "http://127.0.0.1:37541/.well-known/jwks.json",
+  "registration_endpoint": "http://127.0.0.1:37541/oauth/clients",
+  "revocation_endpoint": "http://127.0.0.1:37541/oauth/tokens/revoke",
+  "revocation_endpoint_auth_methods_supported": [
+    "client_secret_basic"
   ],
+  "introspection_endpoint": "http://127.0.0.1:37541/oauth/tokens/introspect",
+  "introspection_endpoint_auth_methods_supported": [
+    "client_secret_basic"
+  ],
+  "scopes_supported": [],
   "response_types_supported": [
     "code",
     "token"
   ],
-  "service_documentation": "http://localhost:5000/doc",
+  "grant_types_supported": [
+    "authorization_code",
+    "refresh_token",
+    "client_credentials",
+    "password",
+    "urn:ietf:params:oauth:grant-type:saml2-bearer",
+    "urn:ietf:params:oauth:grant-type:jwt-bearer"
+  ],
+  "code_challenge_methods_supported": [
+    "plain",
+    "S256"
+  ],
+  "service_documentation": "http://127.0.0.1:37541/doc",
   "ui_locales_supported": [
     "en",
     "es",
