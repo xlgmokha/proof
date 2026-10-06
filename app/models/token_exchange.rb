@@ -94,6 +94,7 @@ class TokenExchange
     raise Invalid.new('invalid_target', 'audience must be a string.') unless audience.is_a?(String) || audience.nil?
 
     requested = resource.presence || audience
+    raise Invalid.new('invalid_target', 'The client may not request this target.') unless ResourceIndicator.permitted?(client, requested) || requested == subject.resource
     raise Invalid.new('invalid_target', 'The target exceeds that of the subject_token.') if subject.resource.present? && requested != subject.resource
 
     requested

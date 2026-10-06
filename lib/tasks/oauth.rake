@@ -7,5 +7,6 @@ namespace :oauth do
     puts "Deleted #{UsedProof.purge_expired!} expired proofs"
     puts "Deleted #{PushedAuthorizationRequest.purge_expired!} expired pushed requests"
     puts "Deleted #{DeviceAuthorization.purge_expired!} expired device authorizations"
+    puts "Deleted #{FailedDeviceAttempt.purge_expired!} expired device code attempts"
   end
 end

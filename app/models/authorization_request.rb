@@ -110,8 +110,9 @@ class AuthorizationRequest
     value = self[:resource]
     return if value.blank?
     return [:invalid_target, 'Only one resource may be requested.'] unless value.is_a?(String)
-    return if ResourceIndicator.valid?(value)
+    return [:invalid_target, 'resource must be an absolute URI without a fragment.'] unless ResourceIndicator.valid?(value)
+    return if ResourceIndicator.permitted?(client, value)
 
-    [:invalid_target, 'resource must be an absolute URI without a fragment.']
+    [:invalid_target, 'The client may not request this resource.']
   end
 end

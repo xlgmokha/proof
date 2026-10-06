@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_06_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_06_150000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -77,6 +77,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_130000) do
     t.string "software_version"
     t.boolean "require_pushed_authorization_requests", default: false, null: false
     t.boolean "require_signed_request_object", default: false, null: false
+    t.string "resources", default: [], null: false, array: true
   end
 
   create_table "device_authorizations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -96,6 +97,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_130000) do
     t.index ["device_code_digest"], name: "index_device_authorizations_on_device_code_digest", unique: true
     t.index ["user_code"], name: "index_device_authorizations_on_user_code", unique: true
     t.index ["user_id"], name: "index_device_authorizations_on_user_id"
+  end
+
+  create_table "failed_device_attempts", force: :cascade do |t|
+    t.string "subject", null: false
+    t.datetime "created_at", null: false
+    t.index ["created_at"], name: "index_failed_device_attempts_on_created_at"
+    t.index ["subject", "created_at"], name: "index_failed_device_attempts_on_subject_and_created_at"
   end
 
   create_table "flipper_features", force: :cascade do |t|

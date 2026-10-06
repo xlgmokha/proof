@@ -114,6 +114,8 @@ module Oauth
       raise GrantError.new('invalid_target', 'Only one resource may be requested.') unless value.is_a?(String)
       raise GrantError.new('invalid_target', 'resource must be an absolute URI without a fragment.') unless ResourceIndicator.valid?(value)
 
+      raise GrantError.new('invalid_target', 'The client may not request this resource.') unless ResourceIndicator.permitted?(current_client, value)
+
       value
     end
 

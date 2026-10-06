@@ -96,7 +96,7 @@ module ClientAuthentication
     return unless client&.private_key_jwt?
     return if params[:client_id].present? && params[:client_id] != client.to_param
 
-    assertion = JwtBearerAssertion.new(client, audiences: assertion_audiences)
+    assertion = JwtBearerAssertion.new(client, audiences: [Oauth::Issuer.identifier], sole_audience: true)
     claims = assertion.verify!(params[:client_assertion])
     return unless claims[:sub].to_s == client.to_param
 
@@ -114,7 +114,8 @@ module ClientAuthentication
   end
 
   def assertion_audiences
-    [oauth_tokens_url, root_url, Oauth::Issuer.identifier].uniq
+    # RFC 7523bis Section 3: the issuer identifier or the token endpoint URL.
+    [oauth_tokens_url, Oauth::Issuer.identifier].uniq
   end
 
   def render_oauth_error(error)

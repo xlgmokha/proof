@@ -91,6 +91,13 @@ RSpec.describe 'device authorization grant' do
 
       specify { expect(response.body).to include(CGI.escapeHTML(client.name)) }
       specify { expect(response.body).to include(@user_code) }
+
+      # RFC 8628 Section 5.1: repeated wrong guesses are refused.
+      it 'stops guesses after repeated failures' do
+        FailedDeviceAttempt::PER_SUBJECT.times { get '/oauth/device', params: { user_code: 'BBBB-BBBB' } }
+        get '/oauth/device', params: { user_code: @user_code }
+        expect(response).to have_http_status(:too_many_requests)
+      end
     end
 
     context 'when the user types the code loosely' do

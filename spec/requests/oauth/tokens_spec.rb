@@ -867,7 +867,7 @@ RSpec.describe '/oauth/tokens' do
       let(:signing_key) { OpenSSL::PKey::RSA.generate(2048) }
       let(:jwk) { JWT::JWK.new(signing_key.public_key, kid: 'key-1') }
       let(:client) { create(:client, token_endpoint_auth_method: :private_key_jwt, jwks_uri: nil, jwks: { keys: [jwk.export] }) }
-      let(:claims) { { iss: client.to_param, sub: client.to_param, aud: oauth_tokens_url, exp: 5.minutes.from_now.to_i, jti: SecureRandom.uuid } }
+      let(:claims) { { iss: client.to_param, sub: client.to_param, aud: Oauth::Issuer.identifier, exp: 5.minutes.from_now.to_i, jti: SecureRandom.uuid } }
       let(:assertion) { JWT.encode(claims, signing_key, 'RS256', kid: 'key-1') }
       let(:params) do
         {
@@ -883,8 +883,25 @@ RSpec.describe '/oauth/tokens' do
         specify { expect(json[:access_token]).to be_present }
       end
 
+      context "when the audience is the token endpoint URL" do
+        let(:claims) { super().merge(aud: oauth_tokens_url) }
+
+        # RFC 7523bis Section 3: only the issuer identifier is acceptable.
+        before { post '/oauth/tokens', params: params }
+
+        specify { expect_error('invalid_client', :unauthorized) }
+      end
+
+      context "when the audience also names another party" do
+        let(:claims) { super().merge(aud: [Oauth::Issuer.identifier, 'https://other.example']) }
+
+        before { post '/oauth/tokens', params: params }
+
+        specify { expect_error('invalid_client', :unauthorized) }
+      end
+
       context "when the subject is not the client" do
-        let(:claims) { { iss: client.to_param, sub: SecureRandom.uuid, aud: oauth_tokens_url, exp: 5.minutes.from_now.to_i, jti: SecureRandom.uuid } }
+        let(:claims) { { iss: client.to_param, sub: SecureRandom.uuid, aud: Oauth::Issuer.identifier, exp: 5.minutes.from_now.to_i, jti: SecureRandom.uuid } }
 
         before { post '/oauth/tokens', params: params }
 

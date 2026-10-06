@@ -10,11 +10,16 @@ module Oauth
     # A ceiling across all users and addresses, so guesses cannot be spread out.
     rate_limit to: 300, within: 1.minute, only: %i[show create], by: -> { 'device-codes' }, name: 'global'
 
+    before_action :refuse_when_locked, only: %i[show create]
+
     def show
       return if params[:user_code].blank?
 
       @device_authorization = DeviceAuthorization.find_pending_by_user_code(params[:user_code])
-      flash.now[:error] = t('.unknown_code') unless @device_authorization
+      return if @device_authorization
+
+      FailedDeviceAttempt.record!(attempt_subject)
+      flash.now[:error] = t('.unknown_code')
     end
 
     def create
@@ -34,7 +39,18 @@ module Oauth
 
     private
 
+    def attempt_subject
+      current_user&.id || request.remote_ip
+    end
+
+    def refuse_when_locked
+      return if params[:user_code].blank? || !FailedDeviceAttempt.locked?(attempt_subject)
+
+      head :too_many_requests
+    end
+
     def render_unknown_code
+      FailedDeviceAttempt.record!(attempt_subject)
       flash.now[:error] = t('oauth.devices.show.unknown_code')
       render :show, status: :unprocessable_entity
     end

@@ -6,7 +6,7 @@ require 'rails_helper'
 RSpec.describe 'token exchange' do
   let(:grant_type) { 'urn:ietf:params:oauth:grant-type:token-exchange' }
   let(:access_type) { 'urn:ietf:params:oauth:token-type:access_token' }
-  let(:client) { create(:client, grant_types: GrantTypes::ALL) }
+  let(:client) { create(:client, grant_types: GrantTypes::ALL, resources: %w[https://api.example.com billing-service]) }
   let(:credentials) { ActionController::HttpAuthentication::Basic.encode_credentials(client.to_param, client.password) }
   let(:headers) { { 'Authorization' => credentials } }
   let(:user) { create(:user) }

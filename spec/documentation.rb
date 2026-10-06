@@ -237,7 +237,7 @@ RSpec.describe "documentation" do
     signing_key = OpenSSL::PKey::RSA.generate(2048)
     jwk = JWT::JWK.new(signing_key.public_key, kid: 'example-key')
     jwt_client = create(:client, jwks_uri: nil, jwks: { keys: [jwk.export] })
-    claims = { iss: jwt_client.to_param, sub: user.email, aud: "#{url_prefix}/oauth/tokens", exp: 5.minutes.from_now.to_i, jti: SecureRandom.uuid }
+    claims = { iss: jwt_client.to_param, sub: user.email, aud: Oauth::Issuer.identifier, exp: 5.minutes.from_now.to_i, jti: SecureRandom.uuid }
     headers = { 'Authorization' => ActionController::HttpAuthentication::Basic.encode_credentials(jwt_client.to_param, jwt_client.password) }
     body = { grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer', assertion: JWT.encode(claims, signing_key, 'RS256', kid: 'example-key') }
     VCR.use_cassette("oauth-tokens-jwt-bearer") do

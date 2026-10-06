@@ -4,7 +4,7 @@ require 'rails_helper'
 
 # RFC 8707: Resource Indicators for OAuth 2.0
 RSpec.describe 'resource indicators' do
-  let(:client) { create(:client) }
+  let(:client) { create(:client, resources: ['https://api.example.com/v1']) }
   let(:credentials) { ActionController::HttpAuthentication::Basic.encode_credentials(client.to_param, client.password) }
   let(:headers) { { 'Authorization' => credentials } }
   let(:resource) { 'https://api.example.com/v1' }
@@ -75,6 +75,15 @@ RSpec.describe 'resource indicators' do
       before { post '/oauth/tokens', params: grant.merge(resource: resource), headers: headers }
 
       specify { expect(response).to have_http_status(:ok) }
+    end
+
+    context 'when the client is not allowed the resource' do
+      let(:client) { create(:client) }
+
+      # RFC 8707 Section 2: invalid_target for a resource the client may not use.
+      before { post '/oauth/tokens', params: grant.merge(resource: resource), headers: headers }
+
+      specify { expect(json[:error]).to eql('invalid_target') }
     end
 
     context 'when the token request names a different resource' do

@@ -20,9 +20,10 @@ class JwtBearerAssertion
     nil
   end
 
-  def initialize(client, audiences:)
+  def initialize(client, audiences:, sole_audience: false)
     @client = client
     @audiences = Array(audiences)
+    @sole_audience = sole_audience
   end
 
   # Returns the verified claims of the assertion or raises Invalid. The
@@ -50,7 +51,7 @@ class JwtBearerAssertion
 
   private
 
-  attr_reader :client, :audiences
+  attr_reader :client, :audiences, :sole_audience
 
   def decode(assertion)
     header = JWT.decode(assertion, nil, false)[1]
@@ -74,7 +75,12 @@ class JwtBearerAssertion
       required_claims: %w[iss sub aud exp jti],
       exp_leeway: LEEWAY.to_i, nbf_leeway: LEEWAY.to_i
     }
-    JWT.decode(assertion, key.verify_key, true, options)[0].with_indifferent_access
+    claims = JWT.decode(assertion, key.verify_key, true, options)[0].with_indifferent_access
+    # RFC 7523bis Section 3.2: for client authentication the issuer identifier
+    # is the only audience.
+    raise Invalid.new('aud must be only the issuer identifier') if sole_audience && Array(claims[:aud]) != audiences
+
+    claims
   end
 
   def candidate_keys(kid)
