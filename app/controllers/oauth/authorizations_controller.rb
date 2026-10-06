@@ -10,16 +10,19 @@ module Oauth
       unless @client.valid_redirect_uri?(secure_params[:redirect_uri])
         state = secure_params[:state]
         type = :invalid_request
-        return redirect_to error_url_for(@client, type, state)
+        return redirect_to error_url_for(@client, type, state), allow_other_host: true
       end
 
       unless @client.valid_response_type?(secure_params[:response_type])
         state = secure_params[:state]
         type = :unsupported_response_type
-        return redirect_to error_url_for(@client, type, state)
+        return redirect_to error_url_for(@client, type, state), allow_other_host: true
       end
 
-      return redirect_to error_url_for(@client, :invalid_request, secure_params[:state]) unless valid_code_challenge?
+      unless valid_code_challenge?
+        return redirect_to(error_url_for(@client, :invalid_request, secure_params[:state]),
+          allow_other_host: true)
+      end
 
       session[:oauth] = secure_params.to_h
     end
@@ -28,11 +31,11 @@ module Oauth
       return render_error(:bad_request) if oauth.nil?
 
       client = Client.find(oauth[:client_id])
-      redirect_to redirect_url_for(client, oauth)
+      redirect_to redirect_url_for(client, oauth), allow_other_host: true
     rescue StandardError => error
       logger.error(error)
       url = error_url_for(client, :invalid_request)
-      redirect_to url if url
+      redirect_to url, allow_other_host: true if url
     end
 
     private
