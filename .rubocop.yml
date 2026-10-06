@@ -6,7 +6,7 @@ plugins:
 AllCops:
   NewCops: disable
   SuggestExtensions: false
-  TargetRubyVersion: 3.3
+  TargetRubyVersion: 4.0
   Exclude:
     - 'bin/**/*'
     - 'config/initializers/*.rb'
