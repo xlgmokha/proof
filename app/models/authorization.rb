@@ -37,7 +37,7 @@ class Authorization < ApplicationRecord
     redirect_uri.blank? || redirect_uri == value
   end
 
-  def issue_tokens_to(client, token_types: [:access, :refresh])
+  def issue_tokens_to(client, token_types: [:access, :refresh], resource: self.resource)
     transaction do
       revoke!
       token_types.map do |x|

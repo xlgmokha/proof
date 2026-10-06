@@ -71,8 +71,12 @@ module ClientAuthentication
     return unless client&.private_key_jwt?
     return if params[:client_id].present? && params[:client_id] != client.to_param
 
-    claims = JwtBearerAssertion.new(client, audiences: assertion_audiences).verify!(params[:client_assertion])
-    client if claims[:sub].to_s == client.to_param
+    assertion = JwtBearerAssertion.new(client, audiences: assertion_audiences)
+    claims = assertion.verify!(params[:client_assertion])
+    return unless claims[:sub].to_s == client.to_param
+
+    assertion.redeem!(claims)
+    client
   rescue JwtBearerAssertion::Invalid => error
     logger.info(error)
     nil

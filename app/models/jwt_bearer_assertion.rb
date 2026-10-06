@@ -11,6 +11,7 @@ class JwtBearerAssertion
   ALGORITHMS = %w[RS256 RS384 RS512 PS256 PS384 PS512 ES256 ES384 ES512].freeze
   LEEWAY = 1.minute
   MAX_LIFETIME = 1.hour
+  MAX_JTI_LENGTH = 255
 
   # The unverified `iss` of an assertion, used to find the key to verify it with.
   def self.issuer_of(assertion)
@@ -24,16 +25,27 @@ class JwtBearerAssertion
     @audiences = Array(audiences)
   end
 
-  # Returns the verified claims of the assertion or raises Invalid.
+  # Returns the verified claims of the assertion or raises Invalid. The
+  # assertion is not consumed: call redeem! once the grant it is used for has
+  # been fully validated, so a request that fails for another reason does not
+  # burn an assertion the client could present again.
   def verify!(assertion)
     raise Invalid.new('assertion is missing') if assertion.blank?
 
     claims = decode(assertion)
     ensure_lifetime!(claims)
-    ensure_unused!(claims)
+    ensure_identifier!(claims)
     claims
   rescue JWT::DecodeError, JwksFetcher::Error => error
     raise Invalid.new(error.message)
+  end
+
+  # Marks the assertion as used (RFC 7523 Section 3: it must not be replayed).
+  def redeem!(claims)
+    expires_at = Time.zone.at(claims[:exp].to_i) + LEEWAY
+    return if UsedAssertion.redeem!(client, claims[:jti].to_s, expires_at)
+
+    raise Invalid.new('assertion has already been used')
   end
 
   private
@@ -77,12 +89,9 @@ class JwtBearerAssertion
     raise Invalid.new('assertion lifetime is too long')
   end
 
-  def ensure_unused!(claims)
-    raise Invalid.new('jti is required') if claims[:jti].blank?
-
-    expires_at = Time.zone.at(claims[:exp].to_i) + LEEWAY
-    return if UsedAssertion.redeem!(client, claims[:jti].to_s, expires_at)
-
-    raise Invalid.new('assertion has already been used')
+  def ensure_identifier!(claims)
+    jti = claims[:jti].to_s
+    raise Invalid.new('jti is required') if jti.blank?
+    raise Invalid.new('jti is too long') if jti.length > MAX_JTI_LENGTH
   end
 end

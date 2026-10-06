@@ -6,6 +6,7 @@ module Oauth
     include AssertionGrants
     before_action :apply_cache_headers
     before_action :authenticate_client!
+    before_action :verify_dpop_proof!, only: :create
 
     rescue_from GrantError, with: :render_oauth_error
     rescue_from ActiveRecord::RecordNotFound do
@@ -21,6 +22,8 @@ module Oauth
 
       @access_token, @refresh_token = tokens_for(grant_type)
       raise GrantError.new('invalid_grant') if @access_token.nil?
+
+      bind_to_dpop_key(@access_token, @refresh_token)
 
       render formats: :json
     rescue StandardError => error
@@ -53,6 +56,23 @@ module Oauth
 
     private
 
+    # RFC 9449 Section 5: a proof sent with the request makes the issued tokens
+    # sender-constrained to its key.
+    def verify_dpop_proof!
+      proof = request.headers['DPoP']
+      return if proof.blank?
+
+      @dpop_jkt = DpopProof.new(proof, method: request.method, url: "#{request.base_url}#{request.path}").verify!
+    rescue DpopProof::Invalid => error
+      render_oauth_error(GrantError.new('invalid_dpop_proof', error.message))
+    end
+
+    def bind_to_dpop_key(*tokens)
+      return if @dpop_jkt.nil?
+
+      tokens.compact.each { |x| x.update_columns(dpop_jkt: @dpop_jkt) if x.dpop_jkt.blank? }
+    end
+
     def apply_cache_headers
       response.headers['Cache-Control'] = 'no-store'
       response.headers['Pragma'] = 'no-cache'
@@ -74,7 +94,7 @@ module Oauth
     # RFC 7662 Section 2.2
     def introspection_for(token)
       claims = token.claims.slice(:scope, :client_id, :exp, :iat, :nbf, :sub, :aud, :iss, :jti, :cnf)
-      claims[:token_type] = 'Bearer' if token.access?
+      claims[:token_type] = token.dpop_jkt.present? ? 'DPoP' : 'Bearer' if token.access?
       claims[:username] = token.subject.email if token.subject.respond_to?(:email)
       claims.merge(active: true)
     end
@@ -83,9 +103,19 @@ module Oauth
       Client::GRANT_TYPES.include?(grant_type)
     end
 
+    # RFC 8707 Section 2.2. Returns nil when none was requested.
+    def requested_resource
+      value = params[:resource]
+      return if value.blank?
+      raise GrantError.new('invalid_target', 'Only one resource may be requested.') unless value.is_a?(String)
+      raise GrantError.new('invalid_target', 'resource must be an absolute URI without a fragment.') unless ResourceIndicator.valid?(value)
+
+      value
+    end
+
     # RFC 6749 Section 3.3
     def requested_scope
-      Scopes.resolve(params[:scope]) || raise(GrantError.new('invalid_scope'))
+      Scopes.resolve(params[:scope], allowed: current_client.allowed_scopes) || raise(GrantError.new('invalid_scope'))
     end
 
     # RFC 6749 Section 4.1.3. A code is single use; presenting it again is
@@ -102,7 +132,7 @@ module Oauth
         next if replayed
 
         verify_code!(authorization)
-        authorization.issue_tokens_to(current_client)
+        authorization.issue_tokens_to(current_client, resource: resource_for(authorization.resource))
       end
       return tokens unless replayed
 
@@ -137,13 +167,27 @@ module Oauth
         next if replayed
 
         raise GrantError.new('invalid_grant', 'The refresh token has expired.') if token.expired?
+        # RFC 9449 Section 5: a bound refresh token needs a proof from the same key.
+        if token.dpop_jkt.present? && token.dpop_jkt != @dpop_jkt
+          raise GrantError.new('invalid_dpop_proof', 'The refresh token is bound to a different key.')
+        end
 
-        token.issue_tokens_to(current_client, scope: narrowed_scope(token))
+        token.issue_tokens_to(current_client, scope: narrowed_scope(token), resource: resource_for(token.resource))
       end
       return tokens unless replayed
 
       token.revoke_family!
       raise GrantError.new('invalid_grant', 'The refresh token was already used.')
+    end
+
+    # RFC 8707 Section 2.2: a resource requested at the token endpoint may not
+    # widen what the grant was for.
+    def resource_for(granted)
+      requested = requested_resource
+      return granted if requested.nil?
+      raise GrantError.new('invalid_target', 'resource does not match the grant.') if granted.present? && granted != requested
+
+      requested
     end
 
     # The scope of a refreshed token may not exceed the original grant.
@@ -159,7 +203,7 @@ module Oauth
     def client_credentials_grant
       raise GrantError.new('unauthorized_client') if current_client.public_client?
 
-      [current_client.access_token(scope: Scopes.format(requested_scope)), nil]
+      [current_client.access_token(scope: Scopes.format(requested_scope), resource: requested_resource), nil]
     end
 
     def tokens_for(grant_type = params[:grant_type])
@@ -171,9 +215,9 @@ module Oauth
       when 'client_credentials'
         client_credentials_grant
       when AssertionGrants::SAML_BEARER_GRANT # RFC7522
-        saml_assertion_grant(params[:assertion], Scopes.format(requested_scope))
+        saml_assertion_grant(params[:assertion], Scopes.format(requested_scope), requested_resource)
       when AssertionGrants::JWT_BEARER_GRANT # RFC7523
-        jwt_bearer_grant(params[:assertion], Scopes.format(requested_scope))
+        jwt_bearer_grant(params[:assertion], Scopes.format(requested_scope), requested_resource)
       end
     end
   end

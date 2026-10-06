@@ -153,7 +153,7 @@ RSpec.describe '/oauth/tokens' do
       end
 
       context "when the client is public" do
-        let(:client) { create(:client, token_endpoint_auth_method: :client_secret_none) }
+        let(:client) { create(:client, :public) }
 
         before { post '/oauth/tokens', params: params.merge(client_id: client.to_param) }
 
@@ -182,7 +182,7 @@ RSpec.describe '/oauth/tokens' do
       end
 
       context "when the client is public" do
-        let(:client) { create(:client, token_endpoint_auth_method: :client_secret_none) }
+        let(:client) { create(:client, :public).tap { |x| x.update_columns(grant_types: GrantTypes::ALL) } }
 
         before { post '/oauth/tokens', params: { grant_type: 'client_credentials', client_id: client.to_param } }
 
@@ -580,6 +580,51 @@ RSpec.describe '/oauth/tokens' do
 
       specify { expect(response).to have_http_status(:bad_request) }
       specify { expect(json[:error]).to eql('invalid_grant') }
+    end
+
+    # RFC 7523 Section 3: an assertion is only used up by a successful grant.
+    context "when the grant fails for another reason" do
+      let(:claims) { super().merge(sub: SecureRandom.uuid) }
+
+      before { post '/oauth/tokens', params: { grant_type: grant_type, assertion: assertion }, headers: headers }
+
+      specify { expect(response).to have_http_status(:bad_request) }
+      specify { expect(UsedAssertion.count).to be_zero }
+    end
+
+    context "when the scope is not supported" do
+      before { post '/oauth/tokens', params: { grant_type: grant_type, assertion: assertion, scope: 'nope' }, headers: headers }
+
+      specify { expect_error('invalid_scope') }
+    end
+
+    context "when the jti is unreasonably long" do
+      let(:claims) { super().merge(jti: 'a' * 300) }
+
+      before { post '/oauth/tokens', params: { grant_type: grant_type, assertion: assertion }, headers: headers }
+
+      specify { expect(response).to have_http_status(:bad_request) }
+      specify { expect(UsedAssertion.count).to be_zero }
+    end
+
+    context "when the assertion is within the clock skew leeway of its expiry" do
+      let(:claims) { super().merge(exp: 30.seconds.ago.to_i) }
+
+      before { post '/oauth/tokens', params: { grant_type: grant_type, assertion: assertion }, headers: headers }
+
+      specify { expect(response).to have_http_status(:ok) }
+
+      it 'remembers the jti for as long as the assertion could be accepted' do
+        expect(UsedAssertion.last.expires_at.to_i).to eql(claims[:exp] + JwtBearerAssertion::LEEWAY.to_i)
+      end
+    end
+
+    context "when the assertion is past the clock skew leeway" do
+      let(:claims) { super().merge(exp: (JwtBearerAssertion::LEEWAY + 5.seconds).ago.to_i) }
+
+      before { post '/oauth/tokens', params: { grant_type: grant_type, assertion: assertion }, headers: headers }
+
+      specify { expect(response).to have_http_status(:bad_request) }
     end
 
     context "when the subject is unknown" do

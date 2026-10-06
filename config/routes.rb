@@ -62,6 +62,7 @@ Rails.application.routes.draw do
     end
   end
   get "/.well-known/oauth-authorization-server", to: "oauth/metadata#show"
+  get "/.well-known/oauth-protected-resource(/*path)", to: "oauth/resource_metadata#show", format: false
   get "/.well-known/jwks.json", to: "oauth/jwks#show", as: :jwks
   direct :documentation do
     root_url + 'doc'

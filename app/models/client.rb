@@ -17,6 +17,9 @@ class Client < ApplicationRecord
   }, validate: true
 
   validates :redirect_uris, presence: true
+  validates :client_uri, :tos_uri, :policy_uri, format: { with: URI_REGEX }, allow_blank: true
+  validate :grant_and_response_types_are_supported
+  validate :scope_is_supported
   validates :jwks_uri, format: { with: URI_REGEX }, allow_blank: true
   validates :logo_uri, format: { with: URI_REGEX }, allow_blank: true
   validates :name, presence: true
@@ -33,12 +36,13 @@ class Client < ApplicationRecord
     self.password = SecureRandom.base58(24) unless password_digest
   end
 
-  def grant_types
-    GRANT_TYPES
-  end
-
   def grant_type?(grant_type)
     grant_types.include?(grant_type)
+  end
+
+  # RFC 7591 Section 2: the scopes the client may request.
+  def allowed_scopes
+    scope.present? ? Scopes.parse(scope) : Scopes::SUPPORTED
   end
 
   # RFC 7591 Section 2: the client's public keys, by value or by reference.
@@ -93,7 +97,7 @@ class Client < ApplicationRecord
       challenge: oauth[:code_challenge],
       challenge_method: :sha256,
       redirect_uri: oauth[:redirect_uri].presence,
-      scope: Scopes.format(Scopes.resolve(oauth[:scope])),
+      scope: Scopes.format(Scopes.resolve(oauth[:scope], allowed: allowed_scopes)),
       resource: oauth[:resource].presence
     )
     redirect_url(
@@ -116,6 +120,26 @@ class Client < ApplicationRecord
   end
 
   private
+
+  # RFC 7591 Section 2.1: the grant types and response types a client uses
+  # must go together, and a client that cannot keep a secret cannot use
+  # client credentials.
+  def grant_and_response_types_are_supported
+    errors.add(:grant_types, 'are not supported.') unless (grant_types - GRANT_TYPES).empty?
+    errors.add(:response_types, 'are not supported.') unless (response_types - RESPONSE_TYPES).empty?
+    errors.add(:grant_types, 'must include authorization_code to use the code response type.') if
+      response_types.include?('code') && !grant_types.include?('authorization_code')
+    errors.add(:response_types, 'must include code to use the authorization_code grant type.') if
+      grant_types.include?('authorization_code') && !response_types.include?('code')
+    errors.add(:grant_types, 'must not include client_credentials for a public client.') if
+      public_client? && grant_types.include?('client_credentials')
+  end
+
+  def scope_is_supported
+    return if scope.blank?
+
+    errors.add(:scope, 'is not supported.') unless Scopes.valid?(Scopes.parse(scope))
+  end
 
   def loopback_match?(candidate)
     uri = URI.parse(candidate)

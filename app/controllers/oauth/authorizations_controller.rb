@@ -10,7 +10,7 @@ module Oauth
     def show
       return redirect_with_error(:unsupported_response_type) unless @client.valid_response_type?(secure_params[:response_type])
 
-      error = pkce_error || scope_error
+      error = pkce_error || scope_error || resource_error
       return redirect_with_error(*error) if error
 
       session[:oauth] = secure_params.to_h
@@ -56,7 +56,16 @@ module Oauth
     end
 
     def scope_error
-      [:invalid_scope, 'The requested scope is not supported.'] unless Scopes.resolve(secure_params[:scope])
+      [:invalid_scope, 'The requested scope is not supported.'] unless Scopes.resolve(secure_params[:scope], allowed: @client.allowed_scopes)
+    end
+
+    def resource_error
+      value = params[:resource]
+      return if value.blank?
+      return [:invalid_target, 'Only one resource may be requested.'] unless value.is_a?(String)
+      return if ResourceIndicator.valid?(value)
+
+      [:invalid_target, 'resource must be an absolute URI without a fragment.']
     end
 
     def secure_params

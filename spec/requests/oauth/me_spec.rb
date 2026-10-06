@@ -45,7 +45,7 @@ RSpec.describe '/oauth/me' do
       before { get '/oauth/me' }
 
       specify { expect(response).to have_http_status(:unauthorized) }
-      specify { expect(response.headers['WWW-Authenticate']).to eql('Bearer realm="oauth"') }
+      specify { expect(response.headers['WWW-Authenticate']).to start_with('Bearer realm="oauth", resource_metadata="http://www.example.com/.well-known/oauth-protected-resource"') }
     end
 
     context "when the access token is invalid" do

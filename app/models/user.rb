@@ -29,11 +29,11 @@ class User < ApplicationRecord
     request.trusted? ? trusted_attributes_for(request) : {}
   end
 
-  def issue_tokens_to(client, token_types: [:access, :refresh], scope: Scopes.format(Scopes::DEFAULT))
+  def issue_tokens_to(client, token_types: [:access, :refresh], scope: Scopes.format(Scopes::DEFAULT), resource: nil)
     transaction do
       family = SecureRandom.uuid
       token_types.map do |x|
-        Token.create!(subject: self, audience: client, token_type: x, scope: scope, family_id: family)
+        Token.create!(subject: self, audience: client, token_type: x, scope: scope, resource: resource, family_id: family)
       end
     end
   end

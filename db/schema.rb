@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_06_080000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_06_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -66,6 +66,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_080000) do
     t.string "logo_uri"
     t.string "jwks_uri"
     t.jsonb "jwks"
+    t.text "grant_types", default: ["authorization_code", "refresh_token", "client_credentials", "urn:ietf:params:oauth:grant-type:saml2-bearer", "urn:ietf:params:oauth:grant-type:jwt-bearer"], null: false, array: true
+    t.text "response_types", default: ["code"], null: false, array: true
+    t.string "scope"
+    t.text "contacts", default: [], null: false, array: true
+    t.string "client_uri"
+    t.string "tos_uri"
+    t.string "policy_uri"
+    t.string "software_id"
+    t.string "software_version"
   end
 
   create_table "flipper_features", force: :cascade do |t|
@@ -141,6 +150,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_080000) do
     t.index ["client_id", "jti"], name: "index_used_assertions_on_client_id_and_jti", unique: true
     t.index ["client_id"], name: "index_used_assertions_on_client_id"
     t.index ["expires_at"], name: "index_used_assertions_on_expires_at"
+  end
+
+  create_table "used_proofs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "digest", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["digest"], name: "index_used_proofs_on_digest", unique: true
+    t.index ["expires_at"], name: "index_used_proofs_on_expires_at"
   end
 
   create_table "user_sessions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

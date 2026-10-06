@@ -73,7 +73,7 @@ class Token < ApplicationRecord
     @to_jwt ||= BearerToken.new.encode(claims(custom_claims), typ: access? ? ACCESS_TYP : REFRESH_TYP)
   end
 
-  def issue_tokens_to(client, token_types: [:access, :refresh], scope: self.scope)
+  def issue_tokens_to(client, token_types: [:access, :refresh], scope: self.scope, resource: self.resource)
     transaction do
       revoke!
       token_types.map do |x|
@@ -108,10 +108,12 @@ class Token < ApplicationRecord
       jti.present? && jti.to_s.match?(ApplicationRecord::UUID) ? find_by(id: jti, token_type: token_type) : nil
     end
 
-    # An access token that may still be used.
-    def authenticate(jwt)
+    # An access token that may still be used. Tokens bound to a DPoP key are
+    # only accepted by callers that can check the proof (RFC 9449 Section 7).
+    def authenticate(jwt, allow_bound: false)
       token = from_jwt(jwt, token_type: :access)
       return if token.nil? || token.revoked? || token.expired?
+      return if token.dpop_jkt.present? && !allow_bound
 
       token
     end

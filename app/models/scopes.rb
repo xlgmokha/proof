@@ -25,10 +25,10 @@ module Scopes
   end
 
   # Scope that may be granted for a request, or nil when it asks for scopes this
-  # server does not support.
-  def resolve(value)
-    requested = value.present? ? parse(value).uniq : DEFAULT
-    requested if valid?(requested)
+  # server does not support or the client is not allowed to use.
+  def resolve(value, allowed: SUPPORTED)
+    requested = value.present? ? parse(value).uniq : DEFAULT & allowed
+    requested if valid?(requested) && subset?(requested, allowed)
   end
 
   def subset?(requested, granted)
