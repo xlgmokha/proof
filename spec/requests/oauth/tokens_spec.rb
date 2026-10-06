@@ -157,6 +157,19 @@ RSpec.describe '/oauth/tokens' do
       end
     end
 
+    context "when refreshing tokens issued by an authorization code grant" do
+      let(:json) { JSON.parse(response.body, symbolize_names: true) }
+      let(:authorization) { create(:authorization, client: client) }
+      let(:refresh_token) { authorization.issue_tokens_to(client).last }
+
+      before do
+        post '/oauth/tokens', params: { grant_type: 'refresh_token', refresh_token: refresh_token.to_jwt }, headers: headers
+      end
+
+      specify { expect(response).to have_http_status(:ok) }
+      specify { expect(json[:access_token]).to be_present }
+    end
+
     context "when requesting tokens using the resource owner password credentials grant" do
       context "when the credentials are valid" do
         let(:user) { create(:user) }

@@ -12,10 +12,9 @@ class JwtBearerAssertion
   LEEWAY = 1.minute
   MAX_LIFETIME = 1.hour
 
-  def initialize(client, audiences:, cache: Rails.cache)
+  def initialize(client, audiences:)
     @client = client
     @audiences = Array(audiences)
-    @cache = cache
   end
 
   # Returns the verified claims of the assertion or raises Invalid.
@@ -32,7 +31,7 @@ class JwtBearerAssertion
 
   private
 
-  attr_reader :client, :audiences, :cache
+  attr_reader :client, :audiences
 
   def decode(assertion)
     header = JWT.decode(assertion, nil, false)[1]
@@ -74,8 +73,9 @@ class JwtBearerAssertion
   def ensure_unused!(claims)
     raise Invalid.new('jti is required') if claims[:jti].blank?
 
-    ttl = [claims[:exp].to_i - Time.current.to_i, 0].max + LEEWAY.to_i
-    fresh = cache.write("jwt-bearer:#{client.to_param}:#{claims[:jti]}", true, expires_in: ttl, unless_exist: true)
-    raise Invalid.new('assertion has already been used') unless fresh
+    expires_at = Time.zone.at(claims[:exp].to_i) + LEEWAY
+    return if UsedAssertion.redeem!(client, claims[:jti].to_s, expires_at)
+
+    raise Invalid.new('assertion has already been used')
   end
 end

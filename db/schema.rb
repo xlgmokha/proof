@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_06_060000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_06_070000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -124,6 +124,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_060000) do
     t.index ["subject_type", "subject_id"], name: "index_tokens_on_subject_type_and_subject_id"
   end
 
+  create_table "used_assertions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "client_id", null: false
+    t.string "jti", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id", "jti"], name: "index_used_assertions_on_client_id_and_jti", unique: true
+    t.index ["client_id"], name: "index_used_assertions_on_client_id"
+    t.index ["expires_at"], name: "index_used_assertions_on_expires_at"
+  end
+
   create_table "user_sessions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "user_id"
     t.string "key"
@@ -154,5 +165,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_060000) do
   add_foreign_key "authorizations", "users"
   add_foreign_key "group_memberships", "groups"
   add_foreign_key "group_memberships", "users"
+  add_foreign_key "used_assertions", "clients", on_delete: :cascade
   add_foreign_key "user_sessions", "users"
 end

@@ -24,7 +24,8 @@ class Token < ApplicationRecord
   def revoke!
     ActiveRecord::Base.transaction do
       update!(revoked_at: Time.current)
-      authorization&.revoke!
+      # The authorization is already revoked once its code has been exchanged.
+      authorization.revoke! if authorization && !authorization.revoked?
     end
   end
 
