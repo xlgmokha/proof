@@ -397,17 +397,17 @@ RSpec.describe "/oauth/clients" do
     end
 
     context "when a public client asks for client credentials" do
-      before { post "/oauth/clients", params: base.merge(token_endpoint_auth_method: 'client_secret_none', grant_types: %w[client_credentials]), as: :json }
+      before { post "/oauth/clients", params: base.merge(token_endpoint_auth_method: 'none', grant_types: %w[client_credentials]), as: :json }
 
       specify { expect(response).to have_http_status(:bad_request) }
     end
 
     context "when a public client is registered" do
-      before { post "/oauth/clients", params: base.merge(token_endpoint_auth_method: 'client_secret_none'), as: :json }
+      before { post "/oauth/clients", params: base.merge(token_endpoint_auth_method: 'none'), as: :json }
 
       specify { expect(response).to have_http_status(:created) }
       specify { expect(json).not_to have_key(:client_secret) }
-      specify { expect(json[:token_endpoint_auth_method]).to eql('client_secret_none') }
+      specify { expect(json[:token_endpoint_auth_method]).to eql('none') }
     end
 
     context "when the descriptive metadata is given" do

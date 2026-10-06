@@ -9,7 +9,7 @@ json.redirect_uris @client.redirect_uris
 json.grant_types @client.grant_types
 json.response_types @client.response_types
 json.client_name @client.name
-json.token_endpoint_auth_method @client.token_endpoint_auth_method
+json.token_endpoint_auth_method @client.token_endpoint_auth_method.to_s == 'client_secret_none' ? 'none' : @client.token_endpoint_auth_method
 json.scope @client.scope if @client.scope.present?
 json.contacts @client.contacts if @client.contacts.present?
 {

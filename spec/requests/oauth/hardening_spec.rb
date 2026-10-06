@@ -86,4 +86,74 @@ RSpec.describe 'conformance hardening' do
     specify { expect(json[:revocation_endpoint_auth_methods_supported]).to include('none') }
     specify { expect(json[:introspection_endpoint_auth_methods_supported]).not_to include('none') }
   end
+
+  # RFC 6749 Section 3.2 and Appendix B
+  describe 'token endpoint parameters' do
+    let(:client) { create(:client) }
+    let(:auth) { { 'Authorization' => ActionController::HttpAuthentication::Basic.encode_credentials(client.to_param, client.password) } }
+
+    it 'accepts a form-urlencoded body' do
+      post '/oauth/tokens', params: { grant_type: 'client_credentials' }, headers: auth
+      expect(response).to have_http_status(:ok)
+    end
+
+    it 'rejects parameters in the query string' do
+      post '/oauth/tokens?grant_type=client_credentials', headers: auth
+      expect(response).to have_http_status(:bad_request)
+      expect(json[:error]).to eql('invalid_request')
+    end
+
+    it 'rejects a repeated parameter' do
+      post '/oauth/tokens', params: 'grant_type=bogus&grant_type=client_credentials', headers: auth.merge('Content-Type' => 'application/x-www-form-urlencoded')
+      expect(response).to have_http_status(:bad_request)
+      expect(json[:error]).to eql('invalid_request')
+    end
+
+    it 'rejects a JSON body' do
+      post '/oauth/tokens', params: { grant_type: 'client_credentials' }.to_json, headers: auth.merge('Content-Type' => 'application/json')
+      expect(response).to have_http_status(:bad_request)
+    end
+  end
+
+  # RFC 8414 Section 3
+  describe 'metadata location' do
+    it 'is served at the issuer-derived path' do
+      get '/.well-known/oauth-authorization-server'
+      expect(response).to have_http_status(:ok)
+    end
+
+    it 'is not served for another path' do
+      get '/.well-known/oauth-authorization-server/tenant'
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it 'validates the issuer' do
+      expect(Oauth::Issuer.valid?('https://a.example/t')).to be(true)
+      expect(Oauth::Issuer.valid?('https://a.example/?x=1')).to be(false)
+      expect(Oauth::Issuer.valid?('https://a.example/#f')).to be(false)
+      expect(Oauth::Issuer.valid?('ftp://a.example')).to be(false)
+      expect(Oauth::Issuer.valid?(nil)).to be(false)
+    end
+  end
+
+  # RFC 6749 Section 5.2: faults of the server are not client errors.
+  describe 'an unexpected failure at the token endpoint' do
+    let(:client) { create(:client) }
+
+    it 'is a server_error' do
+      allow_any_instance_of(Client).to receive(:access_token).and_raise(RuntimeError, 'boom')
+      post '/oauth/tokens', params: { grant_type: 'client_credentials' },
+        headers: { 'Authorization' => ActionController::HttpAuthentication::Basic.encode_credentials(client.to_param, client.password) }
+      expect(response).to have_http_status(:internal_server_error)
+      expect(json[:error]).to eql('server_error')
+    end
+  end
+
+  # RFC 9449 Section 4.3: htu is compared after normalisation.
+  describe 'DPoP htu normalisation' do
+    it 'ignores default ports and case' do
+      proof = DpopProof.allocate
+      expect(proof.send(:normalize, 'HTTPS://Example.com:443/a/b?x=1')).to eql(proof.send(:normalize, 'https://example.com/a/b'))
+    end
+  end
 end

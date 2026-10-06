@@ -64,7 +64,8 @@ Rails.application.routes.draw do
       post 'Bulk', to: 'bulk#create'
     end
   end
-  get "/.well-known/oauth-authorization-server", to: "oauth/metadata#show"
+  # RFC 8414 Section 3: the well-known segment goes between host and issuer path.
+  get "/.well-known/oauth-authorization-server(/*path)", to: "oauth/metadata#show", format: false
   get "/.well-known/oauth-protected-resource(/*path)", to: "oauth/resource_metadata#show", format: false
   get "/.well-known/jwks.json", to: "oauth/jwks#show", as: :jwks
   direct :documentation do

@@ -7,9 +7,34 @@ module ClientAuthentication
 
   CLIENT_ASSERTION_TYPE = 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer'
 
+  included do
+    before_action :ensure_form_parameters!
+  end
+
   private
 
   attr_reader :current_client
+
+  # RFC 6749 Section 3.2 and Appendix B: parameters are sent in a
+  # form-urlencoded body, and none may be repeated.
+  def ensure_form_parameters!
+    return if request.query_parameters.blank? && !repeated_form_parameters? && form_content?
+
+    response.headers['Cache-Control'] = 'no-store'
+    response.headers['Pragma'] = 'no-cache'
+    render_oauth_error GrantError.new('invalid_request', 'Parameters must be sent once, in a form-urlencoded request body.')
+  end
+
+  def form_content?
+    request.raw_post.blank? || request.media_type == 'application/x-www-form-urlencoded'
+  end
+
+  def repeated_form_parameters?
+    keys = URI.decode_www_form(request.raw_post.to_s).map(&:first).reject { |x| x.end_with?('[]') }
+    keys.uniq.size != keys.size
+  rescue ArgumentError
+    true
+  end
 
   def authenticate_client!
     @current_client = identify_client

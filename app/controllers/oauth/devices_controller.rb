@@ -7,6 +7,9 @@ module Oauth
     # The code is short, so guessing is limited (Section 5.1).
     rate_limit to: 10, within: 1.minute, only: %i[show create], by: -> { current_user&.id || request.remote_ip }
 
+    # A ceiling across all users and addresses, so guesses cannot be spread out.
+    rate_limit to: 300, within: 1.minute, only: %i[show create], by: -> { 'device-codes' }, name: 'global'
+
     def show
       return if params[:user_code].blank?
 

@@ -29,8 +29,9 @@ module Oauth
     rescue StandardError => error
       raise if error.is_a?(GrantError) || error.is_a?(ActiveRecord::RecordNotFound)
 
+      # RFC 6749 Section 5.2 has no code for a fault of the server.
       Rails.logger.error(error)
-      render_oauth_error(GrantError.new('invalid_grant'))
+      render json: { error: 'server_error' }, status: :internal_server_error
     end
 
     # RFC 7662

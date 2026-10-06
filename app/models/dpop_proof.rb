@@ -74,7 +74,9 @@ class DpopProof
     uri.fragment = nil
     uri.scheme = uri.scheme&.downcase
     uri.host = uri.host&.downcase
-    uri.to_s
+    uri.port = nil if uri.port == uri.default_port
+    # RFC 3986 Sections 6.2.2 and 6.2.3: case, dot segments, empty path.
+    uri.normalize.to_s
   rescue URI::InvalidURIError
     nil
   end

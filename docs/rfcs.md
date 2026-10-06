@@ -93,20 +93,19 @@ binding, and cannot widen the target (RFC 8693/9449); a missing `device_code`
 is `invalid_request` (RFC 8628); `jwks_uri` fetching refuses mapped, NAT64,
 6to4, CGNAT and reserved addresses and non-object key sets.
 
+Also fixed in a second round: token endpoint, PAR and device endpoints
+require a form-urlencoded body, reject query-string parameters and repeated
+parameters (RFC 6749 Section 3.2); unexpected faults are `server_error` (500);
+metadata is served at the issuer-derived well-known path and `ISSUER` is
+validated at boot in production (RFC 8414); `none` is the registered name of
+the public client method (RFC 7591); `htu` is normalised (RFC 9449); device
+user-code entry has a global ceiling as well as a per-user/IP one.
+
 Known and left open:
 
 - Any absolute URI is accepted as a `resource` (there is no per-client
   allow-list); resource servers here only accept tokens meant for them.
-- Token endpoint parameters are also read from the query string and
-  duplicates are not rejected (RFC 6749 Section 3.2 says body only).
-- `ISSUER` is not validated at boot and metadata is served at the root
-  well-known path only, so an issuer with a path is not discoverable (RFC 8414
-  Section 3).
-- Unexpected errors at the token endpoint are reported as `invalid_grant`.
-- User-code entry is rate limited per user/IP, with no global lockout.
-- `token_endpoint_auth_method` is registered as `client_secret_none`, not
-  `none` (RFC 7591).
-- The `htu` comparison does not normalise default ports or percent-encoding.
+- Device user codes are throttled, not invalidated after failed attempts.
 
 ## Not implemented
 

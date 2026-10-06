@@ -20,6 +20,16 @@ module Oauth
       Saml::Kit.configuration.entity_id
     end
 
+    # RFC 8414 Section 2: an https URL with no query or fragment component.
+    # Plain http is only tolerated outside production.
+    def valid?(value = identifier)
+      uri = URI.parse(value.to_s)
+      schemes = Rails.env.production? ? %w[https] : %w[https http]
+      schemes.include?(uri.scheme) && uri.host.present? && uri.query.nil? && uri.fragment.nil? && !value.to_s.end_with?('?', '#')
+    rescue URI::InvalidURIError
+      false
+    end
+
     # RFC 9068 Section 4: a resource server only accepts tokens whose audience
     # names it.
     def resource?(value)

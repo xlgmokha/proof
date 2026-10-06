@@ -97,7 +97,7 @@ module Oauth
       {
         name: params[:client_name],
         redirect_uris: params[:redirect_uris] || [],
-        token_endpoint_auth_method: params.fetch(:token_endpoint_auth_method, 'client_secret_basic'),
+        token_endpoint_auth_method: internal_auth_method(params.fetch(:token_endpoint_auth_method, 'client_secret_basic')),
         grant_types: grant_types,
         response_types: params[:response_types] || (grant_types.include?('authorization_code') ? %w[code] : []),
         scope: params[:scope],
@@ -113,6 +113,15 @@ module Oauth
         jwks_uri: params[:jwks_uri],
         jwks: params[:jwks].presence&.to_h,
       }
+    end
+
+    # RFC 7591 Section 2 names the public client method `none`.
+    def internal_auth_method(value)
+      case value.to_s
+      when 'none' then 'client_secret_none'
+      when 'client_secret_none' then 'client_secret_none_is_not_a_registered_method'
+      else value
+      end
     end
 
     def render_registration_error(errors)
