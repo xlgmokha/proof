@@ -7,7 +7,11 @@ class BearerToken
   end
 
   def encode(payload)
-    JWT.encode(defaults.merge(payload), private_key, 'RS256')
+    JWT.encode(defaults.merge(payload), private_key, 'RS256', kid: jwk.kid)
+  end
+
+  def jwk
+    @jwk ||= JWT::JWK.new(public_key, { use: 'sig', alg: 'RS256' })
   end
 
   def decode(token)

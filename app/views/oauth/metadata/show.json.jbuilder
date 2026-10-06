@@ -3,12 +3,18 @@
 json.issuer root_url
 json.authorization_endpoint oauth_authorizations_url
 json.token_endpoint oauth_tokens_url
-json.token_endpoint_auth_methods_supported [:client_secret_basic]
+json.token_endpoint_auth_methods_supported %i[client_secret_basic client_secret_post]
 json.token_endpoint_auth_signing_alg_values_supported ['RS256']
 json.userinfo_endpoint oauth_me_url
-json.jwks_uri ''
+json.jwks_uri jwks_url
 json.registration_endpoint oauth_clients_url
+json.revocation_endpoint revoke_oauth_tokens_url
+json.revocation_endpoint_auth_methods_supported %i[client_secret_basic]
+json.introspection_endpoint introspect_oauth_tokens_url
+json.introspection_endpoint_auth_methods_supported %i[client_secret_basic]
 json.scopes_supported []
 json.response_types_supported Client::RESPONSE_TYPES
+json.grant_types_supported Client::GRANT_TYPES
+json.code_challenge_methods_supported %w[plain S256]
 json.service_documentation root_url + 'doc'
 json.ui_locales_supported I18n.available_locales

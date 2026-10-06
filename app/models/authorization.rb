@@ -18,13 +18,11 @@ class Authorization < ApplicationRecord
 
   def valid_verifier?(code_verifier)
     return true if challenge.blank?
+    return false if code_verifier.blank?
 
-    challenge ==
-      if sha256?
-        Base64.urlsafe_encode64(Digest::SHA256.hexdigest(code_verifier))
-      else
-        code_verifier
-      end
+    ActiveSupport::SecurityUtils.secure_compare(
+      challenge, transform_verifier(code_verifier)
+    )
   end
 
   def issue_tokens_to(client, token_types: [:access, :refresh])
@@ -46,5 +44,14 @@ class Authorization < ApplicationRecord
 
   def revoked?
     revoked_at.present?
+  end
+
+  private
+
+  # RFC 7636 Section 4.6
+  def transform_verifier(code_verifier)
+    return code_verifier unless sha256?
+
+    Base64.urlsafe_encode64(Digest::SHA256.digest(code_verifier), padding: false)
   end
 end

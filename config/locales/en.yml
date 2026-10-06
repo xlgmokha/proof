@@ -106,9 +106,6 @@ en:
         authorize: Authorize
         authorize_prompt_html: Do you authorize <strong>%{name}</strong> to access your data?
         title: Authorize
-    tokens:
-      bad_request:
-        invalid_request: invalid_request
   registrations:
     new:
       login: Login

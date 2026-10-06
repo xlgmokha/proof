@@ -43,6 +43,13 @@ class User < ApplicationRecord
       Scim::User::ATTRIBUTES
     end
 
+    # Resolves the `sub` of a JWT assertion, which is either a user id or an email.
+    def from_assertion_subject(subject)
+      return if subject.blank?
+
+      subject.match?(ApplicationRecord::UUID) ? find_by(id: subject) : find_by(email: subject)
+    end
+
     def login(email, password)
       return if email.blank? || password.blank?
 

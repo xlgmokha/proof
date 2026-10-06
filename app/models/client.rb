@@ -2,20 +2,24 @@
 
 class Client < ApplicationRecord
   RESPONSE_TYPES = %w[code token].freeze
+  GRANT_TYPES = GrantTypes::ALL
   audited
   has_secure_password
   has_many :authorizations, dependent: :delete_all
+  before_destroy :delete_tokens
   attribute :redirect_uris, :string, array: true
   enum :token_endpoint_auth_method, {
     client_secret_basic: 0,
     client_secret_post: 1,
     client_secret_none: 2,
-  }
+  }, validate: true
 
   validates :redirect_uris, presence: true
   validates :jwks_uri, format: { with: URI_REGEX }, allow_blank: true
   validates :logo_uri, format: { with: URI_REGEX }, allow_blank: true
   validates :name, presence: true
+  validate :jwks_uri_and_jwks_are_exclusive
+  validates :jwks, jwks: true
   validates_each :redirect_uris do |record, _attr, value|
     invalid_uri = Array(value).find { |x| !x.match?(URI_REGEX) }
     record.errors.add(:redirect_uris, 'is invalid.') if invalid_uri
@@ -26,13 +30,17 @@ class Client < ApplicationRecord
   end
 
   def grant_types
-    [
-      :authorization_code,
-      :refresh_token,
-      :client_credentials,
-      :password,
-      'urn:ietf:params:oauth:grant-type:saml2-bearer'
-    ]
+    GRANT_TYPES
+  end
+
+  # RFC 7591 Section 2: the client's public keys, by value or by reference.
+  def jwk_set
+    set = jwks.presence || (jwks_uri.present? && JwksFetcher.new.fetch(jwks_uri))
+    raise JwksFetcher::Error.new('client has no registered keys') if set.blank?
+
+    JWT::JWK::Set.new(set.with_indifferent_access)
+  rescue JWT::JWKError => error
+    raise JwksFetcher::Error.new(error.message)
   end
 
   def access_token
@@ -95,5 +103,17 @@ class Client < ApplicationRecord
         "#{key}=#{value}" if value.present?
       end.compact.join("&")
     ).to_s
+  end
+
+  private
+
+  def jwks_uri_and_jwks_are_exclusive
+    return if jwks.blank? || jwks_uri.blank?
+
+    errors.add(:jwks, 'must not be specified together with jwks_uri')
+  end
+
+  def delete_tokens
+    Token.where(subject: self).or(Token.where(audience: self)).delete_all
   end
 end

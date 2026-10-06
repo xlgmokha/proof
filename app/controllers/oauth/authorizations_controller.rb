@@ -19,6 +19,8 @@ module Oauth
         return redirect_to error_url_for(@client, type, state)
       end
 
+      return redirect_to error_url_for(@client, :invalid_request, secure_params[:state]) unless valid_code_challenge?
+
       session[:oauth] = secure_params.to_h
     end
 
@@ -34,6 +36,15 @@ module Oauth
     end
 
     private
+
+    # RFC 7636 Section 4.3: the method is only meaningful with a challenge, and
+    # only plain and S256 are defined.
+    def valid_code_challenge?
+      method = secure_params[:code_challenge_method]
+      return true if method.blank?
+
+      %w[plain S256].include?(method) && secure_params[:code_challenge].present?
+    end
 
     def secure_params
       params.permit(

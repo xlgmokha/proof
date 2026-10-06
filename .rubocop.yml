@@ -152,3 +152,7 @@ Style/StringConcatenation:
 
 Style/YodaCondition:
   Enabled: false
+
+Rails/BulkChangeTable:
+  Exclude:
+    - 'db/migrate/*'

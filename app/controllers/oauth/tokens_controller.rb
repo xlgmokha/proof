@@ -3,19 +3,24 @@
 module Oauth
   class TokensController < ActionController::API
     include ActionController::HttpAuthentication::Basic::ControllerMethods
+    include AssertionGrants
     before_action :authenticate!
 
     def create
       response.headers['Cache-Control'] = 'no-store'
       response.headers['Pragma'] = 'no-cache'
 
-      @access_token, @refresh_token = tokens_for(params[:grant_type])
-      return bad_request if @access_token.nil?
+      grant_type = params[:grant_type]
+      return bad_request if grant_type.blank?
+      return bad_request('unsupported_grant_type') unless supported?(grant_type)
+
+      @access_token, @refresh_token = tokens_for(grant_type)
+      return bad_request('invalid_grant') if @access_token.nil?
 
       render formats: :json
     rescue StandardError => error
       Rails.logger.error(error)
-      bad_request
+      bad_request('invalid_grant')
     end
 
     def introspect
@@ -42,15 +47,32 @@ module Oauth
 
     def authenticate!
       @current_client = authenticate_with_http_basic do |id, client_secret|
-        Client.find(id)&.authenticate(client_secret)
+        Client.find_by(id: id)&.authenticate(client_secret)
       end
+      @current_client ||= authenticate_with_post_body
       return if current_client
 
+      response.headers['WWW-Authenticate'] = 'Basic realm="oauth"'
       render "invalid_client", formats: :json, status: :unauthorized
     end
 
-    def bad_request
+    # RFC 6749 Section 2.3.1: only for clients registered with client_secret_post
+    def authenticate_with_post_body
+      return if request.authorization.present? || params[:client_id].blank?
+
+      client = Client.find_by(id: params[:client_id])
+      return unless client&.client_secret_post?
+
+      client.authenticate(params[:client_secret].to_s)
+    end
+
+    def bad_request(error = 'invalid_request')
+      @error = error
       render "bad_request", formats: :json, status: :bad_request
+    end
+
+    def supported?(grant_type)
+      Client::GRANT_TYPES.include?(grant_type)
     end
 
     def authorization_code_grant(code, verifier)
@@ -71,20 +93,6 @@ module Oauth
       user.issue_tokens_to(current_client)
     end
 
-    def saml_assertion_grant(raw)
-      assertion = Saml::Kit::Assertion.new(
-        Base64.urlsafe_decode64(raw)
-      )
-      return if assertion.invalid?
-
-      user = if assertion.name_id_format == Saml::Kit::Namespaces::PERSISTENT
-               User.find(assertion.name_id)
-             else
-               User.find_by!(email: assertion.name_id)
-             end
-      user.issue_tokens_to(current_client)
-    end
-
     def tokens_for(grant_type = params[:grant_type])
       case grant_type
       when 'authorization_code'
@@ -95,10 +103,10 @@ module Oauth
         [current_client.access_token, nil]
       when 'password'
         password_grant(params[:username], params[:password])
-      when 'urn:ietf:params:oauth:grant-type:saml2-bearer' # RFC7522
+      when AssertionGrants::SAML_BEARER_GRANT # RFC7522
         saml_assertion_grant(params[:assertion])
-        # when 'urn:ietf:params:oauth:grant-type:jwt-bearer' # RFC7523
-        # raise NotImplementedError
+      when AssertionGrants::JWT_BEARER_GRANT # RFC7523
+        jwt_bearer_grant(params[:assertion])
       end
     end
   end

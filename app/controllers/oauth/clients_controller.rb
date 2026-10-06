@@ -12,6 +12,7 @@ module Oauth
 
     def create
       @client = Client.create!(transform(secure_params))
+      @registration_access_token = @client.access_token.to_jwt
       render status: :created, formats: :json
     rescue ActiveRecord::RecordInvalid => error
       json = {
@@ -33,13 +34,20 @@ module Oauth
       render json: json, status: :bad_request
     end
 
+    # RFC 7592 Section 2.3
+    def destroy
+      @client.destroy!
+      head :no_content
+    end
+
     private
 
     def authenticate!
       token = authenticate_with_http_token do |jwt, _options|
         claims = Token.claims_for(jwt)
-        return if Token.revoked?(claims[:jti]) || claims.empty?
+        next if claims.empty? || Token.revoked?(claims[:jti])
 
+        @registration_access_token = jwt
         Token.find(claims[:jti])
       end
       return request_http_token_authentication if token.blank?
@@ -59,6 +67,7 @@ module Oauth
         :token_endpoint_auth_method,
         :logo_uri,
         :jwks_uri,
+        jwks: {},
         redirect_uris: []
       )
     end
@@ -67,9 +76,10 @@ module Oauth
       {
         name: params[:client_name],
         redirect_uris: params[:redirect_uris],
-        token_endpoint_auth_method: params[:token_endpoint_auth_method],
+        token_endpoint_auth_method: params.fetch(:token_endpoint_auth_method, 'client_secret_basic'),
         logo_uri: params[:logo_uri],
         jwks_uri: params[:jwks_uri],
+        jwks: params[:jwks].presence&.to_h,
       }
     end
 

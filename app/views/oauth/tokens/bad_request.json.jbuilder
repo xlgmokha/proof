@@ -1,3 +1,3 @@
 # frozen_string_literal: true
 
-json.error t('.invalid_request')
+json.error @error || 'invalid_request'

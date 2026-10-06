@@ -94,8 +94,8 @@ RSpec.describe "/oauth/clients" do
       specify { expect(json[:token_endpoint_auth_method]).to eql('client_secret_basic') }
       specify { expect(json[:logo_uri]).to eql(client.logo_uri) }
       specify { expect(json[:jwks_uri]).to eql(client.jwks_uri) }
-      pending { expect(json[:registration_client_uri]).to eql(oauth_client_path(client)) }
-      pending { expect(json[:registration_access_token]).to be_present }
+      specify { expect(json[:registration_client_uri]).to eql(oauth_client_url(client)) }
+      specify { expect(json[:registration_access_token]).to be_present }
     end
 
     context "when one client tries to read another client" do
@@ -197,5 +197,93 @@ RSpec.describe "/oauth/clients" do
     specify "request MUST NOT include the 'client_id_issued_at'"
     specify "If the client includes the `client_secret` field in the request, the value of this field MUST match the currently issued client secret for that client"
     specify "The client MUST NOT be allowed to overwrite its existing client secret with its own chosen value."
+  end
+
+  describe "POST /oauth/clients with jwks" do
+    let(:json) { JSON.parse(response.body, symbolize_names: true) }
+    let(:public_key) { JWT::JWK.new(OpenSSL::PKey::RSA.generate(2048).public_key).export }
+    let(:params) do
+      { redirect_uris: [generate(:uri)], client_name: FFaker::Name.name, jwks: { keys: [public_key] } }
+    end
+
+    context "when the keys are valid" do
+      before { post "/oauth/clients", params: params, as: :json }
+
+      specify { expect(response).to have_http_status(:created) }
+      specify { expect(json[:jwks][:keys][0][:kid]).to eql(public_key[:kid]) }
+      specify { expect(json[:registration_client_uri]).to eql(oauth_client_url(Client.last)) }
+      specify { expect(Token.claims_for(json[:registration_access_token])[:sub]).to eql(Client.last.to_param) }
+    end
+
+    context "when the token_endpoint_auth_method is omitted" do
+      before { post "/oauth/clients", params: params, as: :json }
+
+      specify { expect(json[:token_endpoint_auth_method]).to eql('client_secret_basic') }
+    end
+
+    context "when the token_endpoint_auth_method is not supported" do
+      before { post "/oauth/clients", params: params.merge(token_endpoint_auth_method: 'private_key_jwt'), as: :json }
+
+      specify { expect(response).to have_http_status(:bad_request) }
+      specify { expect(json[:error]).to eql("invalid_client_metadata") }
+    end
+
+    context "when both jwks and jwks_uri are specified" do
+      before { post "/oauth/clients", params: params.merge(jwks_uri: generate(:uri)), as: :json }
+
+      specify { expect(response).to have_http_status(:bad_request) }
+      specify { expect(json[:error]).to eql("invalid_client_metadata") }
+    end
+
+    context "when the keys contain private material" do
+      let(:public_key) { JWT::JWK.new(OpenSSL::PKey::RSA.generate(2048)).export(include_private: true) }
+
+      before { post "/oauth/clients", params: params, as: :json }
+
+      specify { expect(response).to have_http_status(:bad_request) }
+      specify { expect(json[:error]).to eql("invalid_client_metadata") }
+    end
+  end
+
+  describe "DELETE /oauth/clients/:id" do
+    let(:client) { create(:client) }
+    let(:access_token) { create(:access_token, subject: client, audience: client) }
+    let(:headers) { { 'Authorization' => "Bearer #{access_token.to_jwt}" } }
+
+    context "when the credentials are valid" do
+      before { delete "/oauth/clients/#{client.to_param}", headers: headers }
+
+      specify { expect(response).to have_http_status(:no_content) }
+      specify { expect(response.body).to be_empty }
+      specify { expect(Client.exists?(client.id)).to be(false) }
+      specify { expect(Token.exists?(access_token.id)).to be(false) }
+    end
+
+    context "when one client tries to delete another client" do
+      let(:other_client) { create(:client) }
+
+      before { delete "/oauth/clients/#{other_client.to_param}", headers: headers }
+
+      specify { expect(response).to have_http_status(:forbidden) }
+      specify { expect(Client.exists?(other_client.id)).to be(true) }
+    end
+
+    context "when the access token has been revoked" do
+      before do
+        access_token.revoke!
+        Rails.cache.clear
+        delete "/oauth/clients/#{client.to_param}", headers: headers
+      end
+
+      specify { expect(response).to have_http_status(:unauthorized) }
+      specify { expect(Client.exists?(client.id)).to be(true) }
+    end
+
+    context "when an authorization header is not provided" do
+      before { delete "/oauth/clients/#{client.to_param}" }
+
+      specify { expect(response).to have_http_status(:unauthorized) }
+      specify { expect(Client.exists?(client.id)).to be(true) }
+    end
   end
 end

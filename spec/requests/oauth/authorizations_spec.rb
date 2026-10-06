@@ -34,6 +34,24 @@ RSpec.describe '/oauth/authorizations' do
           specify { expect(response).to redirect_to("#{client.redirect_uris[0]}#error=unsupported_response_type") }
         end
 
+        context "when the code_challenge_method is not supported" do
+          before { get "/oauth/authorizations", params: { client_id: client.to_param, response_type: 'code', redirect_uri: client.redirect_uris[0], code_challenge: 'abc', code_challenge_method: 'S512' } }
+
+          specify { expect(response).to redirect_to("#{client.redirect_uris[0]}#error=invalid_request") }
+        end
+
+        context "when a code_challenge_method is given without a code_challenge" do
+          before { get "/oauth/authorizations", params: { client_id: client.to_param, response_type: 'code', redirect_uri: client.redirect_uris[0], code_challenge_method: 'S256' } }
+
+          specify { expect(response).to redirect_to("#{client.redirect_uris[0]}#error=invalid_request") }
+        end
+
+        context "when a valid S256 code_challenge is given" do
+          before { get "/oauth/authorizations", params: { client_id: client.to_param, response_type: 'code', redirect_uri: client.redirect_uris[0], code_challenge: 'abc', code_challenge_method: 'S256' } }
+
+          specify { expect(response).to have_http_status(:ok) }
+        end
+
         context "when the redirect uri does not match" do
           before { get "/oauth/authorizations", params: { client_id: client.to_param, response_type: 'invalid', redirect_uri: SecureRandom.uuid } }
 
@@ -71,7 +89,7 @@ RSpec.describe '/oauth/authorizations' do
         context "when the client requested a token using a valid PKCE with S256" do
           let(:token) { Token.access.active.last&.to_jwt }
           let(:code_verifier) { SecureRandom.hex(128) }
-          let(:code_challenge) { Base64.urlsafe_encode64(Digest::SHA256.hexdigest(code_verifier)) }
+          let(:code_challenge) { Base64.urlsafe_encode64(Digest::SHA256.digest(code_verifier), padding: false) }
 
           before do
             get "/oauth/authorizations", params: {

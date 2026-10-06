@@ -22,7 +22,7 @@ Rails.application.routes.draw do
   namespace :oauth do
     resource :authorizations, only: [:show, :create]
     resource :me, only: [:show]
-    resources :clients, only: [:show, :create, :update]
+    resources :clients, only: [:show, :create, :update, :destroy]
     resource :tokens, only: [:create] do
       post :introspect
       post :revoke
@@ -57,6 +57,7 @@ Rails.application.routes.draw do
     end
   end
   get "/.well-known/oauth-authorization-server", to: "oauth/metadata#show"
+  get "/.well-known/jwks.json", to: "oauth/jwks#show", as: :jwks
   direct :documentation do
     root_url + 'doc'
   end

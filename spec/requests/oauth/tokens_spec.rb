@@ -36,7 +36,7 @@ RSpec.describe '/oauth/tokens' do
         specify { expect(response.headers['Content-Type']).to include('application/json') }
         specify { expect(response.headers['Cache-Control']).to include('no-store') }
         specify { expect(response.headers['Pragma']).to eql('no-cache') }
-        specify { expect(json[:error]).to eql('invalid_request') }
+        specify { expect(json[:error]).to eql('invalid_grant') }
       end
 
       context "when the code is not known" do
@@ -49,12 +49,12 @@ RSpec.describe '/oauth/tokens' do
         specify { expect(response.headers['Cache-Control']).to include('no-store') }
         specify { expect(response.headers['Pragma']).to eql('no-cache') }
 
-        specify { expect(json[:error]).to eql('invalid_request') }
+        specify { expect(json[:error]).to eql('invalid_grant') }
       end
 
       context "when the authorization was created with the code_challenge_method of SHA256" do
         let(:code_verifier) { SecureRandom.hex(128) }
-        let(:authorization) { create(:authorization, client: client, challenge: Base64.urlsafe_encode64(Digest::SHA256.hexdigest(code_verifier)), challenge_method: :sha256) }
+        let(:authorization) { create(:authorization, client: client, challenge: Base64.urlsafe_encode64(Digest::SHA256.digest(code_verifier), padding: false), challenge_method: :sha256) }
         let(:json) { JSON.parse(response.body, symbolize_names: true) }
 
         before do
@@ -95,7 +95,7 @@ RSpec.describe '/oauth/tokens' do
 
       context "when the SHA256 challenge is invalid" do
         let(:code_verifier) { SecureRandom.hex(128) }
-        let(:authorization) { create(:authorization, client: client, challenge: Base64.urlsafe_encode64(Digest::SHA256.hexdigest(code_verifier)), challenge_method: :sha256) }
+        let(:authorization) { create(:authorization, client: client, challenge: Base64.urlsafe_encode64(Digest::SHA256.digest(code_verifier), padding: false), challenge_method: :sha256) }
         let(:json) { JSON.parse(response.body, symbolize_names: true) }
 
         before do
@@ -108,7 +108,7 @@ RSpec.describe '/oauth/tokens' do
         specify { expect(response.headers['Cache-Control']).to include('no-store') }
         specify { expect(response.headers['Pragma']).to eql('no-cache') }
 
-        specify { expect(json[:error]).to eql('invalid_request') }
+        specify { expect(json[:error]).to eql('invalid_grant') }
       end
 
       context "when the plain challenge is invalid" do
@@ -126,7 +126,7 @@ RSpec.describe '/oauth/tokens' do
         specify { expect(response.headers['Cache-Control']).to include('no-store') }
         specify { expect(response.headers['Pragma']).to eql('no-cache') }
 
-        specify { expect(json[:error]).to eql('invalid_request') }
+        specify { expect(json[:error]).to eql('invalid_grant') }
       end
     end
 
@@ -180,7 +180,7 @@ RSpec.describe '/oauth/tokens' do
         before { post '/oauth/tokens', params: { grant_type: 'password', username: generate(:email), password: generate(:password) }, headers: headers }
 
         specify { expect(response).to have_http_status(:bad_request) }
-        specify { expect(json[:error]).to eql('invalid_request') }
+        specify { expect(json[:error]).to eql('invalid_grant') }
       end
     end
 
@@ -274,7 +274,7 @@ RSpec.describe '/oauth/tokens' do
       specify { expect(response.headers['Content-Type']).to include('application/json') }
       specify { expect(response.headers['Cache-Control']).to include('no-store') }
       specify { expect(response.headers['Pragma']).to eql('no-cache') }
-      specify { expect(json[:error]).to eql('invalid_request') }
+      specify { expect(json[:error]).to eql('invalid_grant') }
     end
 
     context "when the assertion has an invalid signature" do
@@ -298,7 +298,205 @@ RSpec.describe '/oauth/tokens' do
       specify { expect(response.headers['Cache-Control']).to include('no-store') }
       specify { expect(response.headers['Pragma']).to eql('no-cache') }
 
+      specify { expect(json[:error]).to eql('invalid_grant') }
+    end
+  end
+
+  describe "POST /oauth/tokens error handling" do
+    let(:json) { JSON.parse(response.body, symbolize_names: true) }
+
+    context "when the grant_type is missing" do
+      before { post '/oauth/tokens', headers: headers }
+
+      specify { expect(response).to have_http_status(:bad_request) }
       specify { expect(json[:error]).to eql('invalid_request') }
+    end
+
+    context "when the grant_type is not supported" do
+      before { post '/oauth/tokens', params: { grant_type: 'implicit' }, headers: headers }
+
+      specify { expect(response).to have_http_status(:bad_request) }
+      specify { expect(json[:error]).to eql('unsupported_grant_type') }
+    end
+
+    context "when the client credentials are wrong" do
+      before { post '/oauth/tokens', params: { grant_type: 'client_credentials' }, headers: { 'Authorization' => ActionController::HttpAuthentication::Basic.encode_credentials(client.to_param, 'wrong') } }
+
+      specify { expect(response).to have_http_status(:unauthorized) }
+      specify { expect(response.headers['WWW-Authenticate']).to start_with('Basic') }
+      specify { expect(json[:error]).to eql('invalid_client') }
+    end
+  end
+
+  describe "POST /oauth/tokens with client_secret_post authentication" do
+    let(:json) { JSON.parse(response.body, symbolize_names: true) }
+
+    context "when the client is registered for client_secret_post" do
+      let(:client) { create(:client, token_endpoint_auth_method: :client_secret_post) }
+
+      before do
+        post '/oauth/tokens', params: { grant_type: 'client_credentials', client_id: client.to_param, client_secret: client.password }
+      end
+
+      specify { expect(response).to have_http_status(:ok) }
+      specify { expect(json[:access_token]).to be_present }
+    end
+
+    context "when the client is registered for client_secret_basic" do
+      before do
+        post '/oauth/tokens', params: { grant_type: 'client_credentials', client_id: client.to_param, client_secret: client.password }
+      end
+
+      specify { expect(response).to have_http_status(:unauthorized) }
+    end
+
+    context "when the secret is wrong" do
+      let(:client) { create(:client, token_endpoint_auth_method: :client_secret_post) }
+
+      before do
+        post '/oauth/tokens', params: { grant_type: 'client_credentials', client_id: client.to_param, client_secret: 'wrong' }
+      end
+
+      specify { expect(response).to have_http_status(:unauthorized) }
+    end
+  end
+
+  describe "POST /oauth/tokens with the jwt-bearer grant (RFC 7523)" do
+    let(:json) { JSON.parse(response.body, symbolize_names: true) }
+    let(:grant_type) { 'urn:ietf:params:oauth:grant-type:jwt-bearer' }
+    let(:signing_key) { OpenSSL::PKey::RSA.generate(2048) }
+    let(:jwk) { JWT::JWK.new(signing_key.public_key, kid: 'key-1') }
+    let(:client) { create(:client, jwks_uri: nil, jwks: { keys: [jwk.export] }) }
+    let(:user) { create(:user) }
+    let(:cache) { ActiveSupport::Cache::MemoryStore.new }
+    let(:claims) do
+      {
+        iss: client.to_param, sub: user.to_param, aud: oauth_tokens_url,
+        exp: 5.minutes.from_now.to_i, jti: SecureRandom.uuid
+      }
+    end
+    let(:assertion) { JWT.encode(claims, signing_key, 'RS256', kid: 'key-1') }
+
+    before { allow(Rails).to receive(:cache).and_return(cache) }
+
+    context "when the assertion is valid" do
+      before { post '/oauth/tokens', params: { grant_type: grant_type, assertion: assertion }, headers: headers }
+
+      specify { expect(response).to have_http_status(:ok) }
+      specify { expect(response.headers['Cache-Control']).to include('no-store') }
+      specify { expect(json[:token_type]).to eql('Bearer') }
+      specify { expect(json[:refresh_token]).to be_present }
+      specify { expect(Token.claims_for(json[:access_token])[:sub]).to eql(user.to_param) }
+    end
+
+    context "when the subject is identified by email" do
+      before do
+        claims[:sub] = user.email
+        post '/oauth/tokens', params: { grant_type: grant_type, assertion: assertion }, headers: headers
+      end
+
+      specify { expect(response).to have_http_status(:ok) }
+    end
+
+    context "when the keys are published at a jwks_uri" do
+      let(:client) { create(:client, jwks_uri: 'https://example.com/jwks.json') }
+
+      before do
+        fetcher = JwksFetcher.new
+        allow(fetcher).to receive(:fetch).and_return({ "keys" => [jwk.export.stringify_keys] })
+        allow(JwksFetcher).to receive(:new).and_return(fetcher)
+        post '/oauth/tokens', params: { grant_type: grant_type, assertion: assertion }, headers: headers
+      end
+
+      specify { expect(response).to have_http_status(:ok) }
+    end
+
+    context "when the assertion is signed with an unknown key" do
+      let(:assertion) { JWT.encode(claims, OpenSSL::PKey::RSA.generate(2048), 'RS256', kid: 'key-1') }
+
+      before { post '/oauth/tokens', params: { grant_type: grant_type, assertion: assertion }, headers: headers }
+
+      specify { expect(response).to have_http_status(:bad_request) }
+      specify { expect(json[:error]).to eql('invalid_grant') }
+    end
+
+    context "when the assertion uses a symmetric algorithm" do
+      let(:assertion) { JWT.encode(claims, client.password, 'HS256') }
+
+      before { post '/oauth/tokens', params: { grant_type: grant_type, assertion: assertion }, headers: headers }
+
+      specify { expect(response).to have_http_status(:bad_request) }
+      specify { expect(json[:error]).to eql('invalid_grant') }
+    end
+
+    context "when the assertion was issued by a different client" do
+      before do
+        claims[:iss] = SecureRandom.uuid
+        post '/oauth/tokens', params: { grant_type: grant_type, assertion: assertion }, headers: headers
+      end
+
+      specify { expect(json[:error]).to eql('invalid_grant') }
+    end
+
+    context "when the audience is not this server" do
+      before do
+        claims[:aud] = 'https://other.example.com/token'
+        post '/oauth/tokens', params: { grant_type: grant_type, assertion: assertion }, headers: headers
+      end
+
+      specify { expect(json[:error]).to eql('invalid_grant') }
+    end
+
+    context "when the assertion is expired" do
+      before do
+        claims[:exp] = 10.minutes.ago.to_i
+        post '/oauth/tokens', params: { grant_type: grant_type, assertion: assertion }, headers: headers
+      end
+
+      specify { expect(json[:error]).to eql('invalid_grant') }
+    end
+
+    context "when the assertion has no expiration" do
+      before do
+        claims.delete(:exp)
+        post '/oauth/tokens', params: { grant_type: grant_type, assertion: assertion }, headers: headers
+      end
+
+      specify { expect(json[:error]).to eql('invalid_grant') }
+    end
+
+    context "when the assertion lifetime is too long" do
+      before do
+        claims[:exp] = 1.day.from_now.to_i
+        post '/oauth/tokens', params: { grant_type: grant_type, assertion: assertion }, headers: headers
+      end
+
+      specify { expect(json[:error]).to eql('invalid_grant') }
+    end
+
+    context "when the assertion is replayed" do
+      before do
+        post '/oauth/tokens', params: { grant_type: grant_type, assertion: assertion }, headers: headers
+        post '/oauth/tokens', params: { grant_type: grant_type, assertion: assertion }, headers: headers
+      end
+
+      specify { expect(response).to have_http_status(:bad_request) }
+      specify { expect(json[:error]).to eql('invalid_grant') }
+    end
+
+    context "when the subject is unknown" do
+      before do
+        claims[:sub] = SecureRandom.uuid
+        post '/oauth/tokens', params: { grant_type: grant_type, assertion: assertion }, headers: headers
+      end
+
+      specify { expect(json[:error]).to eql('invalid_grant') }
+    end
+
+    context "when the assertion is missing" do
+      before { post '/oauth/tokens', params: { grant_type: grant_type }, headers: headers }
+
+      specify { expect(json[:error]).to eql('invalid_grant') }
     end
   end
 
