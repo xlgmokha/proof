@@ -1,0 +1,22 @@
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <h1 class="title"><%= t('.title') %></h1>
+
+      <% if @device_authorization %>
+        <p><%= t('.confirm_html', name: @device_authorization.client.name, code: @device_authorization.formatted_user_code) %></p>
+        <%= form_tag oauth_device_path, method: :post, data: { turbo: false } do %>
+          <%= hidden_field_tag :user_code, @device_authorization.user_code %>
+          <%= button_tag t('.approve'), type: 'submit', name: 'approve', value: '1', class: 'btn btn-primary' %>
+          <%= button_tag t('.deny'), type: 'submit', name: 'deny', value: '1', class: 'btn btn-secondary' %>
+        <% end %>
+      <% else %>
+        <p><%= t('.prompt') %></p>
+        <%= form_tag oauth_device_path, method: :post, data: { turbo: false } do %>
+          <%= text_field_tag :user_code, params[:user_code], autocomplete: 'off', autocapitalize: 'characters', class: 'input' %>
+          <%= button_tag t('.continue'), type: 'submit', class: 'btn btn-primary' %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>

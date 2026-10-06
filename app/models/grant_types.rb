@@ -8,5 +8,7 @@ module GrantTypes
     client_credentials
     urn:ietf:params:oauth:grant-type:saml2-bearer
     urn:ietf:params:oauth:grant-type:jwt-bearer
+    urn:ietf:params:oauth:grant-type:device_code
+    urn:ietf:params:oauth:grant-type:token-exchange
   ].freeze
 end

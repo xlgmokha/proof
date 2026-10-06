@@ -1,19 +1,19 @@
 # frozen_string_literal: true
 
 module Oauth
-  # RFC 6749 Section 3.1, the authorization code flow of Section 4.1 and the
-  # PKCE extension (RFC 7636), which this server requires of every client
-  # (RFC 9700 Section 2.1.1).
+  # RFC 6749 Section 3.1, the authorization code flow of Section 4.1, the PKCE
+  # extension (RFC 7636), which this server requires of every client
+  # (RFC 9700 Section 2.1.1), and requests that are signed (RFC 9101) or pushed
+  # (RFC 9126).
   class AuthorizationsController < ApplicationController
-    before_action :load_client_and_redirect_uri, only: :show
+    before_action :load_client, only: :show
+    before_action :load_request, only: :show
 
     def show
-      return redirect_with_error(:unsupported_response_type) unless @client.valid_response_type?(secure_params[:response_type])
-
-      error = pkce_error || scope_error || resource_error
+      error = @authorization_request.error
       return redirect_with_error(*error) if error
 
-      session[:oauth] = secure_params.to_h
+      session[:oauth] = @authorization_request.parameters
     end
 
     def create(oauth = session[:oauth])
@@ -36,49 +36,34 @@ module Oauth
 
     # RFC 6749 Section 4.1.2.1: when the client or redirect URI cannot be
     # trusted, the user is told and nothing is redirected.
-    def load_client_and_redirect_uri
-      @client = Client.find_by(id: secure_params[:client_id])
-      @redirect_uri = @client&.resolve_redirect_uri(secure_params[:redirect_uri])
-      return if @redirect_uri
+    def load_client
+      @client = Client.find_by(id: params[:client_id])
+      render plain: 'The client or its redirect_uri is not valid.', status: :bad_request unless @client
+    end
+
+    def load_request
+      @authorization_request = AuthorizationRequest.load(@client, params.permit!, audiences: audiences)
+      return if @authorization_request.redirect_uri
 
       render plain: 'The client or its redirect_uri is not valid.', status: :bad_request
+    rescue AuthorizationRequest::Invalid => error
+      # The request object or reference could not be used; the only redirect
+      # that can be trusted is one the client sent and registered.
+      @authorization_request = AuthorizationRequest.new(@client, params.permit(:redirect_uri, :state))
+      return render plain: error.message, status: :bad_request unless @authorization_request.redirect_uri
+
+      redirect_with_error(error.error, error.description)
     end
 
-    # RFC 7636 Section 4.3 (the method defaults to plain, which is not
-    # accepted here).
-    def pkce_error
-      challenge = secure_params[:code_challenge]
-      return [:invalid_request, 'code_challenge is required.'] if challenge.blank?
-      return [:invalid_request, 'code_challenge_method must be S256.'] unless secure_params[:code_challenge_method] == 'S256'
-      return if Authorization::PKCE_VERIFIER.match?(challenge)
-
-      [:invalid_request, 'code_challenge is not valid.']
-    end
-
-    def scope_error
-      [:invalid_scope, 'The requested scope is not supported.'] unless Scopes.resolve(secure_params[:scope], allowed: @client.allowed_scopes)
-    end
-
-    def resource_error
-      value = params[:resource]
-      return if value.blank?
-      return [:invalid_target, 'Only one resource may be requested.'] unless value.is_a?(String)
-      return if ResourceIndicator.valid?(value)
-
-      [:invalid_target, 'resource must be an absolute URI without a fragment.']
-    end
-
-    def secure_params
-      params.permit(
-        :client_id, :response_type, :redirect_uri, :scope, :resource,
-        :state, :code_challenge, :code_challenge_method
-      )
+    def audiences
+      [Oauth::Issuer.identifier, oauth_authorizations_url, root_url].uniq
     end
 
     def redirect_with_error(type, description = nil)
       redirect_to(
         @client.redirect_url(
-          **authorization_error(type, secure_params[:state], description), to: secure_params[:redirect_uri].presence
+          **authorization_error(type, @authorization_request[:state], description),
+          to: @authorization_request[:redirect_uri].presence
         ),
         allow_other_host: true
       )

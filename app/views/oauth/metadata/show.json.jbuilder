@@ -18,6 +18,13 @@ json.response_modes_supported %w[query]
 json.grant_types_supported Client::GRANT_TYPES
 json.code_challenge_methods_supported %w[S256]
 json.authorization_response_iss_parameter_supported true
+json.device_authorization_endpoint oauth_device_authorization_url
+json.pushed_authorization_request_endpoint oauth_par_url
+json.require_pushed_authorization_requests false
+json.request_parameter_supported true
+json.request_uri_parameter_supported true
+json.require_signed_request_object false
+json.request_object_signing_alg_values_supported RequestObject::ALGORITHMS
 json.dpop_signing_alg_values_supported DpopProof::ALGORITHMS
 json.service_documentation root_url + 'doc'
 json.ui_locales_supported I18n.available_locales

@@ -70,6 +70,7 @@ module Oauth
       params.permit(
         :client_name, :token_endpoint_auth_method, :logo_uri, :client_uri, :tos_uri, :policy_uri,
         :jwks_uri, :scope, :software_id, :software_version,
+        :require_pushed_authorization_requests, :require_signed_request_object,
         jwks: {}, redirect_uris: [], grant_types: [], response_types: [], contacts: []
       )
     end
@@ -92,6 +93,8 @@ module Oauth
         policy_uri: params[:policy_uri],
         software_id: params[:software_id],
         software_version: params[:software_version],
+        require_pushed_authorization_requests: params[:require_pushed_authorization_requests] || false,
+        require_signed_request_object: params[:require_signed_request_object] || false,
         jwks_uri: params[:jwks_uri],
         jwks: params[:jwks].presence&.to_h,
       }

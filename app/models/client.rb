@@ -7,6 +7,8 @@ class Client < ApplicationRecord
   audited
   has_secure_password
   has_many :authorizations, dependent: :delete_all
+  has_many :pushed_authorization_requests, dependent: :delete_all
+  has_many :device_authorizations, dependent: :delete_all
   before_destroy :delete_tokens
   attribute :redirect_uris, :string, array: true
   enum :token_endpoint_auth_method, {

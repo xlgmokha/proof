@@ -107,6 +107,21 @@ en:
         authorize_prompt_html: Do you authorize <strong>%{name}</strong> to access your data?
         deny: Deny
         title: Authorize
+    devices:
+      approved:
+        body_html: You approved <strong>%{name}</strong>. You can return to your device.
+        title: Device approved
+      denied:
+        body_html: You denied <strong>%{name}</strong>. Nothing was shared.
+        title: Device denied
+      show:
+        approve: Approve
+        confirm_html: Is <strong>%{name}</strong> showing the code <strong>%{code}</strong>?
+        continue: Continue
+        deny: Deny
+        prompt: Enter the code shown on your device.
+        title: Connect a device
+        unknown_code: That code is not valid or has expired.
   registrations:
     new:
       login: Login

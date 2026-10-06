@@ -93,7 +93,7 @@ module Oauth
 
     # RFC 7662 Section 2.2
     def introspection_for(token)
-      claims = token.claims.slice(:scope, :client_id, :exp, :iat, :nbf, :sub, :aud, :iss, :jti, :cnf)
+      claims = token.claims.slice(:scope, :client_id, :exp, :iat, :nbf, :sub, :aud, :iss, :jti, :cnf, :act)
       claims[:token_type] = token.dpop_jkt.present? ? 'DPoP' : 'Bearer' if token.access?
       claims[:username] = token.subject.email if token.subject.respond_to?(:email)
       claims.merge(active: true)
@@ -200,6 +200,47 @@ module Oauth
       Scopes.format(requested)
     end
 
+    # RFC 8628 Section 3.4 and 3.5. The outcome is decided inside the lock and
+    # raised outside of it, so the bookkeeping of a poll is not rolled back.
+    def device_code_grant
+      request = DeviceAuthorization.find_by_device_code(params[:device_code], current_client)
+      raise GrantError.new('invalid_grant', 'The device_code is not valid.') if request.nil?
+
+      outcome = request.with_lock { poll_device_authorization(request) }
+      return outcome unless outcome.is_a?(Symbol)
+
+      raise GrantError.new(outcome.to_s)
+    end
+
+    def poll_device_authorization(request)
+      return :expired_token if request.expired?
+      return :access_denied if request.denied?
+
+      too_fast = request.polled_too_fast?
+      request.record_poll!(slow_down: too_fast)
+      return :slow_down if too_fast
+      return :authorization_pending if request.pending?
+
+      tokens = request.user.issue_tokens_to(current_client, scope: request.scope, resource: request.resource)
+      request.destroy!
+      tokens
+    end
+
+    # RFC 8693 Section 2.1
+    def token_exchange_grant
+      exchange = TokenExchange.new(
+        current_client,
+        subject_token: params[:subject_token], subject_token_type: params[:subject_token_type],
+        actor_token: params[:actor_token], actor_token_type: params[:actor_token_type],
+        requested_token_type: params[:requested_token_type],
+        scope: params[:scope], audience: params[:audience], resource: requested_resource
+      )
+      @issued_token_type = TokenExchange::ACCESS_TOKEN_TYPE
+      [exchange.call, nil]
+    rescue TokenExchange::Invalid => error
+      raise GrantError.new(error.error, error.message)
+    end
+
     def client_credentials_grant
       raise GrantError.new('unauthorized_client') if current_client.public_client?
 
@@ -214,6 +255,10 @@ module Oauth
         refresh_grant
       when 'client_credentials'
         client_credentials_grant
+      when DeviceAuthorization::GRANT_TYPE # RFC8628
+        device_code_grant
+      when TokenExchange::GRANT_TYPE # RFC8693
+        token_exchange_grant
       when AssertionGrants::SAML_BEARER_GRANT # RFC7522
         saml_assertion_grant(params[:assertion], Scopes.format(requested_scope), requested_resource)
       when AssertionGrants::JWT_BEARER_GRANT # RFC7523

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_06_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_06_130000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -75,6 +75,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_100000) do
     t.string "policy_uri"
     t.string "software_id"
     t.string "software_version"
+    t.boolean "require_pushed_authorization_requests", default: false, null: false
+    t.boolean "require_signed_request_object", default: false, null: false
+  end
+
+  create_table "device_authorizations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "client_id", null: false
+    t.uuid "user_id"
+    t.string "device_code_digest", null: false
+    t.string "user_code", null: false
+    t.string "scope"
+    t.string "resource"
+    t.integer "status", default: 0, null: false
+    t.integer "interval", default: 5, null: false
+    t.datetime "last_polled_at"
+    t.datetime "expires_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_device_authorizations_on_client_id"
+    t.index ["device_code_digest"], name: "index_device_authorizations_on_device_code_digest", unique: true
+    t.index ["user_code"], name: "index_device_authorizations_on_user_code", unique: true
+    t.index ["user_id"], name: "index_device_authorizations_on_user_id"
   end
 
   create_table "flipper_features", force: :cascade do |t|
@@ -111,6 +132,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_100000) do
     t.index "lower((display_name)::text)", name: "index_groups_on_lower_display_name", unique: true
   end
 
+  create_table "pushed_authorization_requests", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "client_id", null: false
+    t.string "reference", null: false
+    t.jsonb "parameters", default: {}, null: false
+    t.datetime "expires_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_pushed_authorization_requests_on_client_id"
+    t.index ["reference"], name: "index_pushed_authorization_requests_on_reference", unique: true
+  end
+
   create_table "sessions", id: :serial, force: :cascade do |t|
     t.string "session_id", null: false
     t.text "data"
@@ -135,6 +167,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_100000) do
     t.string "resource"
     t.string "dpop_jkt"
     t.uuid "family_id"
+    t.jsonb "act"
     t.index ["audience_type", "audience_id"], name: "index_tokens_on_audience_type_and_audience_id"
     t.index ["authorization_id"], name: "index_tokens_on_authorization_id"
     t.index ["family_id"], name: "index_tokens_on_family_id"
@@ -189,8 +222,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_100000) do
 
   add_foreign_key "authorizations", "clients"
   add_foreign_key "authorizations", "users"
+  add_foreign_key "device_authorizations", "clients", on_delete: :cascade
+  add_foreign_key "device_authorizations", "users", on_delete: :cascade
   add_foreign_key "group_memberships", "groups"
   add_foreign_key "group_memberships", "users"
+  add_foreign_key "pushed_authorization_requests", "clients", on_delete: :cascade
   add_foreign_key "used_assertions", "clients", on_delete: :cascade
   add_foreign_key "user_sessions", "users"
 end

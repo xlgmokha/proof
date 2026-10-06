@@ -66,6 +66,7 @@ class Token < ApplicationRecord
       token_type: token_type,
     }.merge(scope.present? ? { scope: scope } : {})
       .merge(dpop_jkt.present? ? { cnf: { jkt: dpop_jkt } } : {})
+      .merge(act.present? ? { act: act } : {})
       .merge(custom_claims)
   end
 

@@ -22,6 +22,9 @@ Rails.application.routes.draw do
   namespace :oauth do
     resource :authorizations, only: [:show, :create]
     resource :me, only: [:show, :create]
+    post :par, to: 'pushed_requests#create', as: :par
+    post :device_authorization, to: 'device_authorizations#create'
+    resource :device, only: [:show, :create]
     resources :clients, only: [:show, :create, :update, :destroy]
     resource :tokens, only: [:create] do
       post :introspect
