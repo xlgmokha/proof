@@ -14,6 +14,7 @@ json.revocation_endpoint_auth_methods_supported %i[client_secret_basic client_se
 json.revocation_endpoint_auth_signing_alg_values_supported JwtBearerAssertion::ALGORITHMS
 json.introspection_endpoint introspect_oauth_tokens_url
 json.introspection_endpoint_auth_methods_supported %i[client_secret_basic client_secret_post private_key_jwt] + mtls
+json.introspection_signing_alg_values_supported %w[RS256]
 json.introspection_endpoint_auth_signing_alg_values_supported JwtBearerAssertion::ALGORITHMS
 json.scopes_supported Scopes::SUPPORTED
 json.response_types_supported Client::RESPONSE_TYPES

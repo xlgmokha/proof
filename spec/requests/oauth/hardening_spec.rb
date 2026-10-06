@@ -192,3 +192,41 @@ RSpec.describe 'conformance hardening' do
     end
   end
 end
+
+# RFC 9701: JWT response for token introspection
+RSpec.describe 'JWT introspection responses' do
+  let(:client) { create(:client) }
+  let(:headers) { { 'Authorization' => ActionController::HttpAuthentication::Basic.encode_credentials(client.to_param, client.password) } }
+  let(:media_type) { 'application/token-introspection+jwt' }
+
+  def decoded(body)
+    JWT.decode(body, Rails.application.config.x.jwt.private_key.public_key, true, algorithm: 'RS256', aud: client.to_param, verify_aud: true)
+  end
+
+  it 'signs the response when it is asked for' do
+    token = create(:access_token, audience: client)
+    post '/oauth/tokens/introspect', params: { token: token.to_jwt }, headers: headers.merge('Accept' => media_type)
+    expect(response).to have_http_status(:ok)
+    expect(response.media_type).to eql(media_type)
+    claims, header = decoded(response.body)
+    expect(header['typ']).to eql('token-introspection+jwt')
+    expect(claims['iss']).to eql(Oauth::Issuer.identifier)
+    expect(claims['iat']).to be_present
+    expect(claims['token_introspection']).to include('active' => true, 'client_id' => client.to_param)
+  end
+
+  it 'signs an inactive response too' do
+    post '/oauth/tokens/introspect', params: { token: 'nope' }, headers: headers.merge('Accept' => media_type)
+    expect(decoded(response.body).first['token_introspection']).to eql('active' => false)
+  end
+
+  it 'answers with plain JSON otherwise' do
+    post '/oauth/tokens/introspect', params: { token: 'nope' }, headers: headers
+    expect(response.media_type).to eql('application/json')
+  end
+
+  it 'is advertised in the metadata' do
+    get '/.well-known/oauth-authorization-server'
+    expect(JSON.parse(response.body)['introspection_signing_alg_values_supported']).to eql(%w[RS256])
+  end
+end

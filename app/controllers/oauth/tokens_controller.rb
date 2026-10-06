@@ -42,11 +42,10 @@ module Oauth
       raise GrantError.new('invalid_client', 'Public clients cannot introspect tokens.', status: :unauthorized) if current_client.public_client?
 
       token = find_token(params[:token], params[:token_type_hint])
-      if token.nil? || token.revoked? || token.expired?
-        render json: { active: false }, status: :ok
-      else
-        render json: introspection_for(token), status: :ok
-      end
+      body = token.nil? || token.revoked? || token.expired? ? { active: false } : introspection_for(token)
+      return render_introspection_jwt(body) if introspection_jwt_requested?
+
+      render json: body, status: :ok
     end
 
     # RFC 7009
@@ -118,6 +117,22 @@ module Oauth
     end
 
     # RFC 7662 Section 2.2
+    JWT_INTROSPECTION = 'application/token-introspection+jwt'
+
+    # RFC 9701 Section 4: a client asks for a signed response with `Accept`.
+    def introspection_jwt_requested?
+      request.headers['Accept'].to_s.split(',').any? { |x| x.split(';').first.to_s.strip.casecmp?(JWT_INTROSPECTION) }
+    end
+
+    # RFC 9701 Section 5: the usual response is the `token_introspection`
+    # claim of a JWT that names the server and the client it is meant for.
+    def render_introspection_jwt(body)
+      jwt = BearerToken.new.encode(
+        { aud: current_client.to_param, token_introspection: body }, typ: 'token-introspection+jwt'
+      )
+      render plain: jwt, content_type: JWT_INTROSPECTION, status: :ok
+    end
+
     def introspection_for(token)
       claims = token.claims.slice(:scope, :client_id, :exp, :iat, :nbf, :sub, :aud, :iss, :jti, :cnf, :act, :authorization_details, :acr, :auth_time)
       claims[:token_type] = token.dpop_jkt.present? ? 'DPoP' : 'Bearer' if token.access?

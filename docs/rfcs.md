@@ -38,6 +38,7 @@ interpretation, and correct a spec if the RFC says otherwise.
 | 9470 | Step-up authentication: `acr_values` and `max_age` at the authorization endpoint (`unmet_authentication_requirements`, re-authentication), `acr` and `auth_time` in tokens and introspection, the `insufficient_user_authentication` challenge | `AuthenticationContext`, `Oauth::AuthorizationsController`, `BearerAuthentication` | `spec/requests/oauth/step_up_authentication_spec.rb`, `spec/models/authentication_context_spec.rb` |
 | 9449 | DPoP, including authorization code binding (`dpop_jkt`) and server-provided nonces | `DpopProof`, `DpopNonce`, `BearerAuthentication`, `Oauth::TokensController` | `spec/requests/oauth/dpop_spec.rb`, `spec/requests/oauth/dpop_binding_spec.rb` |
 | 9700 | Security best current practice | see below | across the above |
+| 9701 | JWT responses for token introspection (`Accept: application/token-introspection+jwt`) | `Oauth::TokensController#introspect` | `spec/requests/oauth/hardening_spec.rb` |
 | 9728 | Protected resource metadata | `Oauth::ResourceMetadataController` | `spec/requests/oauth/protected_resource_metadata_spec.rb` |
 
 SCIM (RFC 7643/7644) is documented with the SCIM API and is not repeated here.
@@ -54,7 +55,23 @@ SCIM (RFC 7643/7644) is documented with the SCIM API and is not repeated here.
 | 4.14 | Refresh token rotation, family revoked on replay | `Oauth::TokensController#refresh_grant`, `Token#revoke_family!` |
 | 4.2 | Mix-up defense | `iss` on every authorization response (RFC 9207) |
 
-## Deliberate choices
+## Inventory
+
+Every RFC that defines OAuth 2.0 server or resource server behaviour, and where
+it stands. Client-only and informational documents are listed so the list is
+complete.
+
+| RFC | Status |
+| --- | --- |
+| 6749, 6750, 7009, 7522, 7523, 7591, 7592, 7636, 7662, 8252, 8414, 8628, 8693, 8705, 8707, 9068, 9101, 9126, 9207, 9396, 9449, 9470, 9700, 9701, 9728 | Implemented, see above |
+| 7521 | The assertion framework; implemented through its two profiles, 7522 and 7523 |
+| 7515, 7517, 7519 | JOSE and JWT, implemented as the basis of the above |
+| 7800 | Proof-of-possession key semantics, used through `cnf` (`jkt`, `x5t#S256`) |
+| 6819 | Obsoleted by RFC 9700 |
+| 8725 | JWT best practice; its rules are enforced where tokens are verified |
+| 8176 | A registry of `amr` values; this server reports `acr` and `auth_time` and does not issue `amr` |
+
+
 
 - **Issuer.** `Oauth::Issuer.identifier` (`ISSUER`, which is also the SAML entity
   id) is the metadata `issuer`, the `iss` of tokens and of authorization
