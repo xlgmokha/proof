@@ -28,8 +28,8 @@ else
   bin/update
 fi
 
-echo "==> Running webpack…"
-bin/webpack
+echo "==> Running shakapacker…"
+bin/shakapacker
 echo "==> Running tests…"
 
 if [ -n "$1" ]; then

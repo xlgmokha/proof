@@ -274,7 +274,7 @@ RSpec.describe "documentation" do
     end
 
     specify do
-      Group.where(display_name: ['Platform', 'Infrastructure']).destroy_all
+      Group.where(display_name: %w[Platform Infrastructure]).destroy_all
       group = create(:group, display_name: 'Infrastructure')
       VCR.use_cassette("scim-groups-patch") do
         operations = [
