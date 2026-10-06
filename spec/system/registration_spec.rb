@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-describe "when registering for an account", js: true do
+describe "when registering for an account", :js do
   let(:email) { FFaker::Internet.email }
   let(:password) { FFaker::Internet.password }
 

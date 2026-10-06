@@ -48,9 +48,7 @@ module Oauth
         token.revoke!
         return render json: {}, status: :unauthorized
       end
-      unless token.subject.to_param == params[:id]
-        return render json: {}, status: :forbidden
-      end
+      return render json: {}, status: :forbidden unless token.subject.to_param == params[:id]
 
       @client = token.subject
     end

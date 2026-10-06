@@ -6,7 +6,7 @@ module Scim
       def index
         render json: {
           schemas: [Scim::Kit::V2::Messages::LIST_RESPONSE],
-          totalResults: User.count,
+          totalResults: ::User.count,
           Resources: resources,
         }.to_json, status: :ok
       end
@@ -14,7 +14,7 @@ module Scim
       private
 
       def resources
-        User.pluck(:id, :email).map do |x|
+        ::User.pluck(:id, :email).map do |x|
           { id: x[0], userName: x[1] }
         end
       end

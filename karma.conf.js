@@ -1,6 +1,8 @@
 // Karma configuration
 // Generated on Sun Jan 28 2018 13:49:43 GMT-0700 (MST)
 
+const webpackConfig = require('./config/webpack/webpack.config.js');
+
 module.exports = function(config) {
   const tests = 'spec/javascripts/**/*.spec.js';
   config.set({
@@ -27,10 +29,23 @@ module.exports = function(config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['ChromeHeadless'],
+    browsers: [process.env.CI || process.env.KARMA_NO_SANDBOX ? 'ChromeHeadlessNoSandbox' : 'ChromeHeadless'],
     singleRun: true,
     concurrency: Infinity,
-    webpack: require('./config/webpack/test.js'),
+    customLaunchers: {
+      ChromeHeadlessNoSandbox: {
+        base: 'ChromeHeadless',
+        flags: ['--no-sandbox', '--disable-dev-shm-usage'],
+      },
+    },
+    webpack: Object.assign({}, webpackConfig, {
+      entry: undefined,
+      devtool: 'inline-source-map',
+      optimization: { splitChunks: false, runtimeChunk: false },
+      plugins: webpackConfig.plugins.filter(
+        (plugin) => !['WebpackAssetsManifest', 'MiniCssExtractPlugin'].includes(plugin.constructor.name),
+      ),
+    }),
     webpackMiddleware: {
       stats: 'errors-only'
     }

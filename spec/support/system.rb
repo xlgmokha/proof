@@ -12,7 +12,7 @@ RSpec.configure do |config|
     driven_by :rack_test
   end
 
-  config.before(:each, type: :system, js: true) do
+  config.before(:each, :js, type: :system) do
     driven_by ENV['HEADLESS'].present? ? :selenium_chrome_headless : :selenium
   end
 end

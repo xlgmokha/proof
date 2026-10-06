@@ -12,9 +12,7 @@ class ApplicationController < ActionController::Base
     render template: "errors/#{status}", status: status
   end
 
-  def apply_locale
-    I18n.with_locale(current_user&.locale || I18n.default_locale) do
-      yield
-    end
+  def apply_locale(&block)
+    I18n.with_locale(current_user&.locale || I18n.default_locale, &block)
   end
 end

@@ -6,7 +6,7 @@ class Client < ApplicationRecord
   has_secure_password
   has_many :authorizations, dependent: :delete_all
   attribute :redirect_uris, :string, array: true
-  enum token_endpoint_auth_method: {
+  enum :token_endpoint_auth_method, {
     client_secret_basic: 0,
     client_secret_post: 1,
     client_secret_none: 2,
@@ -18,7 +18,7 @@ class Client < ApplicationRecord
   validates :name, presence: true
   validates_each :redirect_uris do |record, _attr, value|
     invalid_uri = Array(value).find { |x| !x.match?(URI_REGEX) }
-    record.errors[:redirect_uris] << 'is invalid.' if invalid_uri
+    record.errors.add(:redirect_uris, 'is invalid.') if invalid_uri
   end
 
   after_initialize do

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module SCIM
+module Scim
   class UserRepository
     attr_reader :mapper
 

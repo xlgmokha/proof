@@ -16,7 +16,7 @@ module ApplicationHelper
 
   def flash_error_messages_for(item)
     if item.is_a?(ActiveModel::Errors)
-      item.keys.map do |key|
+      item.attribute_names.map do |key|
         item.full_messages_for(key).join(' ')
       end
     else

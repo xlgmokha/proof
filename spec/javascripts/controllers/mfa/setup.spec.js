@@ -1,5 +1,5 @@
 import Controller from '../../../../app/javascript/controllers/mfa/setup_controller'
-import { Application } from 'stimulus';
+import { Application } from '@hotwired/stimulus';
 
 describe('mfa--setup', () => {
   beforeEach(() => {

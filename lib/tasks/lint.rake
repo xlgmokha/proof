@@ -18,7 +18,7 @@ namespace :lint do
       app_path: Rails.root,
       print_report: true,
       pager: false,
-      config_file: Rails.root.join("config", "brakeman"),
+      config_file: Rails.root.join("config/brakeman"),
     )
   end
 

@@ -6,7 +6,6 @@ class User < ApplicationRecord
   audited except: [:password_digest, :mfa_secret]
   has_secure_password
   has_many :sessions,
-    foreign_key: "user_id",
     class_name: 'UserSession',
     inverse_of: :user,
     dependent: :delete_all
@@ -41,7 +40,7 @@ class User < ApplicationRecord
 
   class << self
     def scim_mapper
-      SCIM::User::ATTRIBUTES
+      Scim::User::ATTRIBUTES
     end
 
     def login(email, password)

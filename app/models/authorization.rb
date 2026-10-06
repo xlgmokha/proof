@@ -6,7 +6,7 @@ class Authorization < ApplicationRecord
   belongs_to :user
   belongs_to :client
   has_many :tokens, dependent: :delete_all
-  enum challenge_method: { plain: 0, sha256: 1 }
+  enum :challenge_method, { plain: 0, sha256: 1 }
 
   scope :active, -> { where.not(id: revoked.or(where(id: expired))) }
   scope :revoked, -> { where('revoked_at < ?', Time.current) }

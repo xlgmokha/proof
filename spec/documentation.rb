@@ -25,7 +25,7 @@ RSpec.configure do |config|
     puts "Booting"
     $server.boot
     print "." until $server.responsive?
-    FileUtils.rm_rf(Rails.root.join('tmp', '_cassettes'))
+    FileUtils.rm_rf(Rails.root.join("tmp/_cassettes"))
     Net::Hippie.logger = Logger.new('/dev/null')
     VCR.configure do |x|
       x.cassette_library_dir = "tmp/_cassettes"
@@ -44,7 +44,7 @@ RSpec.configure do |config|
 end
 
 class UserAgent
-  def login_with(scheme: 'https', host:, port:, email:, password:, issuer:)
+  def login_with(host:, port:, email:, password:, issuer:, scheme: 'https')
     authn_request = Saml::Kit::AuthenticationRequest.build(configuration: Saml::Kit.configuration) do |x|
       x.issuer = issuer
       x.embed_signature = false

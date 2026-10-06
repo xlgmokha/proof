@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module SCIM
+module Scim
   class UserMapper
     def initialize(url_helpers)
       @url_helpers = url_helpers

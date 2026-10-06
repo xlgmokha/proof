@@ -61,7 +61,7 @@ RSpec.describe ::Scim::Search do
 
     specify do
       results = subject.for("not (userName pr)")
-      expect(results).to match_array([])
+      expect(results).to be_empty
     end
 
     specify do

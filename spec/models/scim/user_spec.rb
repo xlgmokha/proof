@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe SCIM::User do
+RSpec.describe Scim::User do
   describe "#valid?" do
     specify { expect(build(:scim_user)).to be_valid }
     specify { expect(build(:scim_user, id: 1)).to be_invalid }

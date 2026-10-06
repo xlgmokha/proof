@@ -8,7 +8,7 @@
 // layout file, like app/views/layouts/application.html.erb
 
 import LocalTime from 'local-time';
-import Rails from 'rails-ujs';
+import Rails from '@rails/ujs';
 import Turbolinks from 'turbolinks';
 import '../styles';
 import '../images';

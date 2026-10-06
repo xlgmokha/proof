@@ -6,17 +6,17 @@ module Scim
       include Pageable
       rescue_from ActiveRecord::RecordNotFound do |_error|
         @resource_id = params[:id] if params[:id].present?
-        render "record_not_found", status: :not_found
+        render "scim/record_not_found", status: :not_found
       end
 
       def index
-        @users = User.order(:created_at).scim_search(params[:filter])
+        @users = ::User.order(:created_at).scim_search(params[:filter])
         @users = paginate(@users, page: page - 1, page_size: page_size)
         render formats: :scim, status: :ok
       end
 
       def show
-        @user = User.find(params[:id])
+        @user = ::User.find(params[:id])
         response.headers['Location'] = scim_v2_user_url(@user)
         fresh_when(@user)
         render formats: :scim, status: :ok

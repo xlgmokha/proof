@@ -9,7 +9,7 @@ module Scim
     helper_method :current_user, :scim_type_for
     rescue_from StandardError do |error|
       Rails.logger.error(error)
-      render "server_error", status: :server_error
+      render "scim/server_error", status: :internal_server_error
     end
     rescue_from ActiveRecord::RecordInvalid, with: :record_invalid
     rescue_from ActiveModel::ValidationError, with: :record_invalid
@@ -36,7 +36,7 @@ module Scim
     def record_invalid(error)
       @error = error
       @model = error.respond_to?(:model) ? error.model : error.record
-      render "record_invalid", status: :bad_request
+      render "scim/record_invalid", status: :bad_request
     end
 
     private
@@ -46,7 +46,7 @@ module Scim
         Token.authenticate(token)
       end
       options = { status: :unauthorized, formats: :scim }
-      render "unauthorized", options unless Current.user?
+      render "scim/unauthorized", options unless Current.user?
     end
 
     def apply_scim_content_type
@@ -57,7 +57,7 @@ module Scim
       return if acceptable_content_type?
 
       status = :unsupported_media_type
-      render 'unsupported_media_type', status: status, formats: :scim
+      render "scim/unsupported_media_type", status: status, formats: :scim
     end
 
     def acceptable_content_type?

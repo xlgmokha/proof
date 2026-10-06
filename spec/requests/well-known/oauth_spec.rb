@@ -19,7 +19,7 @@ RSpec.describe "/.well-known/oauth-authorization-server" do
     specify { expect(json[:userinfo_endpoint]).to eql(oauth_me_url) }
     specify { expect(json[:jwks_uri]).to eql('') }
     specify { expect(json[:registration_endpoint]).to eql(oauth_clients_url) }
-    specify { expect(json[:scopes_supported]).to match_array([]) }
+    specify { expect(json[:scopes_supported]).to be_empty }
     specify { expect(json[:response_types_supported]).to match_array(Client::RESPONSE_TYPES) }
     specify { expect(json[:service_documentation]).to eql(root_url + 'doc') }
     specify { expect(json[:ui_locales_supported]).to eql(I18n.available_locales.map(&:to_s)) }
