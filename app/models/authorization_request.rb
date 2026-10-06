@@ -16,6 +16,7 @@ class AuthorizationRequest
 
   PARAMETERS = %w[
     client_id response_type redirect_uri scope resource state code_challenge code_challenge_method dpop_jkt authorization_details
+    acr_values max_age
   ].freeze
 
   attr_reader :client, :parameters
@@ -86,7 +87,7 @@ class AuthorizationRequest
 
   # The error to report for a request whose client and redirect URI are fine.
   def error
-    response_type_error || pkce_error || scope_error || resource_error || dpop_jkt_error || authorization_details_error
+    response_type_error || pkce_error || scope_error || resource_error || dpop_jkt_error || authorization_details_error || authentication_error
   end
 
   private
@@ -110,6 +111,14 @@ class AuthorizationRequest
     return if challenge.is_a?(String) && challenge.match?(/\A[A-Za-z0-9\-_]{43}\z/)
 
     [:invalid_request, 'code_challenge is not valid.']
+  end
+
+  # RFC 9470 Section 4: both are optional, `max_age` is a count of seconds.
+  def authentication_error
+    return [:invalid_request, 'acr_values must be a string.'] unless self[:acr_values].nil? || self[:acr_values].is_a?(String)
+    return if self[:max_age].nil? || (self[:max_age].is_a?(String) && self[:max_age].match?(/\A\d{1,9}\z/))
+
+    [:invalid_request, 'max_age must be a non-negative integer.']
   end
 
   # RFC 9396 Section 5

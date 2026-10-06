@@ -67,6 +67,8 @@ class Token < ApplicationRecord
     }.merge(scope.present? ? { scope: scope } : {})
       .merge(confirmation.present? ? { cnf: confirmation } : {})
       .merge(act.present? ? { act: act } : {})
+      .merge(acr.present? ? { acr: acr } : {})
+      .merge(auth_time.present? ? { auth_time: auth_time } : {})
       .merge(authorization_details.present? ? { authorization_details: authorization_details } : {})
       .merge(custom_claims)
   end
@@ -86,7 +88,8 @@ class Token < ApplicationRecord
       token_types.map do |x|
         Token.create!(
           subject: subject, audience: client, token_type: x, scope: scope,
-          resource: resource, dpop_jkt: dpop_jkt, family_id: family_id, authorization_details: authorization_details
+          resource: resource, dpop_jkt: dpop_jkt, family_id: family_id, authorization_details: authorization_details,
+          acr: acr, auth_time: auth_time
         )
       end
     end

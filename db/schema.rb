@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_06_190000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_06_200000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -53,6 +53,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_190000) do
     t.string "resource"
     t.string "dpop_jkt"
     t.jsonb "authorization_details"
+    t.string "acr"
+    t.integer "auth_time"
     t.index ["client_id"], name: "index_authorizations_on_client_id"
     t.index ["code"], name: "index_authorizations_on_code"
     t.index ["user_id"], name: "index_authorizations_on_user_id"
@@ -188,6 +190,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_190000) do
     t.jsonb "act"
     t.jsonb "authorization_details"
     t.string "x5t_s256"
+    t.string "acr"
+    t.integer "auth_time"
     t.index ["audience_type", "audience_id"], name: "index_tokens_on_audience_type_and_audience_id"
     t.index ["authorization_id"], name: "index_tokens_on_authorization_id"
     t.index ["family_id"], name: "index_tokens_on_family_id"

@@ -43,7 +43,8 @@ class Authorization < ApplicationRecord
       token_types.map do |x|
         tokens.create!(
           subject: user, audience: client, token_type: x,
-          scope: scope, resource: resource, family_id: id, authorization_details: authorization_details
+          scope: scope, resource: resource, family_id: id, authorization_details: authorization_details,
+          acr: acr, auth_time: auth_time
         )
       end
     end

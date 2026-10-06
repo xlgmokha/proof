@@ -718,8 +718,8 @@ RSpec.describe '/oauth/tokens' do
 
         before { post '/oauth/tokens/revoke', params: { token: token.to_jwt, token_type_hint: :access_token }, headers: headers }
 
-        # RFC 7009 Section 2.1: the request is refused.
-        specify { expect_error('invalid_request') }
+        # RFC 7009 Section 2.1: it is not revoked, and the answer is the same as for an unknown token.
+        specify { expect(response).to have_http_status(:ok) }
         specify { expect(token.reload).not_to be_revoked }
       end
 

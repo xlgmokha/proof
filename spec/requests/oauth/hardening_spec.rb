@@ -156,4 +156,39 @@ RSpec.describe 'conformance hardening' do
       expect(proof.send(:normalize, 'HTTPS://Example.com:443/a/b?x=1')).to eql(proof.send(:normalize, 'https://example.com/a/b'))
     end
   end
+
+  # RFC 9700 Section 2.1, RFC 8252 Section 7.3
+  describe 'redirect uri schemes' do
+    specify { expect(build(:client, redirect_uris: ['http://app.example.com/cb'])).to be_invalid }
+    specify { expect(build(:client, redirect_uris: ['http://127.0.0.1/cb'])).to be_valid }
+    specify { expect(build(:client, redirect_uris: ['http://[::1]/cb'])).to be_valid }
+    specify { expect(build(:client, redirect_uris: ['https://app.example.com/cb'])).to be_valid }
+  end
+
+  # RFC 6750 Section 3.1
+  describe 'a malformed bearer credential' do
+    it 'is an invalid_request' do
+      get '/oauth/me', headers: { 'Authorization' => 'Bearer a b' }
+      expect(response).to have_http_status(:bad_request)
+      expect(response.headers['WWW-Authenticate']).to include('error="invalid_request"')
+    end
+
+    it 'is not confused with an absent credential' do
+      get '/oauth/me'
+      expect(response).to have_http_status(:unauthorized)
+      expect(response.headers['WWW-Authenticate']).not_to include('error=')
+    end
+  end
+
+  # RFC 7009 Section 2.1: no oracle for the existence of other clients' tokens.
+  describe 'revoking a token of another client' do
+    it 'looks like revoking an unknown token' do
+      mine = create(:client)
+      token = create(:access_token, audience: create(:client))
+      headers = { 'Authorization' => ActionController::HttpAuthentication::Basic.encode_credentials(mine.to_param, mine.password) }
+      post '/oauth/tokens/revoke', params: { token: token.to_jwt }, headers: headers
+      expect(response).to have_http_status(:ok)
+      expect(token.reload).not_to be_revoked
+    end
+  end
 end

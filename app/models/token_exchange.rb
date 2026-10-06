@@ -47,6 +47,7 @@ class TokenExchange
     Token.create!(
       subject: subject.subject, audience: client, token_type: :access,
       scope: narrowed_scope(subject), resource: target(subject), dpop_jkt: subject.dpop_jkt, authorization_details: subject.authorization_details,
+      acr: subject.acr, auth_time: subject.auth_time,
       act: delegation(subject, actor), family_id: subject.family_id,
       # The new token does not outlive the one it came from.
       expired_at: [1.hour.from_now, subject.expired_at].min

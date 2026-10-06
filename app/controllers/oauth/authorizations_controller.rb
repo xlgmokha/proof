@@ -13,6 +13,8 @@ module Oauth
       error = @authorization_request.error
       return redirect_with_error(*error) if error
 
+      return unless authentication_satisfied?
+
       session[:oauth] = @authorization_request.parameters
       @details = AuthorizationDetails.parse(@authorization_request[:authorization_details], client: @client)
     end
@@ -24,7 +26,7 @@ module Oauth
       session.delete(:oauth)
       return redirect_to denied_url_for(client, oauth), allow_other_host: true if params[:deny].present?
 
-      redirect_to client.redirect_url_for(current_user, oauth), allow_other_host: true
+      redirect_to client.redirect_url_for(current_user, oauth, authentication: authentication_context.to_h), allow_other_host: true
     rescue StandardError => error
       logger.error(error)
       url = client&.redirect_url(**authorization_error('server_error', oauth[:state]), to: oauth[:redirect_uri].presence)
@@ -34,6 +36,35 @@ module Oauth
     end
 
     private
+
+    def authentication_context
+      AuthenticationContext.for(Current.user_session, session[:mfa], current_user)
+    end
+
+    # RFC 9470 Section 4 and 5: `acr_values` that cannot be met fail the
+    # request, and a login that is older than `max_age` is done again.
+    def authentication_satisfied?
+      context = authentication_context
+      unless context.satisfies?(@authorization_request[:acr_values])
+        redirect_with_error('unmet_authentication_requirements', 'The requested authentication context could not be met.')
+        return false
+      end
+      # A login made in answer to the prompt is not asked for again.
+      reauthenticated = session.delete(:reauthenticated_for) == request.fullpath
+      return true unless context.older_than?(@authorization_request[:max_age]) && !reauthenticated
+
+      reauthenticate!
+      false
+    end
+
+    def reauthenticate!
+      path = request.fullpath
+      Current.user_session&.revoke!
+      reset_session
+      session[:return_to] = path
+      session[:reauthenticated_for] = path
+      redirect_to new_session_path
+    end
 
     # RFC 6749 Section 4.1.2.1: when the client or redirect URI cannot be
     # trusted, the user is told and nothing is redirected.

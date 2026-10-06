@@ -52,11 +52,9 @@ module Oauth
     # RFC 7009
     def revoke
       token = find_token(params[:token], params[:token_type_hint])
-      if token && !token.issued_to?(current_client)
-        raise GrantError.new('invalid_request', 'The token was not issued to this client.')
-      end
-
-      token&.revoke!
+      # Section 2.1: only the client the token was issued to may revoke it. Anything
+      # else is answered as an unknown token, so it does not reveal that it exists.
+      token.revoke! if token&.issued_to?(current_client)
       render plain: '', status: :ok
     end
 
@@ -121,7 +119,7 @@ module Oauth
 
     # RFC 7662 Section 2.2
     def introspection_for(token)
-      claims = token.claims.slice(:scope, :client_id, :exp, :iat, :nbf, :sub, :aud, :iss, :jti, :cnf, :act, :authorization_details)
+      claims = token.claims.slice(:scope, :client_id, :exp, :iat, :nbf, :sub, :aud, :iss, :jti, :cnf, :act, :authorization_details, :acr, :auth_time)
       claims[:token_type] = token.dpop_jkt.present? ? 'DPoP' : 'Bearer' if token.access?
       claims[:username] = token.subject.email if token.subject.respond_to?(:email)
       claims.merge(active: true)

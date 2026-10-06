@@ -29,6 +29,7 @@ json.request_uri_parameter_supported true
 json.require_request_uri_registration true
 json.require_signed_request_object false
 json.request_object_signing_alg_values_supported RequestObject::ALGORITHMS
+json.acr_values_supported AuthenticationContext::SUPPORTED
 json.authorization_details_types_supported AuthorizationDetails.supported_types
 json.tls_client_certificate_bound_access_tokens true if ClientCertificate.enabled?
 json.dpop_signing_alg_values_supported DpopProof::ALGORITHMS

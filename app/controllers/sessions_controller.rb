@@ -68,9 +68,11 @@ class SessionsController < ApplicationController
 
   def login(user)
     saml_data = session[:saml]
+    state = return_state
     reset_session
     session[:user_session_key] = user.sessions.build.access(request)
     session[:saml] = saml_data
+    restore_return_state(state)
   end
 
   def binding_for(binding, location)

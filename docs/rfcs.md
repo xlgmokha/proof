@@ -35,6 +35,7 @@ interpretation, and correct a spec if the RFC says otherwise.
 | 9126 | Pushed authorization requests | `Oauth::PushedRequestsController`, `PushedAuthorizationRequest` | `spec/requests/oauth/pushed_authorization_requests_spec.rb` |
 | 9207 | `iss` in authorization responses | `Oauth::AuthorizationsController`, `Client#redirect_url_for` | `spec/requests/oauth/authorizations_spec.rb` |
 | 9396 | Rich authorization requests (`authorization_details`) | `AuthorizationDetails`, `AuthorizationRequest`, `Oauth::TokensController` | `spec/requests/oauth/authorization_details_spec.rb` |
+| 9470 | Step-up authentication: `acr_values` and `max_age` at the authorization endpoint (`unmet_authentication_requirements`, re-authentication), `acr` and `auth_time` in tokens and introspection, the `insufficient_user_authentication` challenge | `AuthenticationContext`, `Oauth::AuthorizationsController`, `BearerAuthentication` | `spec/requests/oauth/step_up_authentication_spec.rb`, `spec/models/authentication_context_spec.rb` |
 | 9449 | DPoP, including authorization code binding (`dpop_jkt`) and server-provided nonces | `DpopProof`, `DpopNonce`, `BearerAuthentication`, `Oauth::TokensController` | `spec/requests/oauth/dpop_spec.rb`, `spec/requests/oauth/dpop_binding_spec.rb` |
 | 9700 | Security best current practice | see below | across the above |
 | 9728 | Protected resource metadata | `Oauth::ResourceMetadataController` | `spec/requests/oauth/protected_resource_metadata_spec.rb` |
@@ -100,20 +101,13 @@ user-code entry has a global ceiling as well as a per-user/IP one.
 
 Third round: client assertions use the issuer identifier as their only audience (the RFC 7523bis draft text, read from its source), clients may only name resources they were granted (`Client#resources`, operator set), and device user-code entry is locked out after repeated failures (`FailedDeviceAttempt`). The RFC 9728 and 7523bis drafts were read from their WG sources and agree with the implemented behaviour; the other RFC texts were still unreachable.
 
-Known and left open (reviewer findings judged to be hardening or deliberate):
-revocation of another client's token answers 400 rather than 200 (permitted by
-RFC 7009 Section 2.2.1, but a token-existence oracle); registered redirect
-URIs may be plain `http` for any host; a malformed `Authorization: Bearer`
-header is treated as no credentials; client authentication has a timing
-difference between known and unknown client ids; a request object need not
-repeat `client_id`.
+Fourth round: RFC 9470 is implemented, and the hardening notes above are fixed: revoking another client's token is answered like an unknown token, plain `http` redirect URIs are only accepted for loopback hosts, a malformed `Bearer` header is `invalid_request`, and client authentication spends the same time for unknown client ids. The one reviewer suggestion not taken is requiring `client_id` inside a request object: the outer `client_id` is already required and must match the client the object is verified against (RFC 9101 Section 6.3).
 
 ## Not implemented
 
 | RFC | Why |
 | --- | --- |
 | 7800 / 8725 | Proof-of-possession key semantics are used through the `cnf` claim (`jkt`, `x5t#S256`); RFC 8725 is best-practice guidance, and its rules that matter (algorithm allow list, `typ`, `iss`, `aud`) are enforced where tokens are verified. |
-| 9470 (step-up authentication) | Needs the login to record an authentication context class and time (`acr`, `auth_time`); this application's login does not distinguish authentication strength. |
 | 6819 | Obsoleted by RFC 9700. |
 
 ## Configuration

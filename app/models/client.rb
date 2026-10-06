@@ -36,6 +36,14 @@ class Client < ApplicationRecord
     record.errors.add(:redirect_uris, 'is invalid.') if invalid_uri
     # RFC 6749 Section 3.1.2: the redirect endpoint must not have a fragment.
     record.errors.add(:redirect_uris, 'must not include a fragment.') if Array(value).any? { |x| x.include?('#') }
+    # RFC 9700 Section 2.1: plain http is only for loopback redirects (RFC 8252 Section 7.3).
+    insecure = Array(value).any? do |x|
+      uri = URI.parse(x)
+      uri.scheme == 'http' && !(LOOPBACK_HOSTS + %w[localhost]).include?(uri.host)
+    rescue URI::InvalidURIError
+      false
+    end
+    record.errors.add(:redirect_uris, 'must use https unless they are loopback addresses.') if insecure
   end
 
   after_initialize do
@@ -95,7 +103,7 @@ class Client < ApplicationRecord
 
   # Creates the authorization for an approved request and returns the URL to
   # send the user agent to.
-  def redirect_url_for(user, oauth)
+  def redirect_url_for(user, oauth, authentication: {})
     authorization = authorizations.create!(
       user: user,
       challenge: oauth[:code_challenge],
@@ -104,6 +112,7 @@ class Client < ApplicationRecord
       scope: Scopes.format(Scopes.resolve(oauth[:scope], allowed: allowed_scopes)),
       resource: oauth[:resource].presence,
       dpop_jkt: oauth[:dpop_jkt].presence,
+      acr: authentication[:acr], auth_time: authentication[:auth_time],
       authorization_details: AuthorizationDetails.parse(oauth[:authorization_details], client: self)
     )
     redirect_url(

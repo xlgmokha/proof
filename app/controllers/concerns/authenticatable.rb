@@ -23,8 +23,29 @@ module Authenticatable
 
   private
 
+  # What has to survive a new login to get the user back to where they were.
+  RETURN_KEYS = %i[return_to reauthenticated_for].freeze
+
   def authenticate!
-    redirect_to new_session_path unless current_user?
+    return if current_user?
+
+    # Only the OAuth authorization page is returned to, and only by path.
+    session[:return_to] = request.fullpath if request.get? && request.path.start_with?('/oauth/')
+    redirect_to new_session_path
+  end
+
+  def return_state
+    RETURN_KEYS.index_with { |key| session[key] }.compact
+  end
+
+  def restore_return_state(state)
+    state.each { |key, value| session[key] = value }
+  end
+
+  # Where to go after signing in: back to the page that asked for it.
+  def return_path
+    path = session.delete(:return_to).to_s
+    path if path.start_with?('/oauth/') && !path.start_with?('//')
   end
 
   def authenticate_mfa!

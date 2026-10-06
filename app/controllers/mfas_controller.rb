@@ -7,9 +7,11 @@ class MfasController < ApplicationController
 
   def create
     if current_user.mfa.authenticate(secure_params[:code])
+      state = return_state
       reset_session
       session[:user_session_key] = Current.user_session.key
       session[:mfa] = { issued_at: Time.current.utc.to_i }
+      restore_return_state(state)
       redirect_to response_path
     else
       redirect_to new_mfa_path, error: "Invalid code"

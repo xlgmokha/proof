@@ -76,14 +76,14 @@ module ClientAuthentication
 
   def authenticate_basic(id, secret)
     client = Client.find_by(id: id)
-    return unless client && (client.client_secret_basic? || client.client_secret_post?)
+    return spend_time(secret) unless client && (client.client_secret_basic? || client.client_secret_post?)
 
     client.authenticate(secret)
   end
 
   def authenticate_post_body
     client = Client.find_by(id: params[:client_id])
-    return unless client&.client_secret_post?
+    return spend_time(params[:client_secret]) unless client&.client_secret_post?
 
     client.authenticate(params[:client_secret].to_s)
   end
@@ -108,6 +108,15 @@ module ClientAuthentication
   end
 
   attr_reader :client_certificate
+
+  DUMMY_DIGEST = BCrypt::Password.create('not a secret', cost: BCrypt::Engine.cost)
+
+  # A secret is checked even when the client is not known, so the time taken
+  # does not show which client ids exist.
+  def spend_time(secret)
+    DUMMY_DIGEST.is_password?(secret.to_s)
+    nil
+  end
 
   # RFC 8705 Section 2: the client is identified by its client_id and proves
   # itself with the certificate of the TLS connection.

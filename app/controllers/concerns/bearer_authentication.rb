@@ -13,8 +13,12 @@ module BearerAuthentication
 
   # Sets @access_token when the request carries a usable access token, and
   # otherwise responds with the challenge described in RFC 6750 Section 3.
-  def authenticate_bearer!(scope: nil)
+  def authenticate_bearer!(scope: nil, acr_values: nil, max_age: nil)
     presented = presented_credentials
+    # Section 3.1: a credential that cannot be read is a malformed request.
+    if presented.empty? && request.authorization.to_s.match?(/\A(Bearer|DPoP)\b/i)
+      return challenge('invalid_request', 'The credentials are malformed.', status: :bad_request)
+    end
     return challenge(nil, status: :unauthorized, schemes: %w[Bearer DPoP]) if presented.empty?
     return challenge('invalid_request', 'Multiple access tokens were presented.', status: :bad_request) if presented.many?
 
@@ -23,9 +27,28 @@ module BearerAuthentication
     return challenge('invalid_token', 'The access token is invalid.', status: :unauthorized, schemes: [scheme]) unless @access_token
     return unless certificate_constraint_satisfied?(scheme)
     return unless sender_constraint_satisfied?(scheme, jwt)
+    return unless authentication_event_satisfied?(scheme, acr_values, max_age, scope)
     return if scope.nil? || @access_token.scopes.include?(scope)
 
     challenge('insufficient_scope', 'The access token lacks the required scope.', status: :forbidden, scope: scope, schemes: [scheme])
+  end
+
+  # RFC 9470 Section 3: the resource may require the user to have authenticated
+  # in a certain way, or recently. The client is told which, to try again.
+  def authentication_event_satisfied?(scheme, acr_values, max_age, scope)
+    return true if acr_values.blank? && max_age.nil?
+
+    acr_ok = acr_values.blank? || Array(acr_values).include?(@access_token.acr) ||
+      (@access_token.acr.present? && AuthenticationContext.new(@access_token.acr, 0).satisfies?(Array(acr_values).join(' ')))
+    age_ok = max_age.nil? || (@access_token.auth_time.present? && Time.current.to_i - @access_token.auth_time <= max_age.to_i)
+    return true if acr_ok && age_ok
+
+    requirements = { acr_values: Array(acr_values).join(' ').presence, max_age: max_age }.compact
+    challenge(
+      'insufficient_user_authentication', 'A different authentication level is required.',
+      status: :unauthorized, scope: scope, schemes: [scheme], extra: requirements
+    )
+    false
   end
 
   # RFC 8705 Section 3: a token bound to a certificate is only good over a
@@ -84,8 +107,8 @@ module BearerAuthentication
     request.post? && request.media_type == 'application/x-www-form-urlencoded'
   end
 
-  def challenge(error, description = nil, status:, scope: nil, schemes: %w[Bearer])
-    response.headers['WWW-Authenticate'] = schemes.map { |x| challenge_for(x, error, description, scope) }.join(', ')
+  def challenge(error, description = nil, status:, scope: nil, schemes: %w[Bearer], extra: {})
+    response.headers['WWW-Authenticate'] = schemes.map { |x| challenge_for(x, error, description, scope, extra) }.join(', ')
     head status
   end
 
@@ -95,10 +118,11 @@ module BearerAuthentication
     "#{Oauth::Issuer.identifier}/.well-known/oauth-protected-resource#{path}"
   end
 
-  def challenge_for(scheme, error, description, scope)
+  def challenge_for(scheme, error, description, scope, extra = {})
     # RFC 9728 Section 5.1: point the client at the resource's metadata.
     attributes = {
       realm: REALM, error: error, error_description: description, scope: scope,
+      **extra,
       resource_metadata: resource_metadata_url_for_request
     }
     attributes[:algs] = DpopProof::ALGORITHMS.join(' ') if scheme == 'DPoP'
