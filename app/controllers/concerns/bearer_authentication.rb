@@ -13,7 +13,7 @@ module BearerAuthentication
 
   # Sets @access_token when the request carries a usable access token, and
   # otherwise responds with the challenge described in RFC 6750 Section 3.
-  def authenticate_bearer!(scope: nil, acr_values: nil, max_age: nil)
+  def authenticate_bearer!(scope: nil, acr_values: nil, max_age: nil, resource: nil, subject_type: nil)
     presented = presented_credentials
     # Section 3.1: a credential that cannot be read is a malformed request.
     if presented.empty? && request.authorization.to_s.match?(/\A(Bearer|DPoP)\b/i)
@@ -23,7 +23,7 @@ module BearerAuthentication
     return challenge('invalid_request', 'Multiple access tokens were presented.', status: :bad_request) if presented.many?
 
     scheme, jwt = presented.first
-    @access_token = Token.authenticate(jwt, allow_bound: true)
+    @access_token = Token.authenticate(jwt, allow_bound: true, resource: resource, subject_type: subject_type)
     return challenge('invalid_token', 'The access token is invalid.', status: :unauthorized, schemes: [scheme]) unless @access_token
     return unless certificate_constraint_satisfied?(scheme)
     return unless sender_constraint_satisfied?(scheme, jwt)
@@ -115,7 +115,9 @@ module BearerAuthentication
   # RFC 9728 Section 5.1: the metadata of the resource being accessed.
   def resource_metadata_url_for_request
     path = Oauth::Issuer::RESOURCES.keys.reject(&:empty?).find { |x| request.path == x || request.path.start_with?("#{x}/") }
-    "#{Oauth::Issuer.identifier}/.well-known/oauth-protected-resource#{path}"
+    issuer = URI.parse(Oauth::Issuer.identifier)
+    origin = "#{issuer.scheme}://#{issuer.authority}"
+    "#{origin}/.well-known/oauth-protected-resource#{issuer.path.chomp('/')}#{path}"
   end
 
   def challenge_for(scheme, error, description, scope, extra = {})

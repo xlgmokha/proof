@@ -73,7 +73,8 @@ class AuthorizationRequest
 
   def initialize(client, parameters)
     @client = client
-    @parameters = parameters.to_h.with_indifferent_access.merge(client_id: client.to_param)
+    # OAuth 2.1 Section 3.1: a parameter sent without a value is treated as omitted.
+    @parameters = parameters.to_h.with_indifferent_access.reject { |_, v| v == '' }.merge(client_id: client.to_param)
   end
 
   def [](name)
@@ -93,6 +94,8 @@ class AuthorizationRequest
   private
 
   def response_type_error
+    return [:unauthorized_client, 'The client may not use the authorization code grant.'] unless client.grant_type?('authorization_code')
+
     value = self[:response_type]
     return [:invalid_request, 'response_type is required.'] if value.blank?
     return if client.valid_response_type?(value)

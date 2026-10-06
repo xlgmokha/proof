@@ -2,6 +2,7 @@
 
 class Token < ApplicationRecord
   ACCESS_TYP = 'at+jwt' # RFC 9068 Section 2.1
+  ACCESS_LIFETIME = 1.hour
   REFRESH_TYP = 'rt+jwt'
 
   audited associated_with: :subject
@@ -16,7 +17,7 @@ class Token < ApplicationRecord
 
   after_initialize do |x|
     if x.expired_at.nil?
-      x.expired_at = access? ? 1.hour.from_now : 1.day.from_now
+      x.expired_at = access? ? ACCESS_LIFETIME.from_now : 1.day.from_now
     end
   end
 
@@ -120,11 +121,16 @@ class Token < ApplicationRecord
 
     # An access token that may still be used. Tokens bound to a DPoP key are
     # only accepted by callers that can check the proof (RFC 9449 Section 7).
-    def authenticate(jwt, allow_bound: false)
+    def authenticate(jwt, allow_bound: false, resource: nil, subject_type: nil)
       token = from_jwt(jwt, token_type: :access)
       return if token.nil? || token.revoked? || token.expired?
       return if (token.dpop_jkt.present? || token.x5t_s256.present?) && !allow_bound
-      return unless Oauth::Issuer.resource?(token.resource.presence || Oauth::Issuer.identifier)
+      audience = token.resource.presence || Oauth::Issuer.identifier
+      return unless Oauth::Issuer.resource?(audience)
+      # RFC 9068 Section 4 and OAuth 2.1 "Access Token Privilege Restriction":
+      # a resource only serves tokens that were issued for it (or for the server as a whole).
+      return if resource && [Oauth::Issuer.identifier, "#{Oauth::Issuer.identifier}#{resource}"].exclude?(audience)
+      return if subject_type && token.subject_type != subject_type
 
       token
     end

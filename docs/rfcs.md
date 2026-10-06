@@ -120,6 +120,10 @@ Third round: client assertions use the issuer identifier as their only audience 
 
 Fourth round: RFC 9470 is implemented, and the hardening notes above are fixed: revoking another client's token is answered like an unknown token, plain `http` redirect URIs are only accepted for loopback hosts, a malformed `Bearer` header is `invalid_request`, and client authentication spends the same time for unknown client ids. The one reviewer suggestion not taken is requiring `client_id` inside a request object: the outer `client_id` is already required and must match the client the object is verified against (RFC 9101 Section 6.3).
 
+Fifth round, from an audit against the OAuth 2.1 draft, the RFC 9470 and RFC 9728 drafts and the RFC 7523bis draft (read from their sources): resources only serve tokens issued for them and for a user (SCIM and `/oauth/me` no longer accept registration or client-credentials tokens); a replayed authorization code with wrong parameters no longer revokes the issued tokens; SAML assertions must name this server as audience, and malformed assertions are client errors; protected resource metadata follows an issuer with a path; empty parameters count as omitted and repeated parameters are refused at the authorization endpoint; error descriptions are limited to the RFC character set; the consent page shows scope and lifetime and a frame-ancestors policy is set; credentials have 32 base58 characters; secrets are accepted in the body of any secret-based client; the authorization endpoint answers `unauthorized_client`.
+
+Not changed: the new refresh token keeps the narrowed scope of the request (it can only differ once more than one scope exists), and resource metadata for sub-paths such as `/scim/v2/Users` is the metadata of the resource `/scim/v2`.
+
 ## Not implemented
 
 | RFC | Why |

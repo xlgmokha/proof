@@ -47,12 +47,15 @@ module Scim
 
     def authenticate!
       Current.token = authenticate_with_http_token do |token|
-        Token.authenticate(token)
+        Token.authenticate(token, resource: '/scim/v2', subject_type: 'User')
       end
       return if Current.user?
 
-      # RFC 6750 Section 3: say how to authenticate.
-      response.headers['WWW-Authenticate'] = challenge_for('Bearer', nil, nil, nil)
+      # RFC 6750 Section 3: say how to authenticate, and why a credential was refused.
+      presented = request.authorization.present?
+      response.headers['WWW-Authenticate'] = challenge_for(
+        'Bearer', presented ? 'invalid_token' : nil, presented ? 'The access token is invalid.' : nil, nil
+      )
       render "scim/unauthorized", status: :unauthorized, formats: :scim
     end
 

@@ -6,6 +6,7 @@ module Oauth
   # (RFC 9700 Section 2.1.1), and requests that are signed (RFC 9101) or pushed
   # (RFC 9126).
   class AuthorizationsController < ApplicationController
+    before_action :reject_repeated_parameters, only: :show
     before_action :load_client, only: :show
     before_action :load_request, only: :show
 
@@ -16,6 +17,7 @@ module Oauth
       return unless authentication_satisfied?
 
       session[:oauth] = @authorization_request.parameters
+      @scopes = Scopes.resolve(@authorization_request[:scope], allowed: @client.allowed_scopes) || []
       @details = AuthorizationDetails.parse(@authorization_request[:authorization_details], client: @client)
     end
 
@@ -68,6 +70,17 @@ module Oauth
 
     # RFC 6749 Section 4.1.2.1: when the client or redirect URI cannot be
     # trusted, the user is told and nothing is redirected.
+    # RFC 6749 Section 3.1: no parameter more than once. The redirect_uri may be
+    # one of them, so the answer is shown to the user rather than redirected.
+    def reject_repeated_parameters
+      keys = URI.decode_www_form(request.query_string.to_s).map(&:first).reject { |x| x.end_with?('[]') }
+      return if keys.uniq.size == keys.size
+
+      render plain: 'A parameter was repeated.', status: :bad_request
+    rescue ArgumentError
+      render plain: 'The request is malformed.', status: :bad_request
+    end
+
     def load_client
       @client = Client.find_by(id: params[:client_id])
       render plain: 'The client or its redirect_uri is not valid.', status: :bad_request unless @client
@@ -109,7 +122,7 @@ module Oauth
 
     # RFC 6749 Section 4.1.2.1 and RFC 9207 (the issuer is always identified).
     def authorization_error(type, state, description = nil)
-      { error: type, error_description: description, state: state, iss: Oauth::Issuer.identifier }
+      { error: type, error_description: description&.gsub(/[^\x20\x21\x23-\x5B\x5D-\x7E]/, ''), state: state, iss: Oauth::Issuer.identifier }
     end
   end
 end

@@ -4,6 +4,10 @@
       <h1 class="title"><%= t('.title') %></h1>
 
       <p><%= t('.authorize_prompt_html', name: @client.name) %></p>
+      <% if @scopes.present? %>
+        <p><%= t('.scope', scope: @scopes.join(', ')) %></p>
+      <% end %>
+      <p><%= t('.lifetime', minutes: (Token::ACCESS_LIFETIME / 60).to_i) %></p>
       <% Array(@details).each do |detail| %>
         <pre class="authorization-detail"><%= JSON.pretty_generate(detail) %></pre>
       <% end %>

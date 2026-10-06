@@ -230,3 +230,123 @@ RSpec.describe 'JWT introspection responses' do
     expect(JSON.parse(response.body)['introspection_signing_alg_values_supported']).to eql(%w[RS256])
   end
 end
+
+# Findings of the audit against the OAuth 2.1 draft, RFC 9470, RFC 9728 and RFC 7523bis
+RSpec.describe 'conformance audit' do
+  let(:json) { JSON.parse(response.body, symbolize_names: true) }
+  let(:client) { create(:client) }
+  let(:user) { create(:user) }
+  let(:credentials) { ActionController::HttpAuthentication::Basic.encode_credentials(client.to_param, client.password) }
+
+  describe 'which tokens a resource serves' do
+    it 'does not serve SCIM to a registration access token' do
+      post '/oauth/clients', params: { client_name: 'App', redirect_uris: ['https://a.example.com/cb'] }
+      get '/scim/v2/Users', headers: { 'Authorization' => "Bearer #{json[:registration_access_token]}", 'Accept' => 'application/scim+json' }
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+    it 'does not serve SCIM to a client credentials token' do
+      get '/scim/v2/Users', headers: { 'Authorization' => "Bearer #{client.access_token.to_jwt}", 'Accept' => 'application/scim+json' }
+      expect(response).to have_http_status(:unauthorized)
+      expect(response.headers['WWW-Authenticate']).to include('invalid_token')
+    end
+
+    it 'does not serve /oauth/me to a token for the SCIM resource' do
+      token = create(:access_token, resource: "#{Oauth::Issuer.identifier}/scim/v2")
+      get '/oauth/me', headers: { 'Authorization' => "Bearer #{token.to_jwt}" }
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+    it 'serves SCIM to a user token for the SCIM resource' do
+      token = create(:access_token, resource: "#{Oauth::Issuer.identifier}/scim/v2")
+      get '/scim/v2/Users', headers: { 'Authorization' => "Bearer #{token.to_jwt}", 'Accept' => 'application/scim+json' }
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  # OAuth 2.1 "Reuse of Authorization Codes"
+  describe 'a replayed authorization code' do
+    let(:authorization) { create(:authorization, client: client) }
+    let(:grant) { { grant_type: 'authorization_code', code: authorization.code, code_verifier: PkceHelpers::PKCE_VERIFIER } }
+    let(:headers) { { 'Authorization' => credentials } }
+
+    it 'revokes what was issued when the replay is genuine' do
+      post '/oauth/tokens', params: grant, headers: headers
+      access = json[:access_token]
+      post '/oauth/tokens', params: grant, headers: headers
+      expect(Token.authenticate(access)).to be_nil
+    end
+
+    it 'does not revoke anything when the replay has the wrong verifier' do
+      post '/oauth/tokens', params: grant, headers: headers
+      access = json[:access_token]
+      post '/oauth/tokens', params: grant.merge(code_verifier: 'x' * 50), headers: headers
+      expect(response).to have_http_status(:bad_request)
+      expect(Token.authenticate(access)).to be_present
+    end
+  end
+
+  describe 'authorization request parameters' do
+    let(:params) do
+      {
+        client_id: client.to_param, response_type: 'code', redirect_uri: client.redirect_uris[0],
+        code_challenge: PkceHelpers::PKCE_CHALLENGE, code_challenge_method: 'S256'
+      }
+    end
+
+    before { http_login(user) }
+
+    it 'treats an empty value as omitted (Section 3.1)' do
+      get '/oauth/authorizations', params: params.merge(max_age: '', dpop_jkt: '')
+      expect(response).to have_http_status(:ok)
+    end
+
+    it 'rejects a repeated parameter' do
+      get "/oauth/authorizations?#{params.to_query}&scope=admin"
+      expect(response).to have_http_status(:ok)
+      get "/oauth/authorizations?#{params.to_query}&state=a&state=b"
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it 'shows the scope and the lifetime on the consent page' do
+      get '/oauth/authorizations', params: params.merge(scope: 'admin')
+      expect(response.body).to include('admin')
+      expect(response.body).to include('60 minutes')
+    end
+
+    it 'answers unauthorized_client for a client that cannot use the code grant' do
+      only_credentials = create(:client, grant_types: %w[client_credentials], response_types: [])
+      get '/oauth/authorizations', params: params.merge(client_id: only_credentials.to_param, redirect_uri: only_credentials.redirect_uris[0])
+      expect(Rack::Utils.parse_query(URI.parse(response.location).query)['error']).to eql('unauthorized_client')
+    end
+  end
+
+  describe 'error descriptions' do
+    it 'only use the characters the RFC allows' do
+      error = GrantError.new('invalid_request', "bad \"quote\" and \\ and \n and é")
+      expect(error.description).to match(/\A[\x20\x21\x23-\x5B\x5D-\x7E]*\z/)
+    end
+  end
+
+  # RFC 9728 Section 3.1 with an issuer that has a path
+  describe 'protected resource metadata for an issuer with a path' do
+    before { allow(Oauth::Issuer).to receive(:identifier).and_return('http://www.example.com/t1') }
+
+    it 'is found with the issuer path after the well-known segment' do
+      get '/.well-known/oauth-protected-resource/t1/oauth/me'
+      expect(response).to have_http_status(:ok)
+      expect(json[:resource]).to eql('http://www.example.com/t1/oauth/me')
+    end
+
+    it 'is not found without the issuer path' do
+      get '/.well-known/oauth-protected-resource/oauth/me'
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it 'is what the challenge points at' do
+      get '/oauth/me'
+      expect(response.headers['WWW-Authenticate']).to include('resource_metadata="http://www.example.com/.well-known/oauth-protected-resource/t1/oauth/me"')
+    end
+  end
+end
+

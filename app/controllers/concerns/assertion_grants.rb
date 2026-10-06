@@ -10,10 +10,12 @@ module AssertionGrants
   private
 
   def saml_assertion_grant(raw, scope, resource = nil)
-    assertion = Saml::Kit::Assertion.new(
-      Base64.urlsafe_decode64(raw)
-    )
+    raise GrantError.new('invalid_request', 'assertion is required.') if raw.blank?
+
+    assertion = Saml::Kit::Assertion.new(Base64.urlsafe_decode64(raw.to_s))
     return if assertion.invalid?
+    # RFC 7522 and RFC 7523bis: it must name this server as its audience.
+    return unless (assertion.audiences & assertion_audiences).any?
 
     user = if assertion.name_id_format == Saml::Kit::Namespaces::PERSISTENT
              User.find(assertion.name_id)
@@ -21,6 +23,9 @@ module AssertionGrants
              User.find_by!(email: assertion.name_id)
            end
     user.issue_tokens_to(current_client, scope: scope, resource: resource)
+  rescue ArgumentError, NoMethodError => error
+    logger.error(error)
+    nil
   end
 
   # RFC 7523 Section 2.1

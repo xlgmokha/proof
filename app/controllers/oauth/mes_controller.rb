@@ -3,7 +3,7 @@
 module Oauth
   class MesController < ActionController::API
     include BearerAuthentication
-    before_action { authenticate_bearer!(scope: required_scope) }
+    before_action { authenticate_bearer!(scope: required_scope, resource: '/oauth/me', subject_type: 'User') }
 
     def show
       render json: @access_token.claims

@@ -188,6 +188,9 @@ module Oauth
       replayed = false
       tokens = authorization.with_lock do
         replayed = authorization.revoked?
+        # OAuth 2.1 "Reuse of Authorization Codes": a replay that does not even
+        # present the right parameters does not revoke what was issued.
+        replayed = :invalid if replayed && !valid_replay?(authorization)
         next if replayed
 
         verify_code!(authorization)
@@ -199,8 +202,13 @@ module Oauth
       return tokens unless replayed
 
       # Outside of the lock's transaction, so the revocation is not rolled back.
-      authorization.revoke_tokens!
+      authorization.revoke_tokens! unless replayed == :invalid
       raise GrantError.new('invalid_grant', 'The authorization code was already used.')
+    end
+
+    def valid_replay?(authorization)
+      redirect_ok = authorization.redirect_uri_matches?(params[:redirect_uri])
+      redirect_ok && authorization.challenge.present? && authorization.valid_verifier?(params[:code_verifier])
     end
 
     def verify_code!(authorization)

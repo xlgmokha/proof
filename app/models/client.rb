@@ -47,7 +47,7 @@ class Client < ApplicationRecord
   end
 
   after_initialize do
-    self.password = SecureRandom.base58(24) unless password_digest
+    self.password = SecureRandom.base58(32) unless password_digest
   end
 
   def grant_type?(grant_type)

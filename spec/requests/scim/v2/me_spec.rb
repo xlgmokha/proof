@@ -31,7 +31,8 @@ RSpec.describe '/scim/v2/Me' do
 
       before { get '/scim/v2/Me', headers: headers }
 
-      specify { expect(response).to have_http_status(:not_found) }
+      # A client is not a user, so its token is not accepted here.
+      specify { expect(response).to have_http_status(:unauthorized) }
     end
 
     context "when not authenticated" do

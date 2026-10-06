@@ -445,7 +445,8 @@ RSpec.describe '/oauth/tokens' do
         post '/oauth/tokens', params: { grant_type: 'client_credentials', client_id: client.to_param, client_secret: client.password }
       end
 
-      specify { expect(response).to have_http_status(:unauthorized) }
+      # OAuth 2.1 "Client Secret": credentials in the body are supported.
+      specify { expect(response).to have_http_status(:ok) }
     end
 
     context "when the secret is wrong" do

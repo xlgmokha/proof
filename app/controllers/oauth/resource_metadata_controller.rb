@@ -5,7 +5,13 @@ module Oauth
   # they can obtain a token for it.
   class ResourceMetadataController < ActionController::API
     def show
-      path = params[:path].to_s.presence && "/#{params[:path]}"
+      # RFC 9728 Section 3.1: the well-known segment sits before the whole
+      # identifier, which includes the path of the issuer.
+      base = URI.parse(Oauth::Issuer.identifier).path.chomp('/')
+      full = params[:path].to_s.presence && "/#{params[:path]}"
+      return head :not_found unless full.to_s.start_with?(base)
+
+      path = full.to_s.delete_prefix(base).presence
       name = Oauth::Issuer::RESOURCES[path.to_s]
       return head :not_found unless name
 
@@ -17,7 +23,7 @@ module Oauth
         bearer_methods_supported: path == '/oauth/me' ? %w[header body] : %w[header],
         resource_name: name,
         resource_documentation: documentation_url,
-        dpop_signing_alg_values_supported: DpopProof::ALGORITHMS
+        **(path == '/oauth/me' ? { dpop_signing_alg_values_supported: DpopProof::ALGORITHMS } : {})
       }
     end
   end

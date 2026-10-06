@@ -83,7 +83,7 @@ module ClientAuthentication
 
   def authenticate_post_body
     client = Client.find_by(id: params[:client_id])
-    return spend_time(params[:client_secret]) unless client&.client_secret_post?
+    return spend_time(params[:client_secret]) unless client&.client_secret_post? || client&.client_secret_basic?
 
     client.authenticate(params[:client_secret].to_s)
   end

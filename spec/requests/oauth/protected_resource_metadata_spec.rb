@@ -15,7 +15,7 @@ RSpec.describe '/.well-known/oauth-protected-resource' do
     specify { expect(json[:authorization_servers]).to eql([Oauth::Issuer.identifier]) }
     specify { expect(json[:bearer_methods_supported]).to match_array(%w[header]) }
     specify { expect(json[:scopes_supported]).to match_array(Scopes::SUPPORTED) }
-    specify { expect(json[:dpop_signing_alg_values_supported]).to include('ES256') }
+    specify { expect(json).not_to have_key(:dpop_signing_alg_values_supported) }
     specify { expect(json).not_to include(:jwks_uri, :resource_signing_alg_values_supported) }
   end
 
@@ -26,6 +26,7 @@ RSpec.describe '/.well-known/oauth-protected-resource' do
     specify { expect(response).to have_http_status(:ok) }
     specify { expect(json[:resource]).to eql('http://www.example.com/oauth/me') }
     specify { expect(json[:bearer_methods_supported]).to match_array(%w[header body]) }
+    specify { expect(json[:dpop_signing_alg_values_supported]).to include('ES256') }
   end
 
   describe 'GET for an unknown resource' do

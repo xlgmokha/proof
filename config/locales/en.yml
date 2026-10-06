@@ -106,6 +106,8 @@ en:
         authorize: Authorize
         authorize_prompt_html: Do you authorize <strong>%{name}</strong> to access your data?
         deny: Deny
+        lifetime: The access you grant lasts for %{minutes} minutes at a time and can be renewed until you revoke it.
+        scope: 'Requested access: %{scope}'
         title: Authorize
     devices:
       approved:

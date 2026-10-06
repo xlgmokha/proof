@@ -4,7 +4,7 @@ class Authorization < ApplicationRecord
   # RFC 7636 Section 4.1: 43 to 128 unreserved characters.
   PKCE_VERIFIER = /\A[A-Za-z0-9\-._~]{43,128}\z/
   audited associated_with: :user
-  has_secure_token :code
+  has_secure_token :code, length: 32
   belongs_to :user
   belongs_to :client
   has_many :tokens, dependent: :delete_all
