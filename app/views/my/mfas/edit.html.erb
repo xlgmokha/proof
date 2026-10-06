@@ -13,7 +13,7 @@
         </div>
         <div class="field is-grouped is-grouped-right">
           <div class="control">
-            <%= form.submit t(".disable"), class: 'button is-danger', data: { disable_with: t('saving') } %>
+            <%= form.submit t(".disable"), class: 'button is-danger', data: { turbo_submits_with: t('saving') } %>
           </div>
           <div class="control">
             <%= link_to t("cancel"), my_dashboard_path, class: 'button' %>

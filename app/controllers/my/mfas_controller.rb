@@ -28,9 +28,9 @@ module My
 
     def destroy
       if current_user.mfa.disable!(params[:user][:code])
-        redirect_to my_dashboard_path, notice: t('.success')
+        redirect_to my_dashboard_path, notice: t('.success'), status: :see_other
       else
-        redirect_to edit_my_mfa_path, error: t('.error')
+        redirect_to edit_my_mfa_path, error: t('.error'), status: :see_other
       end
     end
   end

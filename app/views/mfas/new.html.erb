@@ -12,7 +12,7 @@
         </div>
         <div class="field">
           <div class="control is-pulled-right">
-            <%= form.button t('.login'), type: 'submit', class: 'button is-primary', data: { disable_with: t('loading') } %>
+            <%= form.button t('.login'), type: 'submit', class: 'button is-primary', data: { turbo_submits_with: t('loading') } %>
           </div>
         </div>
       <% end %>

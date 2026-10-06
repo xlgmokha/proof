@@ -25,7 +25,7 @@ gem 'saml-kit'
 gem 'scim-kit'
 gem 'shakapacker'
 gem 'spank'
-gem 'turbolinks'
+gem 'turbo-rails'
 gem 'varkon'
 group :doc do
   gem 'jekyll'

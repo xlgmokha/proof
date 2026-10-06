@@ -19,7 +19,7 @@
           </div>
           <div class="field is-grouped is-grouped-right">
             <div class="control">
-              <%= form.submit t(".enable"), class: 'button is-primary', data: { disable_with: 'Saving…' } %>
+              <%= form.submit t(".enable"), class: 'button is-primary', data: { turbo_submits_with: 'Saving…' } %>
             </div>
             <div class="control">
               <%= link_to t(".cancel"), my_clients_path, class: 'button' %>
