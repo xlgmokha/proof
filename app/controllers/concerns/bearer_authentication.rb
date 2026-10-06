@@ -21,10 +21,23 @@ module BearerAuthentication
     scheme, jwt = presented.first
     @access_token = Token.authenticate(jwt, allow_bound: true)
     return challenge('invalid_token', 'The access token is invalid.', status: :unauthorized, schemes: [scheme]) unless @access_token
+    return unless certificate_constraint_satisfied?(scheme)
     return unless sender_constraint_satisfied?(scheme, jwt)
     return if scope.nil? || @access_token.scopes.include?(scope)
 
     challenge('insufficient_scope', 'The access token lacks the required scope.', status: :forbidden, scope: scope, schemes: [scheme])
+  end
+
+  # RFC 8705 Section 3: a token bound to a certificate is only good over a
+  # connection that used it.
+  def certificate_constraint_satisfied?(scheme)
+    return true if @access_token.x5t_s256.blank?
+
+    presented = ClientCertificate.from(request)
+    return true if presented && ActiveSupport::SecurityUtils.secure_compare(presented.thumbprint, @access_token.x5t_s256)
+
+    challenge('invalid_token', 'The access token is bound to a different client certificate.', status: :unauthorized, schemes: [scheme])
+    false
   end
 
   # RFC 9449 Section 7.1: a bound token is only good with a proof from its

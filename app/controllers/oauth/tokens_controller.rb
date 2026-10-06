@@ -20,10 +20,12 @@ module Oauth
       raise GrantError.new('unsupported_grant_type') unless supported?(grant_type)
       raise GrantError.new('unauthorized_client') unless current_client.grant_type?(grant_type)
 
+      ensure_certificate!
       @access_token, @refresh_token = tokens_for(grant_type)
       raise GrantError.new('invalid_grant') if @access_token.nil?
 
       bind_to_dpop_key(@access_token, @refresh_token)
+      bind_to_certificate(@access_token)
 
       render formats: :json
     rescue StandardError => error
@@ -76,6 +78,21 @@ module Oauth
       render_oauth_error(GrantError.new('use_dpop_nonce', error.message))
     rescue DpopProof::Invalid => error
       render_oauth_error(GrantError.new('invalid_dpop_proof', error.message))
+    end
+
+    # RFC 8705 Section 3: a client that asked for certificate-bound tokens
+    # has to present its certificate.
+    def ensure_certificate!
+      return unless current_client.tls_client_certificate_bound_access_tokens?
+      return if ClientCertificate.from(request)
+
+      raise GrantError.new('invalid_request', 'A client certificate is required.')
+    end
+
+    def bind_to_certificate(token)
+      return unless current_client.tls_client_certificate_bound_access_tokens?
+
+      token.update_columns(x5t_s256: ClientCertificate.from(request).thumbprint)
     end
 
     def bind_to_dpop_key(*tokens)

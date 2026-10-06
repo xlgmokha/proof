@@ -86,6 +86,8 @@ module Oauth
         :client_name, :token_endpoint_auth_method, :logo_uri, :client_uri, :tos_uri, :policy_uri,
         :jwks_uri, :scope, :software_id, :software_version,
         :require_pushed_authorization_requests, :require_signed_request_object,
+        :tls_client_auth_subject_dn, :tls_client_auth_san_dns, :tls_client_auth_san_uri,
+        :tls_client_auth_san_ip, :tls_client_auth_san_email, :tls_client_certificate_bound_access_tokens,
         jwks: {}, redirect_uris: [], grant_types: [], response_types: [], contacts: [], authorization_details_types: [], request_uris: []
       )
     end
@@ -110,6 +112,12 @@ module Oauth
         software_version: params[:software_version],
         require_pushed_authorization_requests: params[:require_pushed_authorization_requests] || false,
         require_signed_request_object: params[:require_signed_request_object] || false,
+        tls_client_auth_subject_dn: params[:tls_client_auth_subject_dn],
+        tls_client_auth_san_dns: params[:tls_client_auth_san_dns],
+        tls_client_auth_san_uri: params[:tls_client_auth_san_uri],
+        tls_client_auth_san_ip: params[:tls_client_auth_san_ip],
+        tls_client_auth_san_email: params[:tls_client_auth_san_email],
+        tls_client_certificate_bound_access_tokens: params[:tls_client_certificate_bound_access_tokens] || false,
         authorization_details_types: params[:authorization_details_types] || [],
         request_uris: params[:request_uris] || [],
         jwks_uri: params[:jwks_uri],

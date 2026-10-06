@@ -28,12 +28,14 @@ interpretation, and correct a spec if the RFC says otherwise.
 | 8414 | Authorization server metadata | `app/views/oauth/metadata/show.json.jbuilder` | `spec/requests/well-known/oauth_spec.rb` |
 | 8628 | Device authorization grant | `Oauth::DeviceAuthorizationsController`, `Oauth::DevicesController`, `DeviceAuthorization` | `spec/requests/oauth/device_authorizations_spec.rb` |
 | 8693 | Token exchange (access, refresh and JWT subject tokens; delegation with `act`) | `TokenExchange` | `spec/requests/oauth/token_exchange_spec.rb` |
+| 8705 | Mutual TLS client authentication (`tls_client_auth`, `self_signed_tls_client_auth`) and certificate-bound access tokens | `ClientCertificate`, `ClientAuthentication#authenticate_mtls`, `BearerAuthentication` | `spec/requests/oauth/mutual_tls_spec.rb` |
 | 8707 | Resource indicators | `ResourceIndicator`, token and authorization endpoints | `spec/requests/oauth/resource_indicators_spec.rb` |
 | 9068 | JWT profile for access tokens (`at+jwt`) | `Token#claims`, `BearerToken` | `spec/models/token_spec.rb` |
-| 9101 | JWT-secured authorization requests | `RequestObject`, `AuthorizationRequest` | `spec/requests/oauth/request_objects_spec.rb` |
+| 9101 | JWT-secured authorization requests, by value and by reference (registered `request_uris`) | `RequestObject`, `AuthorizationRequest`, `JwksFetcher#fetch_text` | `spec/requests/oauth/request_objects_spec.rb`, `spec/requests/oauth/request_uri_reference_spec.rb` |
 | 9126 | Pushed authorization requests | `Oauth::PushedRequestsController`, `PushedAuthorizationRequest` | `spec/requests/oauth/pushed_authorization_requests_spec.rb` |
 | 9207 | `iss` in authorization responses | `Oauth::AuthorizationsController`, `Client#redirect_url_for` | `spec/requests/oauth/authorizations_spec.rb` |
-| 9449 | DPoP | `DpopProof`, `BearerAuthentication`, `Oauth::TokensController` | `spec/requests/oauth/dpop_spec.rb` |
+| 9396 | Rich authorization requests (`authorization_details`) | `AuthorizationDetails`, `AuthorizationRequest`, `Oauth::TokensController` | `spec/requests/oauth/authorization_details_spec.rb` |
+| 9449 | DPoP, including authorization code binding (`dpop_jkt`) and server-provided nonces | `DpopProof`, `DpopNonce`, `BearerAuthentication`, `Oauth::TokensController` | `spec/requests/oauth/dpop_spec.rb`, `spec/requests/oauth/dpop_binding_spec.rb` |
 | 9700 | Security best current practice | see below | across the above |
 | 9728 | Protected resource metadata | `Oauth::ResourceMetadataController` | `spec/requests/oauth/protected_resource_metadata_spec.rb` |
 
@@ -62,13 +64,8 @@ SCIM (RFC 7643/7644) is documented with the SCIM API and is not repeated here.
   request; nothing is cached.
 - **One resource per request.** RFC 8707 allows several; a request naming more
   than one is rejected with `invalid_target`.
-- **Authorization code binding to a DPoP key** (RFC 9449 Section 10,
-  `dpop_jkt`) and server-provided DPoP nonces (Section 8) are not implemented;
-  both are optional. Proofs are bound to tokens at the token endpoint and
-  checked, with replay protection, at resources.
-- **Request objects by reference** (`request_uri` pointing at a URL the client
-  hosts) are not fetched, because that is a server-side request to a
-  client-supplied address. `request_uri` is only accepted for pushed requests.
+- **DPoP nonces** are off unless `DPOP_NONCE_REQUIRED=true`; when on, the token endpoint and DPoP resources answer `use_dpop_nonce` and hand out a nonce.
+- **Request objects by reference** are only fetched from `https` URLs the client registered as `request_uris`, through the same address-restricted fetcher as `jwks_uri`.
 - **Per-client grants.** Clients registered before grant types were stored keep
   the grants they had; newer grants (`device_code`, `token-exchange`) are opt-in
   through registration.
@@ -101,17 +98,24 @@ validated at boot in production (RFC 8414); `none` is the registered name of
 the public client method (RFC 7591); `htu` is normalised (RFC 9449); device
 user-code entry has a global ceiling as well as a per-user/IP one.
 
-Known and left open:
+Third round: client assertions use the issuer identifier as their only audience (the RFC 7523bis draft text, read from its source), clients may only name resources they were granted (`Client#resources`, operator set), and device user-code entry is locked out after repeated failures (`FailedDeviceAttempt`). The RFC 9728 and 7523bis drafts were read from their WG sources and agree with the implemented behaviour; the other RFC texts were still unreachable.
 
-- Any absolute URI is accepted as a `resource` (there is no per-client
-  allow-list); resource servers here only accept tokens meant for them.
-- Device user codes are throttled, not invalidated after failed attempts.
+Known and left open: none of the reviewer findings remain open.
 
 ## Not implemented
 
 | RFC | Why |
 | --- | --- |
-| 8705 (mutual TLS) | Needs the TLS terminator to pass the client certificate to the application; there is no such deployment here to specify or test against. |
-| 9396 (rich authorization requests) | No resource server defines `authorization_details` types yet. |
-| 7800 / 8725 | Informational or best-practice guidance for token formats; the validation rules that matter (algorithm allow list, `typ`, `iss`, `aud`) are enforced where tokens are verified. |
+| 7800 / 8725 | Proof-of-possession key semantics are used through the `cnf` claim (`jkt`, `x5t#S256`); RFC 8725 is best-practice guidance, and its rules that matter (algorithm allow list, `typ`, `iss`, `aud`) are enforced where tokens are verified. |
+| 9470 (step-up authentication) | Needs the login to record an authentication context class and time (`acr`, `auth_time`); this application's login does not distinguish authentication strength. |
 | 6819 | Obsoleted by RFC 9700. |
+
+## Configuration
+
+| Variable | Effect |
+| --- | --- |
+| `ISSUER` | The issuer identifier; an `https` URL without query or fragment (validated at boot in production). |
+| `DPOP_NONCE_REQUIRED` | `true` to require server-provided DPoP nonces (RFC 9449 Section 8). |
+| `AUTHORIZATION_DETAILS_TYPES` | Comma separated `authorization_details` types this server understands (RFC 9396). A client may use those it registered. |
+| `MTLS_ENABLED` | `true` to accept client certificates (RFC 8705). |
+| `CLIENT_CERT_HEADER` | Header the TLS terminator puts the URL-encoded PEM certificate in (default `X-Client-Cert`). The terminator must verify the handshake and strip this header from outside requests. |

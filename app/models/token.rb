@@ -65,10 +65,15 @@ class Token < ApplicationRecord
       sub: subject.to_param,
       token_type: token_type,
     }.merge(scope.present? ? { scope: scope } : {})
-      .merge(dpop_jkt.present? ? { cnf: { jkt: dpop_jkt } } : {})
+      .merge(confirmation.present? ? { cnf: confirmation } : {})
       .merge(act.present? ? { act: act } : {})
       .merge(authorization_details.present? ? { authorization_details: authorization_details } : {})
       .merge(custom_claims)
+  end
+
+  # RFC 7800: the keys and certificates the token is bound to.
+  def confirmation
+    { jkt: dpop_jkt.presence, 'x5t#S256': x5t_s256.presence }.compact
   end
 
   def to_jwt(custom_claims = {})
@@ -115,7 +120,7 @@ class Token < ApplicationRecord
     def authenticate(jwt, allow_bound: false)
       token = from_jwt(jwt, token_type: :access)
       return if token.nil? || token.revoked? || token.expired?
-      return if token.dpop_jkt.present? && !allow_bound
+      return if (token.dpop_jkt.present? || token.x5t_s256.present?) && !allow_bound
       return unless Oauth::Issuer.resource?(token.resource.presence || Oauth::Issuer.identifier)
 
       token

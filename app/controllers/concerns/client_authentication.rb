@@ -56,7 +56,7 @@ module ClientAuthentication
     return authenticate_assertion if params[:client_assertion].present?
     return authenticate_post_body if params[:client_secret].present?
 
-    authenticate_public
+    authenticate_mtls || authenticate_public
   end
 
   # RFC 6749 Section 2.3.1: the id and secret are form-urlencoded before being
@@ -105,6 +105,21 @@ module ClientAuthentication
   rescue JwtBearerAssertion::Invalid => error
     logger.info(error)
     nil
+  end
+
+  attr_reader :client_certificate
+
+  # RFC 8705 Section 2: the client is identified by its client_id and proves
+  # itself with the certificate of the TLS connection.
+  def authenticate_mtls
+    @client_certificate = ClientCertificate.from(request)
+    return unless @client_certificate && params[:client_id].present?
+
+    client = Client.find_by(id: params[:client_id])
+    return unless client
+    return client if client.tls_client_auth? && @client_certificate.matches?(client)
+
+    client if client.self_signed_tls_client_auth? && @client_certificate.key_of?(client)
   end
 
   # RFC 6749 Section 2.1: public clients are identified by their client_id alone.

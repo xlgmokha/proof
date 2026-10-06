@@ -3,16 +3,17 @@
 json.issuer Oauth::Issuer.identifier
 json.authorization_endpoint oauth_authorizations_url
 json.token_endpoint oauth_tokens_url
-json.token_endpoint_auth_methods_supported %i[client_secret_basic client_secret_post private_key_jwt none]
+mtls = ClientCertificate.enabled? ? %i[tls_client_auth self_signed_tls_client_auth] : []
+json.token_endpoint_auth_methods_supported %i[client_secret_basic client_secret_post private_key_jwt none] + mtls
 json.token_endpoint_auth_signing_alg_values_supported JwtBearerAssertion::ALGORITHMS
 json.userinfo_endpoint oauth_me_url
 json.jwks_uri jwks_url
 json.registration_endpoint oauth_clients_url
 json.revocation_endpoint revoke_oauth_tokens_url
-json.revocation_endpoint_auth_methods_supported %i[client_secret_basic client_secret_post private_key_jwt none]
+json.revocation_endpoint_auth_methods_supported %i[client_secret_basic client_secret_post private_key_jwt none] + mtls
 json.revocation_endpoint_auth_signing_alg_values_supported JwtBearerAssertion::ALGORITHMS
 json.introspection_endpoint introspect_oauth_tokens_url
-json.introspection_endpoint_auth_methods_supported %i[client_secret_basic client_secret_post private_key_jwt]
+json.introspection_endpoint_auth_methods_supported %i[client_secret_basic client_secret_post private_key_jwt] + mtls
 json.introspection_endpoint_auth_signing_alg_values_supported JwtBearerAssertion::ALGORITHMS
 json.scopes_supported Scopes::SUPPORTED
 json.response_types_supported Client::RESPONSE_TYPES
@@ -29,6 +30,7 @@ json.require_request_uri_registration true
 json.require_signed_request_object false
 json.request_object_signing_alg_values_supported RequestObject::ALGORITHMS
 json.authorization_details_types_supported AuthorizationDetails.supported_types
+json.tls_client_certificate_bound_access_tokens true if ClientCertificate.enabled?
 json.dpop_signing_alg_values_supported DpopProof::ALGORITHMS
 json.service_documentation root_url + 'doc'
 json.ui_locales_supported I18n.available_locales

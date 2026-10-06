@@ -16,6 +16,8 @@ class Client < ApplicationRecord
     client_secret_post: 1,
     client_secret_none: 2,
     private_key_jwt: 3,
+    tls_client_auth: 4,
+    self_signed_tls_client_auth: 5,
   }, validate: true
 
   validates :redirect_uris, presence: true, if: -> { grant_types.include?('authorization_code') }
@@ -24,6 +26,7 @@ class Client < ApplicationRecord
   validate :scope_is_supported
   validates :jwks_uri, format: { with: URI_REGEX }, allow_blank: true
   validate :request_uris_are_https
+  validate :tls_client_auth_is_identified
   validates :logo_uri, format: { with: URI_REGEX }, allow_blank: true
   validates :name, presence: true
   validate :jwks_uri_and_jwks_are_exclusive
@@ -155,6 +158,17 @@ class Client < ApplicationRecord
     end
   rescue URI::InvalidURIError
     false
+  end
+
+  # RFC 8705 Section 2.1.2: exactly one way to tell which certificate is the
+  # client's; Section 2.2: a self-signed certificate is matched to a key.
+  def tls_client_auth_is_identified
+    if tls_client_auth?
+      identifiers = [tls_client_auth_subject_dn, tls_client_auth_san_dns, tls_client_auth_san_uri, tls_client_auth_san_ip, tls_client_auth_san_email]
+      errors.add(:base, 'Exactly one tls_client_auth_* identifier is required.') unless identifiers.compact_blank.one?
+    elsif self_signed_tls_client_auth? && jwks.blank? && jwks_uri.blank?
+      errors.add(:base, 'jwks or jwks_uri is required.')
+    end
   end
 
   def request_uris_are_https

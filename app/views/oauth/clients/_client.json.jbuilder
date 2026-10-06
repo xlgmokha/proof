@@ -20,6 +20,11 @@ json.contacts @client.contacts if @client.contacts.present?
 json.jwks @client.jwks if @client.jwks.present?
 json.authorization_details_types @client.authorization_details_types if @client.authorization_details_types.present?
 json.request_uris @client.request_uris if @client.request_uris.present?
+json.tls_client_certificate_bound_access_tokens @client.tls_client_certificate_bound_access_tokens
+%i[subject_dn san_dns san_uri san_ip san_email].each do |name|
+  value = @client.public_send("tls_client_auth_#{name}")
+  json.set!("tls_client_auth_#{name}", value) if value.present?
+end
 json.require_pushed_authorization_requests @client.require_pushed_authorization_requests
 json.require_signed_request_object @client.require_signed_request_object
 json.registration_client_uri oauth_client_url(@client)
