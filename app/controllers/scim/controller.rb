@@ -6,11 +6,12 @@ module Scim
     before_action :apply_scim_content_type
     before_action :ensure_correct_content_type!
     before_action :authenticate!
-    helper_method :current_user, :scim_type_for
+    helper_method :current_user
     rescue_from StandardError do |error|
       Rails.logger.error(error)
       render "scim/server_error", status: :internal_server_error
     end
+    rescue_from Scim::Error, with: :render_scim_error
     rescue_from ActiveRecord::RecordInvalid, with: :record_invalid
     rescue_from ActiveModel::ValidationError, with: :record_invalid
     rescue_from ActiveRecord::RecordNotFound, with: :not_found
@@ -34,9 +35,11 @@ module Scim
     end
 
     def record_invalid(error)
-      @error = error
-      @model = error.respond_to?(:model) ? error.model : error.record
-      render "scim/record_invalid", status: :bad_request
+      render_scim_error(Scim::Error.from(error))
+    end
+
+    def render_scim_error(error)
+      render json: error.to_h.to_json, status: error.status
     end
 
     private
@@ -60,20 +63,11 @@ module Scim
       render "scim/unsupported_media_type", status: status, formats: :scim
     end
 
+    # Requests without a body (GET, DELETE) have no content type to check.
     def acceptable_content_type?
-      [:scim, :json].include?(request&.content_mime_type&.symbol)
-    end
+      return true if request.content_mime_type.nil? && request.raw_post.blank?
 
-    def scim_type_for(error)
-      case error
-      when ActiveRecord::RecordInvalid
-        errors = error.record.errors.full_messages
-        if errors.count == 1 &&
-           errors[0].end_with?('has already been taken')
-          return 'uniqueness'
-        end
-      end
-      "invalidValue"
+      [:scim, :json].include?(request.content_mime_type&.symbol)
     end
   end
 end

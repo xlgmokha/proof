@@ -19,6 +19,7 @@ namespace :lint do
       print_report: true,
       pager: false,
       config_file: Rails.root.join("config/brakeman"),
+      skip_files: ["node_modules/", "vendor/"],
     )
   end
 
@@ -26,7 +27,7 @@ namespace :lint do
   task(:ui) { sh 'yarn lint' }
 
   desc "run erb linter"
-  task(:erb) { sh 'erblint --lint-all --enable-all-linters' }
+  task(:erb) { sh 'erb_lint --lint-all' }
 
   desc "Run linters to check the quality of the code."
   task all: ['bundle:audit', :brakeman, :erb, :rubocop, :ui]

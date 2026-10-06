@@ -4,6 +4,9 @@ container = Spank::Container.new
 container.register(:user_repository) do |x|
   Scim::UserRepository.new(x.resolve(:user_mapper))
 end.as_singleton
+container.register(:group_repository) do |_x|
+  Scim::GroupRepository.new
+end.as_singleton
 container.register(:user_mapper) do |x|
   Scim::UserMapper.new(x.resolve(:url_helpers))
 end.as_singleton

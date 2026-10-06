@@ -5,6 +5,12 @@ ActiveSupport::Notifications.subscribe 'proof.routes_loaded' do
     config.service_provider_configuration(location: url_helpers.scim_v2_ServiceProviderConfig_url) do |x|
       x.documentation_uri = url_helpers.documentation_url
       x.add_authentication(:oauthbearertoken, primary: true)
+      x.patch.supported = true
+      x.bulk.supported = true
+      x.bulk.max_operations = Scim::Bulk::MAX_OPERATIONS
+      x.bulk.max_payload_size = Scim::Bulk::MAX_PAYLOAD_SIZE
+      x.filter.supported = true
+      x.filter.max_results = 25
     end
     config.resource_type(id: 'User', location: url_helpers.scim_v2_resource_type_url(id: 'User')) do |x|
       x.name = 'User'

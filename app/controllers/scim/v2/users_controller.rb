@@ -10,13 +10,13 @@ module Scim
       end
 
       def index
-        @users = ::User.order(:created_at).scim_search(params[:filter])
+        @users = ::User.includes(:groups).order(:created_at).scim_search(params[:filter])
         @users = paginate(@users, page: page - 1, page_size: page_size)
         render formats: :scim, status: :ok
       end
 
       def show
-        @user = ::User.find(params[:id])
+        @user = ::User.includes(:groups).find(params[:id])
         response.headers['Location'] = scim_v2_user_url(@user)
         fresh_when(@user)
         render formats: :scim, status: :ok
@@ -34,8 +34,16 @@ module Scim
         render json: user.to_json, status: :ok
       end
 
+      def patch
+        @user = ::User.find(params[:id])
+        Scim::UserPatch.new(@user).apply(Scim::Patch.parse(params.to_unsafe_h.slice(:schemas, :Operations)))
+        response.headers['Location'] = scim_v2_user_url(@user)
+        render :show, formats: :scim, status: :ok
+      end
+
       def destroy
         repository.destroy!(params[:id])
+        head :no_content
       end
 
       private

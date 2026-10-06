@@ -32,10 +32,17 @@ Rails.application.routes.draw do
     namespace :v2, defaults: { format: :scim } do
       post ".search", to: "search#index"
 
-      get 'Groups/:id', to: 'groups#show'
-      post :Groups, to: "groups#create"
-      put 'Groups/:id', to: "groups#update"
-      resources :groups, only: [:index]
+      # RFC 7644 defines the capitalized endpoints. The lowercase paths predate
+      # them and are kept so existing integrations continue to work.
+      patch 'Users/:id', to: 'users#patch'
+      patch 'users/:id', to: 'users#patch', as: nil
+      resources :users, path: 'Users', only: [:index, :show, :create, :update, :destroy]
+      resources :users, path: 'users', only: [:index, :show, :create, :update, :destroy], as: :legacy_users
+
+      patch 'Groups/:id', to: 'groups#patch'
+      patch 'groups/:id', to: 'groups#patch', as: nil
+      resources :groups, path: 'Groups', only: [:index, :show, :create, :update, :destroy]
+      resources :groups, path: 'groups', only: [:index, :show, :create, :update, :destroy], as: :legacy_groups
 
       get :ResourceTypes, to: "resource_types#index"
       get 'ResourceTypes/:id', to: "resource_types#show"
@@ -47,13 +54,11 @@ Rails.application.routes.draw do
 
       get :ServiceProviderConfig, to: "service_providers#show"
 
-      get 'Users/:id', to: 'users#show'
-      post :Users, to: "users#create"
-      put 'Users/:id', to: "users#update"
-      resources :users, only: [:index, :show, :create, :update, :destroy]
-
-      match 'Me', to: lambda { |env| [501, {}, ['']] }, via: [:get, :post, :put, :patch, :delete]
-      match 'Bulk', to: lambda { |env| [501, {}, ['']] }, via: [:post]
+      get 'Me', to: 'mes#show'
+      put 'Me', to: 'mes#update'
+      patch 'Me', to: 'mes#patch'
+      delete 'Me', to: 'mes#destroy'
+      post 'Bulk', to: 'bulk#create'
     end
   end
   get "/.well-known/oauth-authorization-server", to: "oauth/metadata#show"
