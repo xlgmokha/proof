@@ -49,17 +49,6 @@ RSpec.describe Token, type: :model do
     end
   end
 
-  describe ".revoked?" do
-    let(:token) { create(:access_token) }
-
-    # Revocation takes effect immediately; it is not cached.
-    it 'reflects a revocation made after the first check' do
-      expect(described_class.revoked?(token.id)).to be(false)
-      token.revoke!
-      expect(described_class.revoked?(token.id)).to be(true)
-    end
-  end
-
   describe "#to_jwt" do
     let(:token) { create(:access_token, scope: 'admin', resource: 'https://api.example.com') }
     let(:payload) { JWT.decode(token.to_jwt, nil, false) }
@@ -90,7 +79,6 @@ RSpec.describe Token, type: :model do
 
     specify { expect(described_class.claims_for(access_token, token_type: :refresh)).to be_empty }
     specify { expect(described_class.claims_for(refresh_token, token_type: :access)).to be_empty }
-    specify { expect(described_class.claims_for(refresh_token, token_type: :any)).to be_present }
 
     it 'rejects a JWT without the at+jwt type' do
       jwt = BearerToken.new.encode(create(:access_token).claims)
@@ -125,7 +113,6 @@ RSpec.describe Token, type: :model do
 
     specify { expect(subject.claims_for('blah', token_type: :access)).to be_empty }
     specify { expect(subject.claims_for('blah', token_type: :refresh)).to be_empty }
-    specify { expect(subject.claims_for('blah', token_type: :any)).to be_empty }
     specify { expect(subject.claims_for(access_token, token_type: :access)).to be_present }
     specify { expect(subject.claims_for(refresh_token, token_type: :refresh)).to be_present }
   end

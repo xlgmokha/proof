@@ -65,12 +65,8 @@ class Token < ApplicationRecord
       nbf: created_at.to_i,
       sub: subject.to_param,
       token_type: token_type,
-    }.merge(scope.present? ? { scope: scope } : {})
-      .merge(confirmation.present? ? { cnf: confirmation } : {})
-      .merge(act.present? ? { act: act } : {})
-      .merge(acr.present? ? { acr: acr } : {})
-      .merge(auth_time.present? ? { auth_time: auth_time } : {})
-      .merge(authorization_details.present? ? { authorization_details: authorization_details } : {})
+    }.merge({ scope: scope, cnf: confirmation, act: act, acr: acr, auth_time: auth_time,
+              authorization_details: authorization_details }.compact_blank)
       .merge(custom_claims)
   end
 
@@ -97,17 +93,7 @@ class Token < ApplicationRecord
   end
 
   class << self
-    # A revoked token is rejected immediately; the database is the source of truth.
-    def revoked?(jti)
-      revoked.exists?(id: jti)
-    end
-
     def claims_for(token, token_type: :access)
-      if token_type == :any
-        claims = claims_for(token, token_type: :access)
-        claims = claims_for(token, token_type: :refresh) if claims.empty?
-        return claims
-      end
       typ = token_type == :refresh ? REFRESH_TYP : ACCESS_TYP
       claims = BearerToken.new.decode(token, typ: typ)
       claims[:token_type].to_s == token_type.to_s ? claims : {}

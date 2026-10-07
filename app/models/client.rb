@@ -78,10 +78,6 @@ class Client < ApplicationRecord
     )
   end
 
-  def revoke(token)
-    token.revoke! if token.issued_to?(self)
-  end
-
   # RFC 6749 Section 3.1.2.3: the redirect_uri may only be omitted when a single
   # one is registered. Registered URIs are compared exactly (RFC 9700
   # Section 4.1.3), except for the port of a loopback redirect (RFC 8252
