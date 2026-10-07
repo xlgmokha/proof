@@ -39,10 +39,5 @@ module Oauth
 
       value
     end
-
-    def apply_cache_headers
-      response.headers['Cache-Control'] = 'no-store'
-      response.headers['Pragma'] = 'no-cache'
-    end
   end
 end

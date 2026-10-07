@@ -101,11 +101,6 @@ module Oauth
       tokens.compact.each { |x| x.update_columns(dpop_jkt: @dpop_jkt) if x.dpop_jkt.blank? }
     end
 
-    def apply_cache_headers
-      response.headers['Cache-Control'] = 'no-store'
-      response.headers['Pragma'] = 'no-cache'
-    end
-
     # RFC 7009 Section 2.1 and RFC 7662 Section 2.1: the hint only says where
     # to look first.
     def find_token(hint)

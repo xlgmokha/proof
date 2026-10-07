@@ -15,6 +15,11 @@ module ClientAuthentication
 
   attr_reader :current_client
 
+  def apply_cache_headers
+    response.headers['Cache-Control'] = 'no-store'
+    response.headers['Pragma'] = 'no-cache'
+  end
+
   # RFC 6749 Section 3.2 and Appendix B: parameters are sent in a
   # form-urlencoded body, and none may be repeated.
   def ensure_form_parameters!
@@ -22,13 +27,11 @@ module ClientAuthentication
 
     # RFC 8707 and RFC 8693 allow these to repeat; only one target is supported here.
     if request.query_parameters.blank? && form_content? && (repeated_keys - %w[resource audience]).empty? && repeated_keys.any?
-      response.headers['Cache-Control'] = 'no-store'
-      response.headers['Pragma'] = 'no-cache'
+      apply_cache_headers
       return render_oauth_error GrantError.new('invalid_target', 'Only one resource or audience may be requested.')
     end
 
-    response.headers['Cache-Control'] = 'no-store'
-    response.headers['Pragma'] = 'no-cache'
+    apply_cache_headers
     render_oauth_error GrantError.new('invalid_request', 'Parameters must be sent once, in a form-urlencoded request body.')
   end
 

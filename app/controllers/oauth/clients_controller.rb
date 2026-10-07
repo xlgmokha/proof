@@ -124,35 +124,28 @@ module Oauth
 
     # RFC 7591 Section 2: grant_types defaults to authorization_code and
     # response_types follows from the grant types.
+    COPIED = %i[
+      scope logo_uri client_uri tos_uri policy_uri software_id software_version jwks_uri
+      tls_client_auth_subject_dn tls_client_auth_san_dns tls_client_auth_san_uri
+      tls_client_auth_san_ip tls_client_auth_san_email
+    ].freeze
+    DEFAULT_ARRAYS = %i[redirect_uris contacts authorization_details_types request_uris].freeze
+    DEFAULT_FALSE = %i[
+      require_pushed_authorization_requests require_signed_request_object tls_client_certificate_bound_access_tokens
+    ].freeze
+
     def transform(params)
       grant_types = params[:grant_types].presence || %w[authorization_code]
-      {
-        name: params[:client_name],
-        redirect_uris: params[:redirect_uris] || [],
-        token_endpoint_auth_method: internal_auth_method(params.fetch(:token_endpoint_auth_method, 'client_secret_basic')),
-        grant_types: grant_types,
-        response_types: params[:response_types] || (grant_types.include?('authorization_code') ? %w[code] : []),
-        scope: params[:scope],
-        contacts: params[:contacts] || [],
-        logo_uri: params[:logo_uri],
-        client_uri: params[:client_uri],
-        tos_uri: params[:tos_uri],
-        policy_uri: params[:policy_uri],
-        software_id: params[:software_id],
-        software_version: params[:software_version],
-        require_pushed_authorization_requests: params[:require_pushed_authorization_requests] || false,
-        require_signed_request_object: params[:require_signed_request_object] || false,
-        tls_client_auth_subject_dn: params[:tls_client_auth_subject_dn],
-        tls_client_auth_san_dns: params[:tls_client_auth_san_dns],
-        tls_client_auth_san_uri: params[:tls_client_auth_san_uri],
-        tls_client_auth_san_ip: params[:tls_client_auth_san_ip],
-        tls_client_auth_san_email: params[:tls_client_auth_san_email],
-        tls_client_certificate_bound_access_tokens: params[:tls_client_certificate_bound_access_tokens] || false,
-        authorization_details_types: params[:authorization_details_types] || [],
-        request_uris: params[:request_uris] || [],
-        jwks_uri: params[:jwks_uri],
-        jwks: params[:jwks].presence&.to_h,
-      }
+      COPIED.index_with { |x| params[x] }
+            .merge(DEFAULT_ARRAYS.index_with { |x| params[x] || [] })
+            .merge(DEFAULT_FALSE.index_with { |x| params[x] || false })
+            .merge(
+              name: params[:client_name],
+              token_endpoint_auth_method: internal_auth_method(params.fetch(:token_endpoint_auth_method, 'client_secret_basic')),
+              grant_types: grant_types,
+              response_types: params[:response_types] || (grant_types.include?('authorization_code') ? %w[code] : []),
+              jwks: params[:jwks].presence&.to_h
+            )
     end
 
     # RFC 7591 Section 2 names the public client method `none`.

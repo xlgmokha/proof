@@ -38,11 +38,6 @@ module Oauth
       raise GrantError.new('invalid_dpop_proof', error.message)
     end
 
-    def apply_cache_headers
-      response.headers['Cache-Control'] = 'no-store'
-      response.headers['Pragma'] = 'no-cache'
-    end
-
     # The authenticated client must be the one the request is for.
     def authorization_request
       if params[:client_id].present? && params[:client_id] != current_client.to_param
