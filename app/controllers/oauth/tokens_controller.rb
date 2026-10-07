@@ -15,9 +15,8 @@ module Oauth
 
     # RFC 6749 Section 5
     def create
-      grant_type = params[:grant_type]
-      raise GrantError.new('invalid_request', 'grant_type is required.') if grant_type.blank?
-      raise GrantError.new('unsupported_grant_type') unless supported?(grant_type)
+      grant_type = required_param(:grant_type)
+      raise GrantError.new('unsupported_grant_type') unless Client::GRANT_TYPES.include?(grant_type)
       raise GrantError.new('unauthorized_client') unless current_client.grant_type?(grant_type)
 
       ensure_certificate!
@@ -41,7 +40,7 @@ module Oauth
       # Section 2.1: only confidential clients may learn about tokens.
       raise GrantError.new('invalid_client', 'Public clients cannot introspect tokens.', status: :unauthorized) if current_client.public_client?
 
-      token = find_token(params[:token], params[:token_type_hint])
+      token = find_token(params[:token_type_hint])
       body = token.nil? || token.revoked? || token.expired? ? { active: false } : introspection_for(token)
       return render_introspection_jwt(body) if introspection_jwt_requested?
 
@@ -50,7 +49,7 @@ module Oauth
 
     # RFC 7009
     def revoke
-      token = find_token(params[:token], params[:token_type_hint])
+      token = find_token(params[:token_type_hint])
       # Section 2.1: the token must have been issued to the client; if not, the
       # request is refused and the client is told.
       if token && !token.issued_to?(current_client)
@@ -109,9 +108,8 @@ module Oauth
 
     # RFC 7009 Section 2.1 and RFC 7662 Section 2.1: the hint only says where
     # to look first.
-    def find_token(jwt, hint)
-      raise GrantError.new('invalid_request', 'token is required.') if jwt.blank?
-
+    def find_token(hint)
+      jwt = required_param(:token)
       order = hint == 'refresh_token' ? %i[refresh access] : %i[access refresh]
       order.each do |type|
         token = Token.from_jwt(jwt, token_type: type)
@@ -144,8 +142,8 @@ module Oauth
       claims.merge(active: true)
     end
 
-    def supported?(grant_type)
-      Client::GRANT_TYPES.include?(grant_type)
+    def required_param(name)
+      params[name].presence || raise(GrantError.new('invalid_request', "#{name} is required."))
     end
 
     # RFC 8707 Section 2.2. Returns nil when none was requested.
@@ -184,9 +182,7 @@ module Oauth
     # RFC 6749 Section 4.1.3. A code is single use; presenting it again is
     # taken as a sign that it was stolen, so what was issued from it is revoked.
     def authorization_code_grant
-      raise GrantError.new('invalid_request', 'code is required.') if params[:code].blank?
-
-      authorization = current_client.authorizations.find_by(code: params[:code].to_s)
+      authorization = current_client.authorizations.find_by(code: required_param(:code).to_s)
       raise GrantError.new('invalid_grant', 'The authorization code is not valid.') if authorization.nil?
 
       replayed = false
@@ -234,9 +230,7 @@ module Oauth
     # RFC 6749 Section 6, with refresh token rotation and replay detection
     # (RFC 9700 Section 4.14).
     def refresh_grant
-      raise GrantError.new('invalid_request', 'refresh_token is required.') if params[:refresh_token].blank?
-
-      token = Token.from_jwt(params[:refresh_token], token_type: :refresh)
+      token = Token.from_jwt(required_param(:refresh_token), token_type: :refresh)
       raise GrantError.new('invalid_grant', 'The refresh token is not valid.') unless token&.issued_to?(current_client)
 
       replayed = false
@@ -284,9 +278,7 @@ module Oauth
     # RFC 8628 Section 3.4 and 3.5. The outcome is decided inside the lock and
     # raised outside of it, so the bookkeeping of a poll is not rolled back.
     def device_code_grant
-      raise GrantError.new('invalid_request', 'device_code is required.') if params[:device_code].blank?
-
-      request = DeviceAuthorization.find_by_device_code(params[:device_code], current_client)
+      request = DeviceAuthorization.find_by_device_code(required_param(:device_code), current_client)
       raise GrantError.new('invalid_grant', 'The device_code is not valid.') if request.nil?
 
       outcome = request.with_lock { poll_device_authorization(request) }
@@ -336,7 +328,7 @@ module Oauth
       ]
     end
 
-    def tokens_for(grant_type = params[:grant_type])
+    def tokens_for(grant_type)
       case grant_type
       when 'authorization_code'
         authorization_code_grant
