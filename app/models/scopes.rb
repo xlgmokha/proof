@@ -31,6 +31,12 @@ module Scopes
     requested if valid?(requested) && subset?(requested, allowed)
   end
 
+  # The requested scope as a string if it stays within what was granted.
+  def narrow(value, granted)
+    requested = parse(value).uniq
+    format(requested) if subset?(requested, granted)
+  end
+
   def subset?(requested, granted)
     (requested - granted).empty?
   end

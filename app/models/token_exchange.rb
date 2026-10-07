@@ -104,10 +104,7 @@ class TokenExchange
   def narrowed_scope(subject)
     return subject.scope if scope.blank?
 
-    requested = Scopes.parse(scope).uniq
-    raise Invalid.new('invalid_scope', 'The scope exceeds that of the subject_token.') unless Scopes.subset?(requested, subject.scopes)
-
-    Scopes.format(requested)
+    Scopes.narrow(scope, subject.scopes) || raise(Invalid.new('invalid_scope', 'The scope exceeds that of the subject_token.'))
   end
 
   # Section 4.1: the actor goes outermost, with earlier actors nested in it.

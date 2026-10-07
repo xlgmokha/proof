@@ -264,10 +264,7 @@ module Oauth
     def narrowed_scope(token)
       return token.scope if params[:scope].blank?
 
-      requested = Scopes.parse(params[:scope]).uniq
-      raise GrantError.new('invalid_scope') unless Scopes.subset?(requested, token.scopes)
-
-      Scopes.format(requested)
+      Scopes.narrow(params[:scope], token.scopes) || raise(GrantError.new('invalid_scope'))
     end
 
     # RFC 8628 Section 3.4 and 3.5. The outcome is decided inside the lock and
