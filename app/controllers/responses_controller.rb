@@ -7,6 +7,8 @@ class ResponsesController < ApplicationController
       return render_error(:forbidden, model: saml) if saml.invalid?
 
       post_back(saml, session[:saml][:params][:RelayState])
+    elsif (path = return_path)
+      redirect_to path
     else
       redirect_to my_dashboard_path
     end

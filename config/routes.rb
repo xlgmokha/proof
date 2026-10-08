@@ -21,8 +21,11 @@ Rails.application.routes.draw do
   end
   namespace :oauth do
     resource :authorizations, only: [:show, :create]
-    resource :me, only: [:show]
-    resources :clients, only: [:show, :create, :update]
+    resource :me, only: [:show, :create]
+    post :par, to: 'pushed_requests#create', as: :par
+    post :device_authorization, to: 'device_authorizations#create'
+    resource :device, only: [:show, :create]
+    resources :clients, only: [:show, :create, :update, :destroy]
     resource :tokens, only: [:create] do
       post :introspect
       post :revoke
@@ -32,31 +35,39 @@ Rails.application.routes.draw do
     namespace :v2, defaults: { format: :scim } do
       post ".search", to: "search#index"
 
-      get 'Groups/:id', to: 'groups#show'
-      post :Groups, to: "groups#create"
-      put 'Groups/:id', to: "groups#update"
-      resources :groups, only: [:index]
+      # RFC 7644 defines the capitalized endpoints. The lowercase paths predate
+      # them and are kept so existing integrations continue to work.
+      patch 'Users/:id', to: 'users#patch'
+      patch 'users/:id', to: 'users#patch', as: nil
+      resources :users, path: 'Users', only: [:index, :show, :create, :update, :destroy]
+      resources :users, path: 'users', only: [:index, :show, :create, :update, :destroy], as: :legacy_users
+
+      patch 'Groups/:id', to: 'groups#patch'
+      patch 'groups/:id', to: 'groups#patch', as: nil
+      resources :groups, path: 'Groups', only: [:index, :show, :create, :update, :destroy]
+      resources :groups, path: 'groups', only: [:index, :show, :create, :update, :destroy], as: :legacy_groups
 
       get :ResourceTypes, to: "resource_types#index"
       get 'ResourceTypes/:id', to: "resource_types#show"
       resources :resource_types, only: [:index, :show]
 
       get :Schemas, to: 'schemas#index'
-      get 'Schemas/:id', to: "schemas#show"
+      get 'Schemas/:id', to: "schemas#show", constraints: { id: /.+/ }
       resources :schemas, only: [:index, :show], constraints: { id: /.+/ }
 
       get :ServiceProviderConfig, to: "service_providers#show"
 
-      get 'Users/:id', to: 'users#show'
-      post :Users, to: "users#create"
-      put 'Users/:id', to: "users#update"
-      resources :users, only: [:index, :show, :create, :update, :destroy]
-
-      match 'Me', to: lambda { |env| [501, {}, ['']] }, via: [:get, :post, :put, :patch, :delete]
-      match 'Bulk', to: lambda { |env| [501, {}, ['']] }, via: [:post]
+      get 'Me', to: 'mes#show'
+      put 'Me', to: 'mes#update'
+      patch 'Me', to: 'mes#patch'
+      delete 'Me', to: 'mes#destroy'
+      post 'Bulk', to: 'bulk#create'
     end
   end
-  get "/.well-known/oauth-authorization-server", to: "oauth/metadata#show"
+  # RFC 8414 Section 3: the well-known segment goes between host and issuer path.
+  get "/.well-known/oauth-authorization-server(/*path)", to: "oauth/metadata#show", format: false
+  get "/.well-known/oauth-protected-resource(/*path)", to: "oauth/resource_metadata#show", format: false
+  get "/.well-known/jwks.json", to: "oauth/jwks#show", as: :jwks
   direct :documentation do
     root_url + 'doc'
   end

@@ -6,6 +6,6 @@ permalink: /scim/service-provider-config.html
 categories: scim
 ---
 
-This endpoint adheres to [RFC-7644](https://tools.ietf.org/html/rfc7644#section-4).
+This endpoint adheres to [RFC-7644](https://tools.ietf.org/html/rfc7644#section-4). Patch, bulk and filter are supported.
 
 {% include scim-service-provider-config.html %}

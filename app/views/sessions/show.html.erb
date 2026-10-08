@@ -2,7 +2,7 @@
   <nav class="navbar" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
       <%= link_to my_dashboard_path, class: 'navbar-item' do %>
-        <img src="<%= asset_pack_path("media/images/logo.png") %>" height="28">
+        <img src="<%= asset_pack_path("static/images/logo.png") %>" height="28">
       <% end %>
       <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navigation-bar">
         <span aria-hidden="true"></span>
@@ -13,7 +13,7 @@
     <div id='navigation-bar' class="navbar-menu">
       <div class="navbar-start">
         <%= link_to t(".home"), my_dashboard_path, class: 'navbar-item' %>
-        <%= link_to t(".documentation"), '/doc/', class: 'navbar-item', data: { turbolinks: false } %>
+        <%= link_to t(".documentation"), '/doc/', class: 'navbar-item', data: { turbo: false } %>
         <div class="navbar-item has-dropdown is-hoverable">
           <a class="navbar-link"> <%= t('.more') %> </a>
           <div class="navbar-dropdown">

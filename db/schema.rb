@@ -2,19 +2,18 @@
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
 #
-# This file is the source Rails uses to define your schema when running `rails
-# db:schema:load`. When creating a new database, `rails db:schema:load` tends to
+# This file is the source Rails uses to define your schema when running `bin/rails
+# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
 # be faster and is potentially less error prone than running all of your
 # migrations from scratch. Old migrations may fail to apply correctly if those
 # migrations use external dependencies or application code.
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_31_042804) do
-
+ActiveRecord::Schema[8.1].define(version: 2026_10_06_200000) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
-  enable_extension "plpgsql"
   enable_extension "uuid-ossp"
 
   create_table "audits", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -49,6 +48,13 @@ ActiveRecord::Schema.define(version: 2019_05_31_042804) do
     t.datetime "revoked_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "redirect_uri"
+    t.string "scope"
+    t.string "resource"
+    t.string "dpop_jkt"
+    t.jsonb "authorization_details"
+    t.string "acr"
+    t.integer "auth_time"
     t.index ["client_id"], name: "index_authorizations_on_client_id"
     t.index ["code"], name: "index_authorizations_on_code"
     t.index ["user_id"], name: "index_authorizations_on_user_id"
@@ -63,6 +69,53 @@ ActiveRecord::Schema.define(version: 2019_05_31_042804) do
     t.integer "token_endpoint_auth_method", default: 0, null: false
     t.string "logo_uri"
     t.string "jwks_uri"
+    t.jsonb "jwks"
+    t.text "grant_types", default: ["authorization_code", "refresh_token", "client_credentials", "urn:ietf:params:oauth:grant-type:saml2-bearer", "urn:ietf:params:oauth:grant-type:jwt-bearer"], null: false, array: true
+    t.text "response_types", default: ["code"], null: false, array: true
+    t.string "scope"
+    t.text "contacts", default: [], null: false, array: true
+    t.string "client_uri"
+    t.string "tos_uri"
+    t.string "policy_uri"
+    t.string "software_id"
+    t.string "software_version"
+    t.boolean "require_pushed_authorization_requests", default: false, null: false
+    t.boolean "require_signed_request_object", default: false, null: false
+    t.string "resources", default: [], null: false, array: true
+    t.string "authorization_details_types", default: [], null: false, array: true
+    t.string "request_uris", default: [], null: false, array: true
+    t.string "tls_client_auth_subject_dn"
+    t.string "tls_client_auth_san_dns"
+    t.string "tls_client_auth_san_uri"
+    t.string "tls_client_auth_san_ip"
+    t.string "tls_client_auth_san_email"
+    t.boolean "tls_client_certificate_bound_access_tokens", default: false, null: false
+  end
+
+  create_table "device_authorizations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "client_id", null: false
+    t.uuid "user_id"
+    t.string "device_code_digest", null: false
+    t.string "user_code", null: false
+    t.string "scope"
+    t.string "resource"
+    t.integer "status", default: 0, null: false
+    t.integer "interval", default: 5, null: false
+    t.datetime "last_polled_at"
+    t.datetime "expires_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_device_authorizations_on_client_id"
+    t.index ["device_code_digest"], name: "index_device_authorizations_on_device_code_digest", unique: true
+    t.index ["user_code"], name: "index_device_authorizations_on_user_code", unique: true
+    t.index ["user_id"], name: "index_device_authorizations_on_user_id"
+  end
+
+  create_table "failed_device_attempts", force: :cascade do |t|
+    t.string "subject", null: false
+    t.datetime "created_at", null: false
+    t.index ["created_at"], name: "index_failed_device_attempts_on_created_at"
+    t.index ["subject", "created_at"], name: "index_failed_device_attempts_on_subject_and_created_at"
   end
 
   create_table "flipper_features", force: :cascade do |t|
@@ -81,6 +134,35 @@ ActiveRecord::Schema.define(version: 2019_05_31_042804) do
     t.index ["feature_key", "key", "value"], name: "index_flipper_gates_on_feature_key_and_key_and_value", unique: true
   end
 
+  create_table "group_memberships", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "group_id", null: false
+    t.uuid "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["group_id", "user_id"], name: "index_group_memberships_on_group_id_and_user_id", unique: true
+    t.index ["group_id"], name: "index_group_memberships_on_group_id"
+    t.index ["user_id"], name: "index_group_memberships_on_user_id"
+  end
+
+  create_table "groups", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "display_name", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index "lower((display_name)::text)", name: "index_groups_on_lower_display_name", unique: true
+  end
+
+  create_table "pushed_authorization_requests", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "client_id", null: false
+    t.string "reference", null: false
+    t.jsonb "parameters", default: {}, null: false
+    t.datetime "expires_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_pushed_authorization_requests_on_client_id"
+    t.index ["reference"], name: "index_pushed_authorization_requests_on_reference", unique: true
+  end
+
   create_table "sessions", id: :serial, force: :cascade do |t|
     t.string "session_id", null: false
     t.text "data"
@@ -91,7 +173,6 @@ ActiveRecord::Schema.define(version: 2019_05_31_042804) do
   end
 
   create_table "tokens", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.bigint "authorization_id"
     t.string "subject_type"
     t.uuid "subject_id"
     t.string "audience_type"
@@ -101,9 +182,40 @@ ActiveRecord::Schema.define(version: 2019_05_31_042804) do
     t.datetime "revoked_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "authorization_id"
+    t.string "scope"
+    t.string "resource"
+    t.string "dpop_jkt"
+    t.uuid "family_id"
+    t.jsonb "act"
+    t.jsonb "authorization_details"
+    t.string "x5t_s256"
+    t.string "acr"
+    t.integer "auth_time"
     t.index ["audience_type", "audience_id"], name: "index_tokens_on_audience_type_and_audience_id"
     t.index ["authorization_id"], name: "index_tokens_on_authorization_id"
+    t.index ["family_id"], name: "index_tokens_on_family_id"
     t.index ["subject_type", "subject_id"], name: "index_tokens_on_subject_type_and_subject_id"
+  end
+
+  create_table "used_assertions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "client_id", null: false
+    t.string "jti", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id", "jti"], name: "index_used_assertions_on_client_id_and_jti", unique: true
+    t.index ["client_id"], name: "index_used_assertions_on_client_id"
+    t.index ["expires_at"], name: "index_used_assertions_on_expires_at"
+  end
+
+  create_table "used_proofs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "digest", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["digest"], name: "index_used_proofs_on_digest", unique: true
+    t.index ["expires_at"], name: "index_used_proofs_on_expires_at"
   end
 
   create_table "user_sessions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -134,5 +246,11 @@ ActiveRecord::Schema.define(version: 2019_05_31_042804) do
 
   add_foreign_key "authorizations", "clients"
   add_foreign_key "authorizations", "users"
+  add_foreign_key "device_authorizations", "clients", on_delete: :cascade
+  add_foreign_key "device_authorizations", "users", on_delete: :cascade
+  add_foreign_key "group_memberships", "groups"
+  add_foreign_key "group_memberships", "users"
+  add_foreign_key "pushed_authorization_requests", "clients", on_delete: :cascade
+  add_foreign_key "used_assertions", "clients", on_delete: :cascade
   add_foreign_key "user_sessions", "users"
 end

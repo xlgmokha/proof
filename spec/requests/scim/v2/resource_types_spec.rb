@@ -32,7 +32,7 @@ RSpec.describe "/scim/v2/ResourceTypes" do
     specify { expect(json[1][:endpoint]).to eql(scim_v2_groups_url) }
     specify { expect(json[1][:meta][:location]).to eql(scim_v2_resource_type_url(id: 'Group')) }
     specify { expect(json[1][:meta][:resourceType]).to eql('ResourceType') }
-    specify { expect(json[1][:schemaExtensions]).to match_array([]) }
+    specify { expect(json[1][:schemaExtensions]).to be_empty }
   end
 
   describe "GET /scim/v2/ResourceTypes/User" do
@@ -64,7 +64,7 @@ RSpec.describe "/scim/v2/ResourceTypes" do
     specify { expect(json[:meta][:location]).to eql(scim_v2_resource_type_url(id: 'Group')) }
     specify { expect(json[:meta][:resourceType]).to eql('ResourceType') }
     specify { expect(json[:schema]).to eql('urn:ietf:params:scim:schemas:core:2.0:Group') }
-    specify { expect(json[:schemaExtensions]).to match_array([]) }
+    specify { expect(json[:schemaExtensions]).to be_empty }
   end
 
   describe "GET /scim/v2/ResourceTypes/unknown" do

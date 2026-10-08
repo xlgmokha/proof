@@ -24,3 +24,10 @@
 # For further information see the following documentation:
 # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy-Report-Only
 # Rails.application.config.content_security_policy_report_only = true
+
+# OAuth 2.1 "Clickjacking": the consent page may only be framed by this site.
+Rails.application.configure do
+  config.content_security_policy do |policy|
+    policy.frame_ancestors :self
+  end
+end

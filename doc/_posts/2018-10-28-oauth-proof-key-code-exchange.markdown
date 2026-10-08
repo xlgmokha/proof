@@ -27,4 +27,9 @@ This endpoint adhears Proof Key Code Exchange described in [RFC-7636](https://to
 ```
 [Section 1.1](https://tools.ietf.org/html/rfc7636#section-1.1)
 
+The `code_challenge_method` may be `plain` or `S256`. For `S256` the `code_challenge` is
+`BASE64URL-ENCODE(SHA256(ASCII(code_verifier)))` using the raw digest and no padding
+([Section 4.2](https://tools.ietf.org/html/rfc7636#section-4.2)). Authorization requests with another
+method, or with a method but no `code_challenge`, are rejected with `invalid_request`.
+
 {% include oauth-tokens-pkce.html %}

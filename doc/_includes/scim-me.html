@@ -1,0 +1,79 @@
+
+#### GET http://127.0.0.1:37541/scim/v2/Me
+
+Example curl request:
+
+```bash
+$ curl http://127.0.0.1:37541/scim/v2/Me \
+  -X GET \
+  -d '' \
+  -H "Accept: application/scim+json" \
+  -H "Content-Type: application/scim+json" \
+  -H "User-Agent: net/hippie 1.4.0" \
+  -H "Authorization: Bearer eyJraWQiOiJiYTYyOTNlYWEyNjg4MzkzOTkzMWMxYmI5MTQxNDhmM2YyMTNmOGJmNmU3ZDFkNTQ3ODEwMzk3ZjRkNTBlNGUzIiwiYWxnIjoiUlMyNTYifQ.eyJleHAiOjE3OTEyNjY5ODEsImlhdCI6MTc5MTI2MzM4MSwiaXNzIjoidGVzdCIsIm5iZiI6MTc5MTI2MzM4MSwiYXVkIjoiZjgxZjlhNWUtMWM0My00MjhiLThmN2ItYTdiNGEyNGJhMTMyIiwianRpIjoiYzIwMDdmMDgtNjY1MC00ZWEwLWI3NmEtMWE3NzJjMWVkNGE5Iiwic3ViIjoiNDdmZjcyMjAtMTA3YS00ZTIxLWExZWEtODQ1YzZiMDlmNDgzIiwidG9rZW5fdHlwZSI6ImFjY2VzcyJ9.reEZ13rxPZameZs97Sd89Ek_Axh_FjmdalEOOC7LI-wfY9n3_H1kGgIRO_3ZNQ9tvwxgVX4wMyHrfErFxvBT5B8s3T446SqQkzh9BRx7-zrutmX5IhNROlm2bUx67fy79VYBfNbw_nzZfnSb7MsJoiD7xXrlczk_2qcUYpmX1O2LtUC1phDdoZFir64Tg2zzJrGYnn0YVXRDj6u0gvTtOcxLfAN7CtAv1WJ00FPQWb8PGalxDJwSykjRVZIdGnSxhXXxS113DD58g4Tq8iZ6G8UhYU2TnsQW7g2txK4m_6Xw72RL0YAIlkK94tW4g-HYDkirPjQ4PHO5cmP9cIMRghkWzr0GN4WabMNAUlBrhnKWD0n5l3W19gerEv755Mg8Zao8M-sUdf812GSX0NYXrDfm2FBWUvzv_FiAhh_VWkd2x33pprP55LGX6iOgRRIVakIFX4g3bI4EgDXR-7UQC25e6WJMnCD0kI0s0lOxuZbi9Ka7g1u7By6sQ_tUX4KEhiZAzVD601izrPxZQSlJ3X0YdF38fQIwldhP-njwdAkCnqLKHy3rDzjqINHdlEEIxmC54galryw0Qkek-jEwWaRKPcjqH6O8wOsW1i02ZE9VkkNkbrP4KniaOscohUaeQ_niT8QAe_38D8Ldwid4rHYq7p_CyWdfPhOF6Mrm2J4" \
+  -H "Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3" \
+  -H "Host: 127.0.0.1:37541"
+```
+Request:
+```text
+Accept: application/scim+json
+Content-Type: application/scim+json
+User-Agent: net/hippie 1.4.0
+Authorization: Bearer eyJraWQiOiJiYTYyOTNlYWEyNjg4MzkzOTkzMWMxYmI5MTQxNDhmM2YyMTNmOGJmNmU3ZDFkNTQ3ODEwMzk3ZjRkNTBlNGUzIiwiYWxnIjoiUlMyNTYifQ.eyJleHAiOjE3OTEyNjY5ODEsImlhdCI6MTc5MTI2MzM4MSwiaXNzIjoidGVzdCIsIm5iZiI6MTc5MTI2MzM4MSwiYXVkIjoiZjgxZjlhNWUtMWM0My00MjhiLThmN2ItYTdiNGEyNGJhMTMyIiwianRpIjoiYzIwMDdmMDgtNjY1MC00ZWEwLWI3NmEtMWE3NzJjMWVkNGE5Iiwic3ViIjoiNDdmZjcyMjAtMTA3YS00ZTIxLWExZWEtODQ1YzZiMDlmNDgzIiwidG9rZW5fdHlwZSI6ImFjY2VzcyJ9.reEZ13rxPZameZs97Sd89Ek_Axh_FjmdalEOOC7LI-wfY9n3_H1kGgIRO_3ZNQ9tvwxgVX4wMyHrfErFxvBT5B8s3T446SqQkzh9BRx7-zrutmX5IhNROlm2bUx67fy79VYBfNbw_nzZfnSb7MsJoiD7xXrlczk_2qcUYpmX1O2LtUC1phDdoZFir64Tg2zzJrGYnn0YVXRDj6u0gvTtOcxLfAN7CtAv1WJ00FPQWb8PGalxDJwSykjRVZIdGnSxhXXxS113DD58g4Tq8iZ6G8UhYU2TnsQW7g2txK4m_6Xw72RL0YAIlkK94tW4g-HYDkirPjQ4PHO5cmP9cIMRghkWzr0GN4WabMNAUlBrhnKWD0n5l3W19gerEv755Mg8Zao8M-sUdf812GSX0NYXrDfm2FBWUvzv_FiAhh_VWkd2x33pprP55LGX6iOgRRIVakIFX4g3bI4EgDXR-7UQC25e6WJMnCD0kI0s0lOxuZbi9Ka7g1u7By6sQ_tUX4KEhiZAzVD601izrPxZQSlJ3X0YdF38fQIwldhP-njwdAkCnqLKHy3rDzjqINHdlEEIxmC54galryw0Qkek-jEwWaRKPcjqH6O8wOsW1i02ZE9VkkNkbrP4KniaOscohUaeQ_niT8QAe_38D8Ldwid4rHYq7p_CyWdfPhOF6Mrm2J4
+Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+Host: 127.0.0.1:37541
+```
+```json
+
+```
+Response:
+```text
+200 OK
+
+X-Frame-Options: SAMEORIGIN
+X-Xss-Protection: 1; mode=block
+X-Content-Type-Options: nosniff
+X-Download-Options: noopen
+X-Permitted-Cross-Domain-Policies: none
+Referrer-Policy: strict-origin-when-cross-origin
+Content-Type: application/scim+json
+Location: http://127.0.0.1:37541/scim/v2/Users/47ff7220-107a-4e21-a1ea-845c6b09f483
+Etag: W/"030cc047c7505c02d51015868637c985"
+Last-Modified: Tue, 06 Oct 2026 05:09:41 GMT
+Cache-Control: max-age=0, private, must-revalidate
+X-Request-Id: 8372ae47-c9a4-4c0a-8b8b-6970f35b9c92
+Content-Length: 714
+```
+```json
+{
+  "schemas": [
+    "urn:ietf:params:scim:schemas:core:2.0:User"
+  ],
+  "id": "47ff7220-107a-4e21-a1ea-845c6b09f483",
+  "meta": {
+    "resourceType": "User",
+    "created": "2026-10-06T05:09:41Z",
+    "lastModified": "2026-10-06T05:09:41Z",
+    "version": "W/\"030cc047c7505c02d51015868637c985\"",
+    "location": "http://127.0.0.1:37541/scim/v2/Users/47ff7220-107a-4e21-a1ea-845c6b09f483"
+  },
+  "userName": "u640b44n10@example-4102a8a0.com",
+  "name": {
+    "formatted": "u640b44n10@example-4102a8a0.com",
+    "familyName": "u640b44n10@example-4102a8a0.com",
+    "givenName": "u640b44n10@example-4102a8a0.com"
+  },
+  "displayName": "u640b44n10@example-4102a8a0.com",
+  "locale": "en",
+  "timezone": "Etc/UTC",
+  "active": true,
+  "emails": [
+    {
+      "value": "u640b44n10@example-4102a8a0.com",
+      "primary": true
+    }
+  ],
+  "groups": []
+}
+```
+

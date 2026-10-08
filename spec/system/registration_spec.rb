@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-describe "when registering for an account", js: true do
+describe "when registering for an account", :js do
   let(:email) { FFaker::Internet.email }
   let(:password) { FFaker::Internet.password }
 
@@ -14,7 +14,8 @@ describe "when registering for an account", js: true do
       fill_in "user_password_confirmation", with: password
       click_button I18n.t('registrations.new.register')
     end
-    within "form[action^='/session']" do
+    # The header loads its own form for /session; the login form is the one with the email field.
+    within "form[action^='/session']:has(#user_email)" do
       fill_in "user_email", with: email
       fill_in "user_password", with: password
       click_button I18n.t('sessions.new.login')

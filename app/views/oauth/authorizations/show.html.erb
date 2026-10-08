@@ -4,8 +4,16 @@
       <h1 class="title"><%= t('.title') %></h1>
 
       <p><%= t('.authorize_prompt_html', name: @client.name) %></p>
-      <%= form_for :authorization, url: oauth_authorizations_path, method: :post do |form| %>
-        <%= form.button t('.authorize'), type: 'submit', class: 'btn btn-primary', data: { disable_with: t('loading') } %>
+      <% if @scopes.present? %>
+        <p><%= t('.requested_access', list: @scopes.join(', ')) %></p>
+      <% end %>
+      <p><%= t('.lifetime', minutes: (Token::ACCESS_LIFETIME / 60).to_i) %></p>
+      <% Array(@details).each do |detail| %>
+        <pre class="authorization-detail"><%= JSON.pretty_generate(detail) %></pre>
+      <% end %>
+      <%= form_for :authorization, url: oauth_authorizations_path, method: :post, data: { turbo: false } do |form| %>
+        <%= form.button t('.authorize'), type: 'submit', class: 'btn btn-primary', data: { turbo_submits_with: t('loading') } %>
+        <%= form.button t('.deny'), type: 'submit', name: 'deny', value: '1', class: 'btn btn-secondary' %>
       <% end %>
     </div>
   </div>

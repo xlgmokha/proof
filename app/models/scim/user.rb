@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module SCIM
+module Scim
   class User
     include ActiveModel::Model
     ATTRIBUTES = {

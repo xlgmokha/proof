@@ -4,7 +4,7 @@ const _ = require("lodash");
 const glob = require("glob");
 const path = require("path");
 const fs = require("fs");
-const yaml = require("yaml-js");
+const yaml = require("yaml");
 
 class I18nLoader {
   constructor(localesPath, pattern) {
@@ -25,7 +25,7 @@ class I18nLoader {
   }
 
   fromFile(file) {
-    let content = yaml.load(fs.readFileSync(path.join(this.localesPath, file)));
+    let content = yaml.parse(fs.readFileSync(path.join(this.localesPath, file), "utf8"));
     _.forEach(content, (data, locale) => {
       content[locale] = I18nLoader.flatten(data);
     });

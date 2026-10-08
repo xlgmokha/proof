@@ -8,7 +8,7 @@ module My
 
     def destroy
       current_user.sessions.find(params[:id]).destroy
-      redirect_to my_sessions_path, notice: t('.success')
+      redirect_to my_sessions_path, notice: t(".success"), status: :see_other
     end
   end
 end

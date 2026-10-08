@@ -15,7 +15,7 @@
       </div>
       <nav class="level">
         <div class="level-left">
-          <%= link_to my_session_path(user_session.to_param), class: 'level-item', method: :delete, data: { remote: true, disable_with: t('loading') } do %>
+          <%= link_to my_session_path(user_session.to_param), class: 'level-item', data: { turbo_method: :delete } do %>
             <span class="icon is-small">
               <i class="fas fa-trash" aria-hidden="true"></i>
             </span>

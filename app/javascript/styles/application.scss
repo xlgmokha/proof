@@ -1,9 +1,11 @@
-@import '~@fortawesome/fontawesome-free/scss/fontawesome';
-@import '~@fortawesome/fontawesome-free/scss/regular';
-@import '~@fortawesome/fontawesome-free/scss/solid';
-@import '~@fortawesome/fontawesome-free/scss/brands';
-@import '~bulma/bulma';
-@import '~bourbon/core/bourbon';
+@use '@fortawesome/fontawesome-free/scss/variables' with ($font-path: '~@fortawesome/fontawesome-free/webfonts');
+
+@import '@fortawesome/fontawesome-free/scss/fontawesome';
+@import '@fortawesome/fontawesome-free/scss/regular';
+@import '@fortawesome/fontawesome-free/scss/solid';
+@import '@fortawesome/fontawesome-free/scss/brands';
+@import 'bulma/bulma';
+@import 'bourbon/core/bourbon';
 
 @keyframes spinner {
   0% { transform: rotate(0deg); }

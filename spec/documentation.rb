@@ -25,7 +25,7 @@ RSpec.configure do |config|
     puts "Booting"
     $server.boot
     print "." until $server.responsive?
-    FileUtils.rm_rf(Rails.root.join('tmp', '_cassettes'))
+    FileUtils.rm_rf(Rails.root.join("tmp/_cassettes"))
     Net::Hippie.logger = Logger.new('/dev/null')
     VCR.configure do |x|
       x.cassette_library_dir = "tmp/_cassettes"
@@ -44,7 +44,7 @@ RSpec.configure do |config|
 end
 
 class UserAgent
-  def login_with(scheme: 'https', host:, port:, email:, password:, issuer:)
+  def login_with(host:, port:, email:, password:, issuer:, scheme: 'https')
     authn_request = Saml::Kit::AuthenticationRequest.build(configuration: Saml::Kit.configuration) do |x|
       x.issuer = issuer
       x.embed_signature = false
@@ -159,7 +159,7 @@ RSpec.describe "documentation" do
 
   specify do
     code_verifier = SecureRandom.hex(128)
-    authorization = create(:authorization, client: client, challenge: Base64.urlsafe_encode64(Digest::SHA256.hexdigest(code_verifier)), challenge_method: :sha256)
+    authorization = create(:authorization, client: client, challenge: Base64.urlsafe_encode64(Digest::SHA256.digest(code_verifier), padding: false), challenge_method: :sha256)
     headers = { 'Authorization' => ActionController::HttpAuthentication::Basic.encode_credentials(client.to_param, client.password) }
     body = { grant_type: 'authorization_code', code: authorization.code, code_verifier: code_verifier }
     VCR.use_cassette("oauth-tokens-pkce") do
@@ -230,6 +230,87 @@ RSpec.describe "documentation" do
       headers = { 'Content-Type' => Mime[:scim].to_s }
       response = hippie.get("#{url_prefix}/scim/v2/ResourceTypes/Group", headers: headers)
       expect(response.code).to eql('200')
+    end
+  end
+
+  specify do
+    signing_key = OpenSSL::PKey::RSA.generate(2048)
+    jwk = JWT::JWK.new(signing_key.public_key, kid: 'example-key')
+    jwt_client = create(:client, jwks_uri: nil, jwks: { keys: [jwk.export] })
+    claims = { iss: jwt_client.to_param, sub: user.email, aud: Oauth::Issuer.identifier, exp: 5.minutes.from_now.to_i, jti: SecureRandom.uuid }
+    headers = { 'Authorization' => ActionController::HttpAuthentication::Basic.encode_credentials(jwt_client.to_param, jwt_client.password) }
+    body = { grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer', assertion: JWT.encode(claims, signing_key, 'RS256', kid: 'example-key') }
+    VCR.use_cassette("oauth-tokens-jwt-bearer") do
+      response = hippie.post("#{url_prefix}/oauth/tokens", body: body, headers: headers)
+      expect(response.code).to eql('200')
+    end
+  end
+
+  specify do
+    headers = { 'Authorization' => "Bearer #{client.access_token.to_jwt}" }
+    VCR.use_cassette("oauth-dynamic-client-delete") do
+      response = hippie.delete("#{url_prefix}/oauth/clients/#{client.to_param}", headers: headers)
+      expect(response.code).to eql('204')
+    end
+  end
+
+  context "with SCIM" do
+    let(:scim_headers) do
+      {
+        'Authorization' => "Bearer #{create(:access_token, subject: user).to_jwt}",
+        'Content-Type' => Mime[:scim].to_s,
+        'Accept' => Mime[:scim].to_s,
+      }
+    end
+    let(:patch_op) { Scim::Kit::V2::Messages::PATCH_OP }
+
+    specify do
+      Group.where(display_name: 'Engineering').destroy_all
+      VCR.use_cassette("scim-groups-create") do
+        body = { schemas: [Scim::Kit::V2::Schemas::GROUP], displayName: 'Engineering', members: [{ value: user.to_param }] }
+        response = hippie.post("#{url_prefix}/scim/v2/Groups", body: body.to_json, headers: scim_headers)
+        expect(response.code).to eql('201')
+      end
+    end
+
+    specify do
+      Group.where(display_name: %w[Platform Infrastructure]).destroy_all
+      group = create(:group, display_name: 'Infrastructure')
+      VCR.use_cassette("scim-groups-patch") do
+        operations = [
+          { op: 'add', path: 'members', value: [{ value: user.to_param }] },
+          { op: 'replace', path: 'displayName', value: 'Platform' },
+        ]
+        response = hippie.patch("#{url_prefix}/scim/v2/Groups/#{group.to_param}", body: { schemas: [patch_op], Operations: operations }.to_json, headers: scim_headers)
+        expect(response.code).to eql('200')
+      end
+    end
+
+    specify do
+      VCR.use_cassette("scim-users-patch") do
+        operations = [{ op: 'replace', path: 'locale', value: 'ja' }, { op: 'replace', path: 'timezone', value: 'Asia/Tokyo' }]
+        response = hippie.patch("#{url_prefix}/scim/v2/Users/#{user.to_param}", body: { schemas: [patch_op], Operations: operations }.to_json, headers: scim_headers)
+        expect(response.code).to eql('200')
+      end
+    end
+
+    specify do
+      VCR.use_cassette("scim-me") do
+        response = hippie.get("#{url_prefix}/scim/v2/Me", headers: scim_headers)
+        expect(response.code).to eql('200')
+      end
+    end
+
+    specify do
+      VCR.use_cassette("scim-bulk") do
+        operations = [
+          { method: 'POST', path: '/Users', bulkId: 'new-user', data: { schemas: [Scim::Kit::V2::Schemas::USER], userName: generate(:email), locale: 'en', timezone: 'Etc/UTC' } },
+          { method: 'POST', path: '/Groups', bulkId: 'new-group', data: { displayName: 'Bulk Group', members: [{ value: 'bulkId:new-user' }] } },
+        ]
+        body = { schemas: [Scim::Kit::V2::Messages::BULK_REQUEST], Operations: operations }
+        response = hippie.post("#{url_prefix}/scim/v2/Bulk", body: body.to_json, headers: scim_headers)
+        expect(response.code).to eql('200')
+      end
     end
   end
 end

@@ -8,18 +8,18 @@
           <div class="field">
             <%= form.label :name %>
             <div class="control">
-              <%= form.text_field :name, class: 'input', data: { target: 'clients--new.name' } %>
+              <%= form.text_field :name, class: 'input', data: { 'clients--new-target': 'name' } %>
             </div>
           </div>
           <div class="field">
             <%= form.label :redirect_uris %>
             <div class="control">
-              <%= form.url_field :redirect_uris, class: 'input', data: { target: 'clients--new.redirect_uris' }, multiple: true %>
+              <%= form.url_field :redirect_uris, class: 'input', data: { 'clients--new-target': 'redirect_uris' }, multiple: true %>
             </div>
           </div>
           <div class="field is-grouped is-grouped-right">
             <div class="control">
-              <%= form.submit t(".enable"), class: 'button is-primary', data: { disable_with: 'Saving…' } %>
+              <%= form.submit t(".enable"), class: 'button is-primary', data: { turbo_submits_with: 'Saving…' } %>
             </div>
             <div class="control">
               <%= link_to t(".cancel"), my_clients_path, class: 'button' %>

@@ -50,17 +50,17 @@ class SessionsController < ApplicationController
       raise 'Unknown NameId' unless current_user.to_param == saml.name_id
 
       session[:saml] = { params: saml_params.to_h, xml: saml.to_xml }
-      redirect_to response_path
+      redirect_to response_path, status: :see_other
     elsif saml_params[:SAMLResponse].present?
       saml = binding.deserialize(saml_params)
       raise ActiveRecord::RecordInvalid.new(saml) if saml.invalid?
 
       reset_session
-      redirect_to new_session_path
+      redirect_to new_session_path, status: :see_other
     else
       Current.user_session&.destroy
       reset_session
-      redirect_to new_session_path
+      redirect_to new_session_path, status: :see_other
     end
   end
 
@@ -68,9 +68,11 @@ class SessionsController < ApplicationController
 
   def login(user)
     saml_data = session[:saml]
+    state = return_state
     reset_session
     session[:user_session_key] = user.sessions.build.access(request)
     session[:saml] = saml_data
+    restore_return_state(state)
   end
 
   def binding_for(binding, location)

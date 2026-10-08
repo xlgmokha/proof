@@ -2,8 +2,8 @@
 
 require 'rails_helper'
 
-describe "when logging in directly in to the application", js: true do
-  describe "when MFA is disabled", js: true do
+describe "when logging in directly in to the application", :js do
+  describe "when MFA is disabled", :js do
     let(:user) { create(:user) }
 
     it 'redirects the user to the dashboard' do
@@ -16,7 +16,7 @@ describe "when logging in directly in to the application", js: true do
     end
   end
 
-  describe "when MFA is enabled", js: true do
+  describe "when MFA is enabled", :js do
     let(:user) { create(:user, :mfa_configured) }
 
     it 'prompts for a TOTP code then redirect to the dashboard' do

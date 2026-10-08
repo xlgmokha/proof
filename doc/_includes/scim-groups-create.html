@@ -1,0 +1,80 @@
+
+#### POST http://127.0.0.1:37541/scim/v2/Groups
+
+Example curl request:
+
+```bash
+$ curl http://127.0.0.1:37541/scim/v2/Groups \
+  -X POST \
+  -d '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:Group"],"displayName":"Engineering","members":[{"value":"af48b320-90bf-4fbc-96bf-be1c2a1ab7e8"}]}' \
+  -H "Accept: application/scim+json" \
+  -H "Content-Type: application/scim+json" \
+  -H "User-Agent: net/hippie 1.4.0" \
+  -H "Authorization: Bearer eyJraWQiOiJiYTYyOTNlYWEyNjg4MzkzOTkzMWMxYmI5MTQxNDhmM2YyMTNmOGJmNmU3ZDFkNTQ3ODEwMzk3ZjRkNTBlNGUzIiwiYWxnIjoiUlMyNTYifQ.eyJleHAiOjE3OTEyNjY5ODEsImlhdCI6MTc5MTI2MzM4MSwiaXNzIjoidGVzdCIsIm5iZiI6MTc5MTI2MzM4MSwiYXVkIjoiZWE4ZmNmZTEtYzI5Yi00NTFkLWE5NDgtMTFhNGNiZTQzOTFlIiwianRpIjoiZjBmOTMyNzctYTM5OC00NzliLTlkOGEtZDViYzhiMDc3MmYzIiwic3ViIjoiYWY0OGIzMjAtOTBiZi00ZmJjLTk2YmYtYmUxYzJhMWFiN2U4IiwidG9rZW5fdHlwZSI6ImFjY2VzcyJ9.l9UeyrM5nKkHQrAEc-0gJ6THjfWGSQEXzmbKBgL_qcmdt257lcLZ3bk4j-DVyF37uIoDNgOj2ZgvXWrruGNsH_LRsbmhD-we6MM1Lujv3hcPNUQJjHSGa4U5OnK6x4BVyvdxhosGAnpfQhMR9xhYX4WMYoo5WEXOFx1Bl_Dgb2JTPJAfSLob8tT8iC3AGYFAimbdH6Y1PCJVG5VdhkSyEz7ImZi1w8tSZx9eqDgWfVNQA2_R_JxgR7KvfSozDRX37x_HPLljqAcHm_hnDz13FjtM8E2vIbfGKTx3XsTmPKtrDC4ivETcvGL9suspJbUh6hDPef2YbjfJ8JIBQHQ-CSZZFTmGmHxE4zfYGTNClBnm7xE0cFV_uL1SmvvUbmt25zNV5eTaVS45zrMJ0QvYLkmUFwTRhc1St82ja1KeOERVt1GPBgPNmV8mOJl65bSaIO2PuBLQ7dYXCoypAN-gqM2M2L4d69QxHyGak1YPxrbctZNwJShz_5FepvQjao_X6TBkji3pVG3OeZrOUNOWh9l0n-Gjvg3E2AuKbRiOxG-oUsDIWCMU9kY0TFfNXOx0TcRS3lUzQbCjy1whdlVpZDlrZnE2cHChACAXOFd-D6PuJnnvDwgI9a897UuFJQbDOEP1jz_P614tB0H5vCYeCXyqBNBjOH695bR6xleQpQ4" \
+  -H "Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3" \
+  -H "Host: 127.0.0.1:37541"
+```
+Request:
+```text
+Accept: application/scim+json
+Content-Type: application/scim+json
+User-Agent: net/hippie 1.4.0
+Authorization: Bearer eyJraWQiOiJiYTYyOTNlYWEyNjg4MzkzOTkzMWMxYmI5MTQxNDhmM2YyMTNmOGJmNmU3ZDFkNTQ3ODEwMzk3ZjRkNTBlNGUzIiwiYWxnIjoiUlMyNTYifQ.eyJleHAiOjE3OTEyNjY5ODEsImlhdCI6MTc5MTI2MzM4MSwiaXNzIjoidGVzdCIsIm5iZiI6MTc5MTI2MzM4MSwiYXVkIjoiZWE4ZmNmZTEtYzI5Yi00NTFkLWE5NDgtMTFhNGNiZTQzOTFlIiwianRpIjoiZjBmOTMyNzctYTM5OC00NzliLTlkOGEtZDViYzhiMDc3MmYzIiwic3ViIjoiYWY0OGIzMjAtOTBiZi00ZmJjLTk2YmYtYmUxYzJhMWFiN2U4IiwidG9rZW5fdHlwZSI6ImFjY2VzcyJ9.l9UeyrM5nKkHQrAEc-0gJ6THjfWGSQEXzmbKBgL_qcmdt257lcLZ3bk4j-DVyF37uIoDNgOj2ZgvXWrruGNsH_LRsbmhD-we6MM1Lujv3hcPNUQJjHSGa4U5OnK6x4BVyvdxhosGAnpfQhMR9xhYX4WMYoo5WEXOFx1Bl_Dgb2JTPJAfSLob8tT8iC3AGYFAimbdH6Y1PCJVG5VdhkSyEz7ImZi1w8tSZx9eqDgWfVNQA2_R_JxgR7KvfSozDRX37x_HPLljqAcHm_hnDz13FjtM8E2vIbfGKTx3XsTmPKtrDC4ivETcvGL9suspJbUh6hDPef2YbjfJ8JIBQHQ-CSZZFTmGmHxE4zfYGTNClBnm7xE0cFV_uL1SmvvUbmt25zNV5eTaVS45zrMJ0QvYLkmUFwTRhc1St82ja1KeOERVt1GPBgPNmV8mOJl65bSaIO2PuBLQ7dYXCoypAN-gqM2M2L4d69QxHyGak1YPxrbctZNwJShz_5FepvQjao_X6TBkji3pVG3OeZrOUNOWh9l0n-Gjvg3E2AuKbRiOxG-oUsDIWCMU9kY0TFfNXOx0TcRS3lUzQbCjy1whdlVpZDlrZnE2cHChACAXOFd-D6PuJnnvDwgI9a897UuFJQbDOEP1jz_P614tB0H5vCYeCXyqBNBjOH695bR6xleQpQ4
+Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+Host: 127.0.0.1:37541
+```
+```json
+{
+  "schemas": [
+    "urn:ietf:params:scim:schemas:core:2.0:Group"
+  ],
+  "displayName": "Engineering",
+  "members": [
+    {
+      "value": "af48b320-90bf-4fbc-96bf-be1c2a1ab7e8"
+    }
+  ]
+}
+```
+Response:
+```text
+201 Created
+
+X-Frame-Options: SAMEORIGIN
+X-Xss-Protection: 1; mode=block
+X-Content-Type-Options: nosniff
+X-Download-Options: noopen
+X-Permitted-Cross-Domain-Policies: none
+Referrer-Policy: strict-origin-when-cross-origin
+Content-Type: application/scim+json
+Location: http://127.0.0.1:37541/scim/v2/Groups/7506a954-1016-40ae-8dd1-848bdbec9549
+Etag: W/"dbd805d2b3505ce26f31e590144676ac"
+Cache-Control: max-age=0, private, must-revalidate
+X-Request-Id: 9e9afce2-bbb0-4688-880d-e0812491c10e
+Content-Length: 543
+```
+```json
+{
+  "schemas": [
+    "urn:ietf:params:scim:schemas:core:2.0:Group"
+  ],
+  "id": "7506a954-1016-40ae-8dd1-848bdbec9549",
+  "meta": {
+    "resourceType": "Group",
+    "created": "2026-10-06T05:09:41Z",
+    "lastModified": "2026-10-06T05:09:41Z",
+    "version": "W/\"0\"",
+    "location": "http://127.0.0.1:37541/scim/v2/Groups/7506a954-1016-40ae-8dd1-848bdbec9549"
+  },
+  "displayName": "Engineering",
+  "members": [
+    {
+      "value": "af48b320-90bf-4fbc-96bf-be1c2a1ab7e8",
+      "$ref": "http://127.0.0.1:37541/scim/v2/Users/af48b320-90bf-4fbc-96bf-be1c2a1ab7e8",
+      "type": "User",
+      "display": "ub8de87n7@example-7f903c40.com"
+    }
+  ]
+}
+```
+

@@ -27,7 +27,7 @@
         </div>
         <div class="field is-grouped is-grouped-right">
           <div class="control">
-            <%= form.button t('.register'), type: 'submit', class: 'button is-primary', data: { disable_with: t('loading') } %>
+            <%= form.button t('.register'), type: 'submit', class: 'button is-primary', data: { turbo_submits_with: t('loading') } %>
           </div>
           <div class="control">
             <%= link_to t(".login"), new_session_path, class: 'button is-text' %>

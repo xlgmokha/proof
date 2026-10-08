@@ -1,0 +1,94 @@
+
+#### PATCH http://127.0.0.1:37541/scim/v2/Users/:id
+
+Example curl request:
+
+```bash
+$ curl http://127.0.0.1:37541/scim/v2/Users/c4fe54b9-d01a-46d4-8453-93a080aa6e15 \
+  -X PATCH \
+  -d '{"schemas":["urn:ietf:params:scim:api:messages:2.0:PatchOp"],"Operations":[{"op":"replace","path":"locale","value":"ja"},{"op":"replace","path":"timezone","value":"Asia/Tokyo"}]}' \
+  -H "Accept: application/scim+json" \
+  -H "Content-Type: application/scim+json" \
+  -H "User-Agent: net/hippie 1.4.0" \
+  -H "Authorization: Bearer eyJraWQiOiJiYTYyOTNlYWEyNjg4MzkzOTkzMWMxYmI5MTQxNDhmM2YyMTNmOGJmNmU3ZDFkNTQ3ODEwMzk3ZjRkNTBlNGUzIiwiYWxnIjoiUlMyNTYifQ.eyJleHAiOjE3OTEyNjY5ODEsImlhdCI6MTc5MTI2MzM4MSwiaXNzIjoidGVzdCIsIm5iZiI6MTc5MTI2MzM4MSwiYXVkIjoiMDNhNTFlYzUtYzBhYS00MWU5LTg0YjEtNzdkMTZlNjc0MTlkIiwianRpIjoiM2M0ZDQ3OWQtZTk3Yy00NDA4LTk5MmMtMTIxZGYyYmIxMDAzIiwic3ViIjoiYzRmZTU0YjktZDAxYS00NmQ0LTg0NTMtOTNhMDgwYWE2ZTE1IiwidG9rZW5fdHlwZSI6ImFjY2VzcyJ9.4UTzEXqV5f9Wz3QKinB_uWmjm-aBXwAEooIedw5DesZ2SlWAwBHPhjUmcOCHXvqPu41Ar3qT92KPjYfjjLO3S_V7-rOF9ChkaCVZzYKHo2X6-19WQRWx0mUBvoYEs1V_lSkaXi6zSyNmgQnOyGJ_kwfn8CdQi55VNfk_1j6wjmE356f45OaPUwD9Imq6008SaSndbuuf2ZQ3rnPF1rchzEUfcRn0KbA5RIIpXpHMEwNHuM4HNgSdCDG-9FcuhHLyZTrXBatsam7vyuFTFJnb-tMQxbKIYSLMP8VAh9SaS4yq-p407Uj7-Ac4YMRgK8ksoX4gHsj7sgon6qfykHmhplZgSsiPcq2ngQwjXxEf5EpQPQyGWQpIAuvvczsyDXEK3VACKacdz2fZAkTF1sV7jCg2Sg0ISi11AOp3uCwur9L2gi0Nzd-R13uBzaZ-1lXC3F8a08nKhxcvE5m892SmzQD-ZFwJrNhYWvcdhfcdj2XabF5De6qnshKYhNSI-jwNQP0Y63R1T_cPOedt1EqJM4BPRtYFXUcfJj58V_02jet4N2nzpE3trSrzc3ktqsaJh8e7aRgBGX6c6cP5v46ZdvYkcZYm6-Q4xPGEkA9j757Zy-hGk2o6LgSMWX_rLGCl4o_vBtQzg4exKf_waeVIc-19CakTfJ72jTLv5moCDOI" \
+  -H "Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3" \
+  -H "Host: 127.0.0.1:37541"
+```
+Request:
+```text
+Accept: application/scim+json
+Content-Type: application/scim+json
+User-Agent: net/hippie 1.4.0
+Authorization: Bearer eyJraWQiOiJiYTYyOTNlYWEyNjg4MzkzOTkzMWMxYmI5MTQxNDhmM2YyMTNmOGJmNmU3ZDFkNTQ3ODEwMzk3ZjRkNTBlNGUzIiwiYWxnIjoiUlMyNTYifQ.eyJleHAiOjE3OTEyNjY5ODEsImlhdCI6MTc5MTI2MzM4MSwiaXNzIjoidGVzdCIsIm5iZiI6MTc5MTI2MzM4MSwiYXVkIjoiMDNhNTFlYzUtYzBhYS00MWU5LTg0YjEtNzdkMTZlNjc0MTlkIiwianRpIjoiM2M0ZDQ3OWQtZTk3Yy00NDA4LTk5MmMtMTIxZGYyYmIxMDAzIiwic3ViIjoiYzRmZTU0YjktZDAxYS00NmQ0LTg0NTMtOTNhMDgwYWE2ZTE1IiwidG9rZW5fdHlwZSI6ImFjY2VzcyJ9.4UTzEXqV5f9Wz3QKinB_uWmjm-aBXwAEooIedw5DesZ2SlWAwBHPhjUmcOCHXvqPu41Ar3qT92KPjYfjjLO3S_V7-rOF9ChkaCVZzYKHo2X6-19WQRWx0mUBvoYEs1V_lSkaXi6zSyNmgQnOyGJ_kwfn8CdQi55VNfk_1j6wjmE356f45OaPUwD9Imq6008SaSndbuuf2ZQ3rnPF1rchzEUfcRn0KbA5RIIpXpHMEwNHuM4HNgSdCDG-9FcuhHLyZTrXBatsam7vyuFTFJnb-tMQxbKIYSLMP8VAh9SaS4yq-p407Uj7-Ac4YMRgK8ksoX4gHsj7sgon6qfykHmhplZgSsiPcq2ngQwjXxEf5EpQPQyGWQpIAuvvczsyDXEK3VACKacdz2fZAkTF1sV7jCg2Sg0ISi11AOp3uCwur9L2gi0Nzd-R13uBzaZ-1lXC3F8a08nKhxcvE5m892SmzQD-ZFwJrNhYWvcdhfcdj2XabF5De6qnshKYhNSI-jwNQP0Y63R1T_cPOedt1EqJM4BPRtYFXUcfJj58V_02jet4N2nzpE3trSrzc3ktqsaJh8e7aRgBGX6c6cP5v46ZdvYkcZYm6-Q4xPGEkA9j757Zy-hGk2o6LgSMWX_rLGCl4o_vBtQzg4exKf_waeVIc-19CakTfJ72jTLv5moCDOI
+Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+Host: 127.0.0.1:37541
+```
+```json
+{
+  "schemas": [
+    "urn:ietf:params:scim:api:messages:2.0:PatchOp"
+  ],
+  "Operations": [
+    {
+      "op": "replace",
+      "path": "locale",
+      "value": "ja"
+    },
+    {
+      "op": "replace",
+      "path": "timezone",
+      "value": "Asia/Tokyo"
+    }
+  ]
+}
+```
+Response:
+```text
+200 OK
+
+X-Frame-Options: SAMEORIGIN
+X-Xss-Protection: 1; mode=block
+X-Content-Type-Options: nosniff
+X-Download-Options: noopen
+X-Permitted-Cross-Domain-Policies: none
+Referrer-Policy: strict-origin-when-cross-origin
+Content-Type: application/scim+json
+Location: http://127.0.0.1:37541/scim/v2/Users/c4fe54b9-d01a-46d4-8453-93a080aa6e15
+Etag: W/"073965c9a42ac6cc73efd2a9dffad501"
+Cache-Control: max-age=0, private, must-revalidate
+X-Request-Id: a2a3816f-10e0-47a6-b314-00f8c4775b44
+Content-Length: 675
+```
+```json
+{
+  "schemas": [
+    "urn:ietf:params:scim:schemas:core:2.0:User"
+  ],
+  "id": "c4fe54b9-d01a-46d4-8453-93a080aa6e15",
+  "meta": {
+    "resourceType": "User",
+    "created": "2026-10-06T05:09:41Z",
+    "lastModified": "2026-10-06T05:09:41Z",
+    "version": null,
+    "location": "http://127.0.0.1:37541/scim/v2/Users/c4fe54b9-d01a-46d4-8453-93a080aa6e15"
+  },
+  "userName": "ub6e44cn9@example-db09646c.com",
+  "name": {
+    "formatted": "ub6e44cn9@example-db09646c.com",
+    "familyName": "ub6e44cn9@example-db09646c.com",
+    "givenName": "ub6e44cn9@example-db09646c.com"
+  },
+  "displayName": "ub6e44cn9@example-db09646c.com",
+  "locale": "ja",
+  "timezone": "Asia/Tokyo",
+  "active": true,
+  "emails": [
+    {
+      "value": "ub6e44cn9@example-db09646c.com",
+      "primary": true
+    }
+  ],
+  "groups": []
+}
+```
+

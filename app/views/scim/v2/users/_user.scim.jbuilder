@@ -20,4 +20,9 @@ json.locale user.locale
 json.timezone user.timezone
 json.active true
 json.emails [{ value: user.email, primary: true }]
-json.groups []
+json.groups user.groups do |group|
+  json.value group.to_param
+  json.set! '$ref', scim_v2_group_url(id: group.to_param)
+  json.display group.display_name
+  json.type 'direct'
+end

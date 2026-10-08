@@ -1,3 +1,4 @@
+<%= turbo_frame_tag 'mfa_test_result' do %>
 <% if @valid %>
   <div data-controller="notification" class="notification is-success">
     <button data-action="click->notification#close" class="delete"></button>
@@ -8,4 +9,5 @@
     <button data-action="click->notification#close" class="delete"></button>
     <%= t('.invalid') %>
   </div>
+<% end %>
 <% end %>

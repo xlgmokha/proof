@@ -1,0 +1,15 @@
+---
+layout: post
+title:  "SCIM - Me"
+date:   2018-10-28 17:00:00 -0600
+permalink: /scim/me.html
+categories: scim
+---
+
+This endpoint adheres to [RFC-7644 Section 3.11](https://tools.ietf.org/html/rfc7644#section-3.11).
+
+`/scim/v2/Me` is an alias for the user the access token was issued to. It supports `GET`, `PUT`,
+`PATCH` and `DELETE` and behaves like `/scim/v2/Users/:id`. Tokens issued to a client rather than a
+user receive `404`.
+
+{% include scim-me.html %}

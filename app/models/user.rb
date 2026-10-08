@@ -6,10 +6,12 @@ class User < ApplicationRecord
   audited except: [:password_digest, :mfa_secret]
   has_secure_password
   has_many :sessions,
-    foreign_key: "user_id",
     class_name: 'UserSession',
     inverse_of: :user,
     dependent: :delete_all
+
+  has_many :group_memberships, dependent: :delete_all
+  has_many :groups, through: :group_memberships
 
   validates :email, presence: true, email: true, uniqueness: {
     case_sensitive: false
@@ -27,10 +29,11 @@ class User < ApplicationRecord
     request.trusted? ? trusted_attributes_for(request) : {}
   end
 
-  def issue_tokens_to(client, token_types: [:access, :refresh])
+  def issue_tokens_to(client, token_types: [:access, :refresh], scope: Scopes.format(Scopes::DEFAULT), resource: nil)
     transaction do
+      family = SecureRandom.uuid
       token_types.map do |x|
-        Token.create!(subject: self, audience: client, token_type: x)
+        Token.create!(subject: self, audience: client, token_type: x, scope: scope, resource: resource, family_id: family)
       end
     end
   end
@@ -41,7 +44,14 @@ class User < ApplicationRecord
 
   class << self
     def scim_mapper
-      SCIM::User::ATTRIBUTES
+      Scim::User::ATTRIBUTES
+    end
+
+    # Resolves the `sub` of a JWT assertion, which is either a user id or an email.
+    def from_assertion_subject(subject)
+      return if subject.blank?
+
+      subject.match?(ApplicationRecord::UUID) ? find_by(id: subject) : find_by(email: subject)
     end
 
     def login(email, password)

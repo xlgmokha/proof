@@ -1,0 +1,90 @@
+
+#### PATCH http://127.0.0.1:37541/scim/v2/Groups/:id
+
+Example curl request:
+
+```bash
+$ curl http://127.0.0.1:37541/scim/v2/Groups/e4bb4fa0-68f8-4586-adf2-f5f81c07dd0a \
+  -X PATCH \
+  -d '{"schemas":["urn:ietf:params:scim:api:messages:2.0:PatchOp"],"Operations":[{"op":"add","path":"members","value":[{"value":"9376b618-a438-48f6-915b-195a90b83d93"}]},{"op":"replace","path":"displayName","value":"Platform"}]}' \
+  -H "Accept: application/scim+json" \
+  -H "Content-Type: application/scim+json" \
+  -H "User-Agent: net/hippie 1.4.0" \
+  -H "Authorization: Bearer eyJraWQiOiJiYTYyOTNlYWEyNjg4MzkzOTkzMWMxYmI5MTQxNDhmM2YyMTNmOGJmNmU3ZDFkNTQ3ODEwMzk3ZjRkNTBlNGUzIiwiYWxnIjoiUlMyNTYifQ.eyJleHAiOjE3OTEyNjY5ODEsImlhdCI6MTc5MTI2MzM4MSwiaXNzIjoidGVzdCIsIm5iZiI6MTc5MTI2MzM4MSwiYXVkIjoiNzgxN2UxNDEtOGQ0MC00NmM1LWI5MDAtNzcxYmM5Yzg3MzFhIiwianRpIjoiYzE3NzJhZjctNDVkNi00MDI0LWI5MmItMWQxZmNiN2U1N2ZhIiwic3ViIjoiOTM3NmI2MTgtYTQzOC00OGY2LTkxNWItMTk1YTkwYjgzZDkzIiwidG9rZW5fdHlwZSI6ImFjY2VzcyJ9.KrALr7tbTfz0zMwgggw2yNf9nXmO4OVdv-VXlDt8F9E-E1yds9qlNOwJ3DoXEo-btsfBy89HIpi76MCRiIewTiaFt3YQTwICWUYa6HF0ct01GguNkV__Srd_O3EF4bg2Dki7HxTZHroTQI8FtuV_vU06sTX225UHH1mVeywDS4fTQuwNbA5ivQsx5BxyeKDIYQ2xL7x6LDnOUFq07ij9Bvd-bhty6wMYuIQBFKr_1xHG0e9E_1MkDchI1Bj5vmcqy9aPA4j8g7ljfZ1AaB-8t0b8NKapFmYZt2z7pWw4eZeJeavYYVdt94UyU2jfKQRjsEsHO7quP-IJHwSd9jIL8hNb-4C4NeF_-51O4RfXgfjq18ttshpi-rdM07uFJGaVaQ0maY_9GjY0VbeM-I7j3gJhzLxeQr77cd98ErtXICQyPZgoAjbO8QUD2t9Qs1TJa94h-ZeUBGKmwfuKj7zHHue0J-upyt0Sfp3F3b6VlgyLKNerB_dwlJCAow9-iDmtrfLqQDaNS0oWJZBG9sU-8RIiZl9QNerJJerMleUkFJgRkukwvyfjHCw7z2VIN4nxI6nFp7mrtacl2j2nSQ3I2u0Px23Ca1knwcyIiOnfT7JCLbHG0FOpOeMvk0tuzSAsRqzC9HqXYAg2Rtj9qq4vQXYKeCr0xhiV1R00VAuv6O4" \
+  -H "Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3" \
+  -H "Host: 127.0.0.1:37541"
+```
+Request:
+```text
+Accept: application/scim+json
+Content-Type: application/scim+json
+User-Agent: net/hippie 1.4.0
+Authorization: Bearer eyJraWQiOiJiYTYyOTNlYWEyNjg4MzkzOTkzMWMxYmI5MTQxNDhmM2YyMTNmOGJmNmU3ZDFkNTQ3ODEwMzk3ZjRkNTBlNGUzIiwiYWxnIjoiUlMyNTYifQ.eyJleHAiOjE3OTEyNjY5ODEsImlhdCI6MTc5MTI2MzM4MSwiaXNzIjoidGVzdCIsIm5iZiI6MTc5MTI2MzM4MSwiYXVkIjoiNzgxN2UxNDEtOGQ0MC00NmM1LWI5MDAtNzcxYmM5Yzg3MzFhIiwianRpIjoiYzE3NzJhZjctNDVkNi00MDI0LWI5MmItMWQxZmNiN2U1N2ZhIiwic3ViIjoiOTM3NmI2MTgtYTQzOC00OGY2LTkxNWItMTk1YTkwYjgzZDkzIiwidG9rZW5fdHlwZSI6ImFjY2VzcyJ9.KrALr7tbTfz0zMwgggw2yNf9nXmO4OVdv-VXlDt8F9E-E1yds9qlNOwJ3DoXEo-btsfBy89HIpi76MCRiIewTiaFt3YQTwICWUYa6HF0ct01GguNkV__Srd_O3EF4bg2Dki7HxTZHroTQI8FtuV_vU06sTX225UHH1mVeywDS4fTQuwNbA5ivQsx5BxyeKDIYQ2xL7x6LDnOUFq07ij9Bvd-bhty6wMYuIQBFKr_1xHG0e9E_1MkDchI1Bj5vmcqy9aPA4j8g7ljfZ1AaB-8t0b8NKapFmYZt2z7pWw4eZeJeavYYVdt94UyU2jfKQRjsEsHO7quP-IJHwSd9jIL8hNb-4C4NeF_-51O4RfXgfjq18ttshpi-rdM07uFJGaVaQ0maY_9GjY0VbeM-I7j3gJhzLxeQr77cd98ErtXICQyPZgoAjbO8QUD2t9Qs1TJa94h-ZeUBGKmwfuKj7zHHue0J-upyt0Sfp3F3b6VlgyLKNerB_dwlJCAow9-iDmtrfLqQDaNS0oWJZBG9sU-8RIiZl9QNerJJerMleUkFJgRkukwvyfjHCw7z2VIN4nxI6nFp7mrtacl2j2nSQ3I2u0Px23Ca1knwcyIiOnfT7JCLbHG0FOpOeMvk0tuzSAsRqzC9HqXYAg2Rtj9qq4vQXYKeCr0xhiV1R00VAuv6O4
+Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+Host: 127.0.0.1:37541
+```
+```json
+{
+  "schemas": [
+    "urn:ietf:params:scim:api:messages:2.0:PatchOp"
+  ],
+  "Operations": [
+    {
+      "op": "add",
+      "path": "members",
+      "value": [
+        {
+          "value": "9376b618-a438-48f6-915b-195a90b83d93"
+        }
+      ]
+    },
+    {
+      "op": "replace",
+      "path": "displayName",
+      "value": "Platform"
+    }
+  ]
+}
+```
+Response:
+```text
+200 OK
+
+X-Frame-Options: SAMEORIGIN
+X-Xss-Protection: 1; mode=block
+X-Content-Type-Options: nosniff
+X-Download-Options: noopen
+X-Permitted-Cross-Domain-Policies: none
+Referrer-Policy: strict-origin-when-cross-origin
+Content-Type: application/scim+json
+Location: http://127.0.0.1:37541/scim/v2/Groups/e4bb4fa0-68f8-4586-adf2-f5f81c07dd0a
+Etag: W/"55802478593b84722f0f9f45e54ce2f5"
+Cache-Control: max-age=0, private, must-revalidate
+X-Request-Id: 02c2d0aa-6a23-44a3-8014-1522b7407668
+Content-Length: 540
+```
+```json
+{
+  "schemas": [
+    "urn:ietf:params:scim:schemas:core:2.0:Group"
+  ],
+  "id": "e4bb4fa0-68f8-4586-adf2-f5f81c07dd0a",
+  "meta": {
+    "resourceType": "Group",
+    "created": "2026-10-06T05:09:41Z",
+    "lastModified": "2026-10-06T05:09:41Z",
+    "version": "W/\"1\"",
+    "location": "http://127.0.0.1:37541/scim/v2/Groups/e4bb4fa0-68f8-4586-adf2-f5f81c07dd0a"
+  },
+  "displayName": "Platform",
+  "members": [
+    {
+      "value": "9376b618-a438-48f6-915b-195a90b83d93",
+      "$ref": "http://127.0.0.1:37541/scim/v2/Users/9376b618-a438-48f6-915b-195a90b83d93",
+      "type": "User",
+      "display": "u9bcf6bn8@example-d649b91d.com"
+    }
+  ]
+}
+```
+

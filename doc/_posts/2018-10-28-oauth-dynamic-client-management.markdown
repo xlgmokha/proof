@@ -33,4 +33,10 @@ The Dynamic Client Management is described in [RFC-7592](https://tools.ietf.org/
 ```
 [Section 1.3](https://tools.ietf.org/html/rfc7592#section-1.3)
 
-This endpoint is currently not implemented.
+The registration response contains the `registration_client_uri` and a `registration_access_token`.
+Present the token as a bearer token to read (`GET`), replace (`PUT`) or delete (`DELETE`) the client.
+
+Valid values replace the existing metadata and omitted fields are cleared. A client can only manage
+itself. Deleting a client also revokes every token issued to it and responds with `204 No Content`.
+
+{% include oauth-dynamic-client-delete.html %}

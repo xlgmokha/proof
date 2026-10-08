@@ -1,0 +1,105 @@
+
+#### POST http://127.0.0.1:37541/scim/v2/Bulk
+
+Example curl request:
+
+```bash
+$ curl http://127.0.0.1:37541/scim/v2/Bulk \
+  -X POST \
+  -d '{"schemas":["urn:ietf:params:scim:api:messages:2.0:BulkRequest"],"Operations":[{"method":"POST","path":"/Users","bulkId":"new-user","data":{"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"userName":"delbert_christiansen@legros.info","locale":"en","timezone":"Etc/UTC"}},{"method":"POST","path":"/Groups","bulkId":"new-group","data":{"displayName":"Bulk Group","members":[{"value":"bulkId:new-user"}]}}]}' \
+  -H "Accept: application/scim+json" \
+  -H "Content-Type: application/scim+json" \
+  -H "User-Agent: net/hippie 1.4.0" \
+  -H "Authorization: Bearer eyJraWQiOiJiYTYyOTNlYWEyNjg4MzkzOTkzMWMxYmI5MTQxNDhmM2YyMTNmOGJmNmU3ZDFkNTQ3ODEwMzk3ZjRkNTBlNGUzIiwiYWxnIjoiUlMyNTYifQ.eyJleHAiOjE3OTEyNjY5ODEsImlhdCI6MTc5MTI2MzM4MSwiaXNzIjoidGVzdCIsIm5iZiI6MTc5MTI2MzM4MSwiYXVkIjoiOWIwOGNiNzUtYjViNS00Y2Y0LWFjMjUtYjdmNGNmNTQ2Y2MzIiwianRpIjoiMmY4NGNlY2QtYmUxZC00ZDY5LWFlYmMtMzI3NGM0ODdlOTlmIiwic3ViIjoiMDEwMjk0MWEtNzVkNC00MjE1LTljMjAtZTJkMjEyN2VkZTk3IiwidG9rZW5fdHlwZSI6ImFjY2VzcyJ9.hYNv8tGxGAwgc5DjuTi381rA82fIwojX6VNjXoAjR-Xmx4nYgS2mQWCqyewjDCd5hpI-ghG1ZdwIYrWyfrB7taA7V1RliuGQR1vHRCFyHgk21Sx5mi64r-FLVBjzuZsp6dXK2B-7FyhrSQ6U7hHPOdAN_GDucRsck1Mc67SeYS9ow119wZhrBq_pN9Bbce_xwCJnaWhgNX7qUYe8DX9kmm8pN-HEaAqbj86mIiP5sI1_Z_-JhqC5Ec9Z8w1JShDnCySPxOm5VcJQ5SyV7GEWuCphAONkRS_uxJiJiruI2OfehsdvrtXqscq9jKE4HWwvxpd-rLHQq4Xw1znZuaPMpwkc4j8fi_LTFpb98bfFKgPuVti73qDSDPsSW3Xm-oEwxdiXmx8tV9yeRMucjZ9wuFemmWND5kPTofw8mQgD0NpQz8WS3Zm-HpB-KMkdNt8kPMl_Xtx0TibqGat3hHwCFJWvXuSvarQlj7nGP-Szh3Y6ZHMlzachGdJ51uRNXfgyrG67hbSuEMdIcvTlUitWcvTob0xd9vY5EA-ZuzkXJmcNZJ_ti-qwXq-jKJ-4l0x48LLhgbRrsQLau0pn0fUytb1mP7Ro7ogwzocq6p-woq1aq8CvXUZ58M27pt0lXjY4fYLasSXMAx247BuUmM3HUTBxd7TNgq6FiYhgMm1ZRFI" \
+  -H "Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3" \
+  -H "Host: 127.0.0.1:37541"
+```
+Request:
+```text
+Accept: application/scim+json
+Content-Type: application/scim+json
+User-Agent: net/hippie 1.4.0
+Authorization: Bearer eyJraWQiOiJiYTYyOTNlYWEyNjg4MzkzOTkzMWMxYmI5MTQxNDhmM2YyMTNmOGJmNmU3ZDFkNTQ3ODEwMzk3ZjRkNTBlNGUzIiwiYWxnIjoiUlMyNTYifQ.eyJleHAiOjE3OTEyNjY5ODEsImlhdCI6MTc5MTI2MzM4MSwiaXNzIjoidGVzdCIsIm5iZiI6MTc5MTI2MzM4MSwiYXVkIjoiOWIwOGNiNzUtYjViNS00Y2Y0LWFjMjUtYjdmNGNmNTQ2Y2MzIiwianRpIjoiMmY4NGNlY2QtYmUxZC00ZDY5LWFlYmMtMzI3NGM0ODdlOTlmIiwic3ViIjoiMDEwMjk0MWEtNzVkNC00MjE1LTljMjAtZTJkMjEyN2VkZTk3IiwidG9rZW5fdHlwZSI6ImFjY2VzcyJ9.hYNv8tGxGAwgc5DjuTi381rA82fIwojX6VNjXoAjR-Xmx4nYgS2mQWCqyewjDCd5hpI-ghG1ZdwIYrWyfrB7taA7V1RliuGQR1vHRCFyHgk21Sx5mi64r-FLVBjzuZsp6dXK2B-7FyhrSQ6U7hHPOdAN_GDucRsck1Mc67SeYS9ow119wZhrBq_pN9Bbce_xwCJnaWhgNX7qUYe8DX9kmm8pN-HEaAqbj86mIiP5sI1_Z_-JhqC5Ec9Z8w1JShDnCySPxOm5VcJQ5SyV7GEWuCphAONkRS_uxJiJiruI2OfehsdvrtXqscq9jKE4HWwvxpd-rLHQq4Xw1znZuaPMpwkc4j8fi_LTFpb98bfFKgPuVti73qDSDPsSW3Xm-oEwxdiXmx8tV9yeRMucjZ9wuFemmWND5kPTofw8mQgD0NpQz8WS3Zm-HpB-KMkdNt8kPMl_Xtx0TibqGat3hHwCFJWvXuSvarQlj7nGP-Szh3Y6ZHMlzachGdJ51uRNXfgyrG67hbSuEMdIcvTlUitWcvTob0xd9vY5EA-ZuzkXJmcNZJ_ti-qwXq-jKJ-4l0x48LLhgbRrsQLau0pn0fUytb1mP7Ro7ogwzocq6p-woq1aq8CvXUZ58M27pt0lXjY4fYLasSXMAx247BuUmM3HUTBxd7TNgq6FiYhgMm1ZRFI
+Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+Host: 127.0.0.1:37541
+```
+```json
+{
+  "schemas": [
+    "urn:ietf:params:scim:api:messages:2.0:BulkRequest"
+  ],
+  "Operations": [
+    {
+      "method": "POST",
+      "path": "/Users",
+      "bulkId": "new-user",
+      "data": {
+        "schemas": [
+          "urn:ietf:params:scim:schemas:core:2.0:User"
+        ],
+        "userName": "delbert_christiansen@legros.info",
+        "locale": "en",
+        "timezone": "Etc/UTC"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/Groups",
+      "bulkId": "new-group",
+      "data": {
+        "displayName": "Bulk Group",
+        "members": [
+          {
+            "value": "bulkId:new-user"
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+Response:
+```text
+200 OK
+
+X-Frame-Options: SAMEORIGIN
+X-Xss-Protection: 1; mode=block
+X-Content-Type-Options: nosniff
+X-Download-Options: noopen
+X-Permitted-Cross-Domain-Policies: none
+Referrer-Policy: strict-origin-when-cross-origin
+Content-Type: application/scim+json
+Etag: W/"8c423b953ed1798c647262773b0281e9"
+Cache-Control: max-age=0, private, must-revalidate
+X-Request-Id: 07cea302-be9f-444e-aecd-e946e2efdbcb
+Content-Length: 432
+```
+```json
+{
+  "schemas": [
+    "urn:ietf:params:scim:api:messages:2.0:BulkResponse"
+  ],
+  "Operations": [
+    {
+      "method": "POST",
+      "bulkId": "new-user",
+      "status": "201",
+      "location": "http://www.example.com/scim/v2/Users/fb13cd1d-c736-4047-9440-adf88bf39a44"
+    },
+    {
+      "method": "POST",
+      "bulkId": "new-group",
+      "status": "409",
+      "response": {
+        "schemas": [
+          "urn:ietf:params:scim:api:messages:2.0:Error"
+        ],
+        "scimType": "uniqueness",
+        "detail": "Display name has already been taken",
+        "status": "409"
+      }
+    }
+  ]
+}
+```
+

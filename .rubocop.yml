@@ -1,11 +1,12 @@
-require:
+plugins:
   - rubocop-rails
   - rubocop-rspec
 # For a list of available cops see:
 # https://github.com/bbatsov/rubocop/blob/master/config/default.yml
 AllCops:
-  TargetRubyVersion:
-    2.6
+  NewCops: disable
+  SuggestExtensions: false
+  TargetRubyVersion: 4.0
   Exclude:
     - 'bin/**/*'
     - 'config/initializers/*.rb'
@@ -102,3 +103,56 @@ Style/TrailingCommaInHashLiteral:
 
 Style/TrailingCommaInArguments:
   Enabled: false
+
+RSpec/MatchArray:
+  Enabled: false
+
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+
+RSpec/PendingWithoutReason:
+  Enabled: false
+
+# Cops added by newer RuboCop releases; to be addressed separately from the upgrade.
+Lint/MissingSuper:
+  Enabled: false
+
+Naming/MethodName:
+  Enabled: false
+
+Rails/IndexWith:
+  Enabled: false
+
+Rails/Pick:
+  Enabled: false
+
+Rails/RakeEnvironment:
+  Enabled: false
+
+Rails/UniqueValidationWithoutIndex:
+  Enabled: false
+
+RSpec/SpecFilePathSuffix:
+  Enabled: false
+
+Style/GlobalStdStream:
+  Enabled: false
+
+Style/RedundantFetchBlock:
+  Enabled: false
+
+Style/RedundantInterpolation:
+  Enabled: false
+
+Style/SlicingWithRange:
+  Enabled: false
+
+Style/StringConcatenation:
+  Enabled: false
+
+Style/YodaCondition:
+  Enabled: false
+
+Rails/BulkChangeTable:
+  Exclude:
+    - 'db/migrate/*'

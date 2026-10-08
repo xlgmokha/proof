@@ -22,9 +22,12 @@ describe "/ServiceProviderConfig" do
     specify { expect(response.body).to be_present }
     specify { expect(json[:schemas]).to match_array([Scim::Kit::V2::Schemas::SERVICE_PROVIDER_CONFIGURATION]) }
     specify { expect(json[:documentationUri]).to eql(root_url + "doc") }
-    specify { expect(json[:patch][:supported]).to be(false) }
-    specify { expect(json[:bulk][:supported]).to be(false) }
-    specify { expect(json[:filter][:supported]).to be(false) }
+    specify { expect(json[:patch][:supported]).to be(true) }
+    specify { expect(json[:bulk][:supported]).to be(true) }
+    specify { expect(json[:bulk][:maxOperations]).to eql(Scim::Bulk::MAX_OPERATIONS) }
+    specify { expect(json[:bulk][:maxPayloadSize]).to eql(Scim::Bulk::MAX_PAYLOAD_SIZE) }
+    specify { expect(json[:filter][:supported]).to be(true) }
+    specify { expect(json[:filter][:maxResults]).to be_positive }
     specify { expect(json[:changePassword][:supported]).to be(false) }
     specify { expect(json[:sort][:supported]).to be(false) }
     specify { expect(json[:etag][:supported]).to be(false) }

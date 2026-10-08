@@ -10,6 +10,13 @@ class OnDemandRegistry < Saml::Kit::DefaultRegistry
   end
 end
 
+Rails.application.config.after_initialize do
+  # The issuer builds the metadata URL and is the `iss` of every token.
+  if Rails.env.production? && !Oauth::Issuer.valid?
+    raise 'ISSUER must be an https URL without a query or fragment (RFC 8414 Section 2).'
+  end
+end
+
 Saml::Kit.configure do |x|
   x.entity_id = ENV['ISSUER']
   x.registry = OnDemandRegistry.new

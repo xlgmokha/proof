@@ -19,14 +19,17 @@ Bundler.require(*Rails.groups)
 module Proof
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults "6.0"
-    config.autoloader = :classic
+    config.load_defaults "8.1"
 
     # Settings in config/environments/* take precedence over those specified
     # here.
     # Application configuration can go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded after loading
     # the framework and any gems in your application.
+    # audited serializes changes as YAML, which Rails 7.1+ loads safely.
+    config.active_record.yaml_column_permitted_classes = [
+      Symbol, Date, Time, ActiveSupport::TimeWithZone, ActiveSupport::TimeZone, BigDecimal
+    ]
     config.middleware.delete(Rack::Runtime)
     routes.default_url_options[:host] = ENV['RAILS_HOST']
     routes.default_url_options[:protocol] = 'https' if Rails.env.production?

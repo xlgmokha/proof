@@ -1,0 +1,133 @@
+# frozen_string_literal: true
+
+# RFC 6750: protecting a resource with bearer access tokens, and RFC 9449
+# Section 7 for tokens that are bound to a DPoP key.
+module BearerAuthentication
+  extend ActiveSupport::Concern
+
+  REALM = 'oauth'
+  # RFC 6750 Section 2.1: credentials = "Bearer" 1*SP b64token
+  HEADER = /\A(Bearer|DPoP) +([A-Za-z0-9\-._~+\/]+=*)\z/i
+
+  private
+
+  # Sets @access_token when the request carries a usable access token, and
+  # otherwise responds with the challenge described in RFC 6750 Section 3.
+  def authenticate_bearer!(scope: nil, acr_values: nil, max_age: nil, resource: nil, subject_type: nil)
+    presented = presented_credentials
+    # Section 3.1: a credential that cannot be read is a malformed request.
+    if presented.empty? && request.authorization.to_s.match?(/\A(Bearer|DPoP)\b/i)
+      return challenge('invalid_request', 'The credentials are malformed.', status: :bad_request)
+    end
+    return challenge(nil, status: :unauthorized, schemes: %w[Bearer DPoP]) if presented.empty?
+    return challenge('invalid_request', 'Multiple access tokens were presented.', status: :bad_request) if presented.many?
+
+    scheme, jwt = presented.first
+    @access_token = Token.authenticate(jwt, allow_bound: true, resource: resource, subject_type: subject_type)
+    return challenge('invalid_token', 'The access token is invalid.', status: :unauthorized, schemes: [scheme]) unless @access_token
+    return unless certificate_constraint_satisfied?(scheme)
+    return unless sender_constraint_satisfied?(scheme, jwt)
+    return unless authentication_event_satisfied?(scheme, acr_values, max_age, scope)
+    return if scope.nil? || @access_token.scopes.include?(scope)
+
+    challenge('insufficient_scope', 'The access token lacks the required scope.', status: :forbidden, scope: scope, schemes: [scheme])
+  end
+
+  # RFC 9470 Section 3: the resource may require the user to have authenticated
+  # in a certain way, or recently. The client is told which, to try again.
+  def authentication_event_satisfied?(scheme, acr_values, max_age, scope)
+    return true if acr_values.blank? && max_age.nil?
+
+    acr_ok = acr_values.blank? || Array(acr_values).include?(@access_token.acr) ||
+      (@access_token.acr.present? && AuthenticationContext.new(@access_token.acr, 0).satisfies?(Array(acr_values).join(' ')))
+    age_ok = max_age.nil? || (@access_token.auth_time.present? && Time.current.to_i - @access_token.auth_time <= max_age.to_i)
+    return true if acr_ok && age_ok
+
+    requirements = { acr_values: Array(acr_values).join(' ').presence, max_age: max_age }.compact
+    challenge(
+      'insufficient_user_authentication', 'A different authentication level is required.',
+      status: :unauthorized, scope: scope, schemes: [scheme], extra: requirements
+    )
+    false
+  end
+
+  # RFC 8705 Section 3: a token bound to a certificate is only good over a
+  # connection that used it.
+  def certificate_constraint_satisfied?(scheme)
+    return true if @access_token.x5t_s256.blank?
+
+    presented = ClientCertificate.from(request)
+    return true if presented && ActiveSupport::SecurityUtils.secure_compare(presented.thumbprint, @access_token.x5t_s256)
+
+    challenge('invalid_token', 'The access token is bound to a different client certificate.', status: :unauthorized, schemes: [scheme])
+    false
+  end
+
+  # RFC 9449 Section 7.1: a bound token is only good with a proof from its
+  # key, and a proof is only meaningful for a bound token.
+  def sender_constraint_satisfied?(scheme, jwt)
+    bound = @access_token.dpop_jkt.present?
+    if bound != scheme.casecmp?('DPoP')
+      challenge('invalid_token', 'The access token is not valid for this authentication scheme.', status: :unauthorized, schemes: [scheme])
+      return false
+    end
+    return true unless bound
+
+    proof = DpopProof.new(
+      request.headers['DPoP'], method: request.method, url: "#{request.base_url}#{request.path}",
+      access_token: jwt, nonce_required: DpopNonce.required?
+    )
+    return true if proof.verify! == @access_token.dpop_jkt
+
+    challenge('invalid_token', 'The DPoP proof was not made with the key the token is bound to.', status: :unauthorized, schemes: ['DPoP'])
+    false
+  rescue DpopProof::UseNonce => error
+    response.headers['DPoP-Nonce'] = DpopNonce.current
+    challenge('use_dpop_nonce', error.message, status: :unauthorized, schemes: ['DPoP'])
+    false
+  rescue DpopProof::Invalid => error
+    challenge('invalid_dpop_proof', error.message, status: :unauthorized, schemes: ['DPoP'])
+    false
+  end
+
+  # Section 2.1 (header) and Section 2.2 (form-encoded body parameter).
+  def presented_credentials
+    credentials = []
+    match = request.authorization.to_s.match(HEADER)
+    credentials << [match[1].capitalize.sub('Dpop', 'DPoP'), match[2]] if match
+    credentials << ['Bearer', request.request_parameters['access_token']] if form_encoded_body? && request.request_parameters['access_token'].present?
+    credentials
+  end
+
+  def presented_bearer_tokens
+    presented_credentials.map(&:last)
+  end
+
+  def form_encoded_body?
+    request.post? && request.media_type == 'application/x-www-form-urlencoded'
+  end
+
+  def challenge(error, description = nil, status:, scope: nil, schemes: %w[Bearer], extra: {})
+    response.headers['WWW-Authenticate'] = schemes.map { |x| challenge_for(x, error, description, scope, extra) }.join(', ')
+    head status
+  end
+
+  # RFC 9728 Section 5.1: the metadata of the resource being accessed.
+  def resource_metadata_url_for_request
+    path = Oauth::Issuer::RESOURCES.keys.reject(&:empty?).find { |x| request.path == x || request.path.start_with?("#{x}/") }
+    issuer = URI.parse(Oauth::Issuer.identifier)
+    origin = "#{issuer.scheme}://#{issuer.authority}"
+    "#{origin}/.well-known/oauth-protected-resource#{issuer.path.chomp('/')}#{path}"
+  end
+
+  def challenge_for(scheme, error, description, scope, extra = {})
+    # RFC 9728 Section 5.1: point the client at the resource's metadata.
+    attributes = {
+      realm: REALM, error: error, error_description: description, scope: scope,
+      **extra,
+      resource_metadata: resource_metadata_url_for_request
+    }
+    attributes[:algs] = DpopProof::ALGORITHMS.join(' ') if scheme == 'DPoP'
+    "#{scheme} #{attributes.compact.map { |k, v| %(#{k}="#{v.to_s.gsub(/[^\x20\x21\x23-\x5B\x5D-\x7E]/, '')}") }.join(', ')}"
+  end
+end

@@ -4,7 +4,12 @@ rules:
     - true
     - ignoreAtRules:
       - function
+      - use
+      - import
       - if
       - each
       - include
       - mixin
+  import-notation: null
+  no-invalid-position-at-import-rule: null
+  selector-class-pattern: null

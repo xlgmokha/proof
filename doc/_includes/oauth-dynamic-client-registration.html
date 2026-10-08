@@ -1,67 +1,84 @@
 
-#### POST http://localhost:5000/oauth/clients
+#### POST http://127.0.0.1:37541/oauth/clients
 
 Example curl request:
 
 ```bash
-$ curl http://localhost:5000/oauth/clients \
+$ curl http://127.0.0.1:37541/oauth/clients \
   -X POST \
-  -d '{"redirect_uris":["https://ernser.com","https://schultz.biz"],"client_name":"Jeffrey Jewess","token_endpoint_auth_method":"client_secret_basic","logo_uri":"https://hagenesjohnson.com","jwks_uri":"https://balistreri.biz"}' \
+  -d '{"redirect_uris":["https://haley.co.uk","https://gleason.info"],"client_name":"Madge Mosciski","token_endpoint_auth_method":"client_secret_basic","logo_uri":"https://nikolaus.name","jwks_uri":"https://schaefer.ca"}' \
   -H "Accept: application/json" \
   -H "Content-Type: application/json" \
-  -H "User-Agent: net/hippie 0.1.9" \
-  -H "Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3"
+  -H "User-Agent: net/hippie 1.4.0" \
+  -H "Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3" \
+  -H "Host: 127.0.0.1:37541"
 ```
 Request:
 ```text
 Accept: application/json
 Content-Type: application/json
-User-Agent: net/hippie 0.1.9
+User-Agent: net/hippie 1.4.0
 Accept-Encoding: gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+Host: 127.0.0.1:37541
 ```
 ```json
 {
   "redirect_uris": [
-    "https://ernser.com",
-    "https://schultz.biz"
+    "https://haley.co.uk",
+    "https://gleason.info"
   ],
-  "client_name": "Jeffrey Jewess",
+  "client_name": "Madge Mosciski",
   "token_endpoint_auth_method": "client_secret_basic",
-  "logo_uri": "https://hagenesjohnson.com",
-  "jwks_uri": "https://balistreri.biz"
+  "logo_uri": "https://nikolaus.name",
+  "jwks_uri": "https://schaefer.ca"
 }
 ```
 Response:
 ```text
 201 Created
 
-Cache-Control: no-cache, no-store
+X-Frame-Options: SAMEORIGIN
+X-Xss-Protection: 1; mode=block
+X-Content-Type-Options: nosniff
+X-Download-Options: noopen
+X-Permitted-Cross-Domain-Policies: none
+Referrer-Policy: strict-origin-when-cross-origin
+Cache-Control: no-store
 Pragma: no-cache
 Content-Type: application/json; charset=utf-8
-X-Request-Id: 7962b362-cf07-4b8e-944c-5a8e699f4f5d
-Transfer-Encoding: chunked
+Vary: Accept
+Etag: W/"29d55dae321831a487a09ec34ba4f931"
+X-Request-Id: fbfe347b-d081-494a-9e68-1c5accd018a6
+Content-Length: 1815
 ```
 ```json
 {
-  "client_id": "b982b9b8-a3f8-49c7-ac22-5a1390f473f6",
-  "client_secret": "HNkbB3iTvgVmaiZeCchsaRJC",
-  "client_id_issued_at": 1540834467,
+  "client_id": "2726e284-9a83-4a33-b499-ce187d6e4b49",
+  "client_secret": "W545hZb1gQEXhpQXZR5KoqQj",
+  "client_id_issued_at": 1791263380,
   "client_secret_expires_at": 0,
   "redirect_uris": [
-    "https://ernser.com",
-    "https://schultz.biz"
+    "https://haley.co.uk",
+    "https://gleason.info"
   ],
   "grant_types": [
     "authorization_code",
     "refresh_token",
     "client_credentials",
     "password",
-    "urn:ietf:params:oauth:grant-type:saml2-bearer"
+    "urn:ietf:params:oauth:grant-type:saml2-bearer",
+    "urn:ietf:params:oauth:grant-type:jwt-bearer"
   ],
-  "client_name": "Jeffrey Jewess",
+  "response_types": [
+    "code",
+    "token"
+  ],
+  "client_name": "Madge Mosciski",
   "token_endpoint_auth_method": "client_secret_basic",
-  "logo_uri": "https://hagenesjohnson.com",
-  "jwks_uri": "https://balistreri.biz"
+  "logo_uri": "https://nikolaus.name",
+  "jwks_uri": "https://schaefer.ca",
+  "registration_client_uri": "http://127.0.0.1:37541/oauth/clients/2726e284-9a83-4a33-b499-ce187d6e4b49",
+  "registration_access_token": "eyJraWQiOiJiYTYyOTNlYWEyNjg4MzkzOTkzMWMxYmI5MTQxNDhmM2YyMTNmOGJmNmU3ZDFkNTQ3ODEwMzk3ZjRkNTBlNGUzIiwiYWxnIjoiUlMyNTYifQ.eyJleHAiOjE3OTEyNjY5ODAsImlhdCI6MTc5MTI2MzM4MCwiaXNzIjoidGVzdCIsIm5iZiI6MTc5MTI2MzM4MCwiYXVkIjoiMjcyNmUyODQtOWE4My00YTMzLWI0OTktY2UxODdkNmU0YjQ5IiwianRpIjoiN2Q0N2Y1NjMtYzNiZS00NWViLWIxZDktZjljNGM4M2Y5ZmM3Iiwic3ViIjoiMjcyNmUyODQtOWE4My00YTMzLWI0OTktY2UxODdkNmU0YjQ5IiwidG9rZW5fdHlwZSI6ImFjY2VzcyJ9.Fmkley-zWDRKqgzV3Mqx26QIdkSCEXiq9ya2-7Ipytjynb3dM0gh14cntesp4285LjT55bbhT7wVs_CgM5yi0VAhJ9IuMi1tPR9boj42ElJD80IWbhOxFlYDiJRrAC8K1cJpAPdsW4Npp6pN4DrA3nrCMOhtSc_VUkxjEBkG2KHagAv7aCDWmzKiTsaROgaS40vp1QeA0cpJKu8whzZsjyMNeS20Ojblig3Nm0oje46o0-uaZfS4eFH2NPJGsM8HEW-zJJprNSwU9vehr90zsv7pP8xoiExmnwXv_T32zhPZbFf6NsB76L_ncHNGc7-Jnam8i3gWT6DBMzPN7OwLHaC_S5eHSRXYbRE2BebxH_yL7xrgT4IEOVUzwpMlXn2LW_syJwZhP5yDb-0xV2yXfYxD-SNmBe_e3M1I2pvVy4Dw8dCLgaCZP8kjS5KMRVT8-qATelOfORc3B0y_mgZ4P0YwjkvL08Zq0v1EKHyDQpWm9GLzhCGGChlHPN0Yix1HLUsP9UEBNpwBXoo6uZCdpvRHR4fbz-MzxfqPxLd7GwfZeH2dgbNBZemI14hCxec2cLx5_TD04sXfW-hDeB6GnmykCpJ8CtovYRQIQC1IoYfx3R3NGaGp8uEHCbqsIRLeXAAIAobHVANt4qVkdEn4HKoTSgRc6KEeQL3E1zKLE5Y"
 }
 ```
 

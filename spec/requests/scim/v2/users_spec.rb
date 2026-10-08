@@ -46,11 +46,11 @@ describe '/scim/v2/users' do
 
       before { post '/scim/v2/users', params: request_body.to_json, headers: headers }
 
-      specify { expect(response).to have_http_status(:bad_request) }
+      specify { expect(response).to have_http_status(:conflict) }
       specify { expect(json[:schemas]).to match_array(['urn:ietf:params:scim:api:messages:2.0:Error']) }
       specify { expect(json[:scimType]).to eql('uniqueness') }
       specify { expect(json[:detail]).to be_instance_of(String) }
-      specify { expect(json[:status]).to eql('400') }
+      specify { expect(json[:status]).to eql('409') }
     end
   end
 
@@ -273,7 +273,7 @@ describe '/scim/v2/users' do
     specify { expect(json[:meta][:lastModified]).to be_present }
     specify { expect(json[:meta][:version]).to be_present }
     specify { expect(json[:meta][:location]).to be_present }
-    specify { expect(json[:emails]).to match_array([value: new_email, primary: true]) }
+    specify { expect(json[:emails]).to match_array([{ value: new_email, primary: true }]) }
     specify { expect(json[:locale]).to eql(locale) }
     specify { expect(json[:timezone]).to eql(timezone) }
   end
